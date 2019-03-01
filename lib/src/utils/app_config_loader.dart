@@ -1,7 +1,7 @@
 import 'dart:async' show Future;
 import 'dart:convert' show json;
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:movieowski/src/utils/AppConfig.dart';
+import 'package:movieowski/src/utils/app_config.dart';
 
 /// Creates [AppConfig] with information from given json file
 class AppConfigLoader {

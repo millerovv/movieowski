@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:movieowski/src/models/popular_movie_model.dart';
 import 'package:movieowski/src/resources/api/base_api_provider.dart';
-import 'package:movieowski/src/utils/AppConfigLoader.dart';
+import 'package:movieowski/src/utils/app_config_loader.dart';
 import 'dart:async';
+
+import 'package:movieowski/src/utils/consts.dart';
 
 class TmdbApiProvider extends BaseApiProvider {
   static const String BASE_URL = 'api.themoviedb.org';
@@ -16,7 +18,7 @@ class TmdbApiProvider extends BaseApiProvider {
   /// Request list of popular movies
   /// Documentation: https://developers.themoviedb.org/3/movies/get-popular-movies
   Future<PopularMoviesModel> getPopularMovies(
-      {int pageIndex: 1, String language: 'en-US', String region: 'RU'}) async {
+      {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.RUSSIA}) async {
     var url = Uri.https(
       BASE_URL,
       '3/movie/popular',

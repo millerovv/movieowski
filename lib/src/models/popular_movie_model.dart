@@ -4,6 +4,8 @@ class PopularMoviesModel {
 	int _total_pages;
 	List<_Result> _results = [];
 
+	PopularMoviesModel._internal();
+
 	PopularMoviesModel.fromJson(Map<String, dynamic> parsedJson) {
 		print(parsedJson['results'].length);
 		_page = parsedJson['page'];
@@ -15,6 +17,10 @@ class PopularMoviesModel {
 			temp.add(result);
 		}
 		_results = temp;
+	}
+
+	factory PopularMoviesModel.empty() {
+		return PopularMoviesModel._internal();
 	}
 
 	List<_Result> get results => _results;
