@@ -7,7 +7,7 @@ import 'package:movieowski/src/utils/app_config.dart';
 class AppConfigLoader {
   final String appConfigFilePath;
 
-  AppConfigLoader({this.appConfigFilePath});
+  AppConfigLoader(this.appConfigFilePath);
 
   Future<AppConfig> load() {
     return rootBundle.loadStructuredData<AppConfig>(this.appConfigFilePath,

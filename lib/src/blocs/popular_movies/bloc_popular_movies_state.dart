@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:movieowski/src/blocs/base/bloc_event_state.dart';
 import 'package:movieowski/src/models/popular_movie_model.dart';
 
-class PopularMoviesState extends BlocState {
+class PopularMoviesState extends Equatable implements BlocState {
   final bool isLoaded;
   final bool isLoading;
   final bool hasFailed;

@@ -2,7 +2,7 @@ class PopularMoviesModel {
 	int _page;
 	int _total_results;
 	int _total_pages;
-	List<_Result> _results = [];
+	List<PopularMovie> _results = [];
 
 	PopularMoviesModel._internal();
 
@@ -11,9 +11,9 @@ class PopularMoviesModel {
 		_page = parsedJson['page'];
 		_total_results = parsedJson['total_results'];
 		_total_pages = parsedJson['total_pages'];
-		List<_Result> temp = [];
+		List<PopularMovie> temp = [];
 		for (int i = 0; i < parsedJson['results'].length; i++) {
-			_Result result = _Result(parsedJson['results'][i]);
+			PopularMovie result = PopularMovie(parsedJson['results'][i]);
 			temp.add(result);
 		}
 		_results = temp;
@@ -23,7 +23,7 @@ class PopularMoviesModel {
 		return PopularMoviesModel._internal();
 	}
 
-	List<_Result> get results => _results;
+	List<PopularMovie> get results => _results;
 
 	int get total_pages => _total_pages;
 
@@ -32,7 +32,7 @@ class PopularMoviesModel {
 	int get page => _page;
 }
 
-class _Result {
+class PopularMovie {
 	int _vote_count;
 	int _id;
 	bool _video;
@@ -48,7 +48,7 @@ class _Result {
 	String _overview;
 	String _release_date;
 
-	_Result(result) {
+	PopularMovie(result) {
 		_vote_count = result['vote_count'];
 		_id = result['id'];
 		_video = result['video'];
@@ -94,4 +94,19 @@ class _Result {
 	int get id => _id;
 
 	int get vote_count => _vote_count;
+}
+
+abstract class MyPro {
+
+	get name;
+	set name(String value);
+
+}
+
+class MyProImpl implements MyPro {
+
+	String _name;
+	get name => _name;
+	set name(String value) => _name = name;
+
 }
