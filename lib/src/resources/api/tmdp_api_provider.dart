@@ -9,7 +9,7 @@ import 'package:movieowski/src/utils/consts.dart';
 
 class TmdbApiProvider extends BaseApiProvider {
   static const String BASE_URL = 'api.themoviedb.org';
-  static const String BASE_IMAGE_URL = 'http://image.tmdb.org/t/p/w500';
+  static const String BASE_IMAGE_URL = 'http://image.tmdb.org/t/p/w300';
   String apiKey;
 
   TmdbApiProvider(AppConfigLoader loader) {
