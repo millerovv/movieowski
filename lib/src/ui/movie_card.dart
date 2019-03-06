@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:movieowski/src/models/popular_movie_model.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
-class MovieCard extends StatelessWidget {
+class HomeMovieCard extends StatelessWidget {
   final String _posterPath;
   final double _rating;
   final bool _forAndroid;
 
-  MovieCard(this._posterPath, this._rating, this._forAndroid);
+  HomeMovieCard(this._posterPath, this._rating, this._forAndroid);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,7 @@ class MovieCard extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: constraints.maxHeight - iconSize * 1.3,
+                    top: constraints.maxHeight - iconSize,
                     left: constraints.maxWidth - iconSize * 1.3,
                     child: Container(
                       width: iconSize,
@@ -73,6 +72,7 @@ class MovieCard extends StatelessWidget {
     );
   }
 
+  /// Get color for rating circle depending on rating value
   Color _calculateRatingColor(double rating) {
     if (rating >= 7.5) {
       return AppColors.accentColor;

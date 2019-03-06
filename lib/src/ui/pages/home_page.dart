@@ -1,76 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/blocs/base/bloc_provider.dart';
-import 'package:movieowski/src/blocs/popular_movies/bloc_popular_movies.dart';
-import 'package:movieowski/src/ui/movie_card.dart';
+import 'package:movieowski/src/blocs/popular_movies/bloc_now_playing_movies_section.dart';
+import 'package:movieowski/src/resources/repository/movies_repository.dart';
+import 'package:movieowski/src/ui/now_playing_movies_section.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class HomePage extends StatefulWidget {
+  final MoviesRepository _moviesRepository;
+
+  HomePage(this._moviesRepository) : assert(_moviesRepository != null);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  PopularMoviesBloc _bloc;
-
   bool _forAndroid;
 
   @override
-  void dispose() {
-    _bloc?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    _bloc = BlocProvider.of<PopularMoviesBloc>(context);
     _forAndroid = Theme.of(context).platform == TargetPlatform.android;
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              new SliverAppBar(
-                flexibleSpace: _createSearchBar(),
-                floating: _forAndroid,
-                snap: _forAndroid,
-                pinned: !_forAndroid,
-              ),
-            ];
-          },
-          //TODO: delete hardcode
-          body: _createInTheatersSection('/xRWht48C2V8XNfzvPehyClOvDni.jpg', 8.6),
+        child: Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            new SliverAppBar(
+              flexibleSpace: _createSearchBar(),
+              floating: _forAndroid,
+              snap: _forAndroid,
+              pinned: !_forAndroid,
+            ),
+          ];
+        },
+        body: BlocProvider<NowPlayingMoviesSectionBloc>(
+          bloc: NowPlayingMoviesSectionBloc(moviesRepository: widget._moviesRepository),
+          child: NowPlayingMoviesSection(),
         ),
       ),
-    );
-  }
-
-  Widget _createInTheatersSection(String posterPath, double rating) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 12.0, left: 16.0, right: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: <Widget>[
-              Text('In theaters', style: Theme.of(context).textTheme.headline),
-              Text('See all',
-                  style: Theme.of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: MovieCard(posterPath, rating, _forAndroid),
-        ),
-      ],
-    );
+    ));
   }
 
   Widget _createSearchBar() {

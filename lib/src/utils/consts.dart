@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 class Regions {
 	Regions._internal();
 	static const String RUSSIA = 'RU';
@@ -26,4 +28,13 @@ class AppColors {
 	static const Color yellow = Color(0xFFD1CE06);
 	static const Color orange = Color(0xFFD18606);
 	static const Color red = Color(0xFFD13206);
+}
+
+class Log {
+	static void d(log, [key='i']) {
+		debugPrint('DEBUG/$key: $log');
+	}
+	static void e(e, stacktrace) {
+		debugPrint('${e.toString()}\n${stacktrace.toString()}');
+	}
 }

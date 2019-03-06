@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movieowski/src/blocs/base/bloc_provider.dart';
-import 'package:movieowski/src/blocs/popular_movies/bloc_popular_movies.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/pages/home_page.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
@@ -28,10 +26,7 @@ class Movieowski extends StatelessWidget {
           headline: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.primaryWhite),
         )
       ),
-      home: BlocProvider<PopularMoviesBloc>(
-        bloc: PopularMoviesBloc(moviesRepository: _moviesRepository),
-        child: HomePage(),
-      ),
+      home: HomePage(_moviesRepository),
     );
   }
 

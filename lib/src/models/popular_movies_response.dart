@@ -1,12 +1,12 @@
-class PopularMoviesModel {
+class PopularMoviesResponseRoot {
 	int _page;
 	int _total_results;
 	int _total_pages;
 	List<PopularMovie> _results = [];
 
-	PopularMoviesModel._internal();
+	PopularMoviesResponseRoot._internal();
 
-	PopularMoviesModel.fromJson(Map<String, dynamic> parsedJson) {
+	PopularMoviesResponseRoot.fromJson(Map<String, dynamic> parsedJson) {
 		print(parsedJson['results'].length);
 		_page = parsedJson['page'];
 		_total_results = parsedJson['total_results'];
@@ -19,8 +19,8 @@ class PopularMoviesModel {
 		_results = temp;
 	}
 
-	factory PopularMoviesModel.empty() {
-		return PopularMoviesModel._internal();
+	factory PopularMoviesResponseRoot.empty() {
+		return PopularMoviesResponseRoot._internal();
 	}
 
 	List<PopularMovie> get results => _results;
