@@ -1,4 +1,4 @@
-import 'package:movieowski/src/models/base_movies_response.dart';
+import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 
 class TrendingMoviesResponseRoot extends BaseMoviesResponse {
 	int page;
@@ -76,9 +76,9 @@ class TrendingMovie extends BaseResponseMovie {
 		releaseDate = json['release_date'];
 		title = json['title'];
 		video = json['video'];
-		voteAverage = json['vote_average'];
+		voteAverage = json['vote_average'].toDouble();
 		voteCount = json['vote_count'];
-		popularity = json['popularity'];
+		popularity = json['popularity'].toDouble();
 	}
 
 	Map<String, dynamic> toJson() {

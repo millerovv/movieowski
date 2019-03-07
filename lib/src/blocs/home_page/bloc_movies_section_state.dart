@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:movieowski/src/blocs/base/bloc_event_state.dart';
-import 'package:movieowski/src/models/base_movies_response.dart';
+import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 
 abstract class MoviesSectionState extends Equatable implements BlocState {
   MoviesSectionState([List props = const []]);

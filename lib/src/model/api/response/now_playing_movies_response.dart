@@ -1,4 +1,4 @@
-import 'package:movieowski/src/models/base_movies_response.dart';
+import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 
 class NowPlayingMoviesResponseRoot extends BaseMoviesResponse {
 	int page;

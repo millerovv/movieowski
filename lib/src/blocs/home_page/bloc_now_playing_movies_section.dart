@@ -1,7 +1,7 @@
 import 'package:movieowski/src/blocs/home_page/bloc_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/bloc_movies_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/bloc_movies_section_state.dart';
-import 'package:movieowski/src/models/now_playing_movies_response.dart';
+import 'package:movieowski/src/model/api/response/now_playing_movies_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/resources/api/base_api_provider.dart';
 import 'package:movieowski/src/utils/logger.dart';

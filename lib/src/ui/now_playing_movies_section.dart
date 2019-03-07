@@ -7,6 +7,8 @@ import 'package:movieowski/src/blocs/home_page/bloc_movies_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/bloc_movies_section_state.dart';
 import 'package:movieowski/src/blocs/home_page/bloc_trending_movies_section.dart';
 import 'package:movieowski/src/ui/movie_card.dart';
+import 'package:movieowski/src/utils/consts.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MoviesSection extends StatefulWidget {
   final sectionType;
@@ -57,25 +59,7 @@ class _MoviesSectionState extends State<MoviesSection> {
           builder: (BuildContext context, MoviesSectionState state) {
             if (state is MoviesIsEmpty) {
               _bloc.emitEvent(FetchMovies(page: 1));
-              return Container(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is MoviesIsLoaded) {
-              return Container(
-                height: 224.3,
-                width: double.infinity,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: EdgeInsets.only(left: index == 0 ? 16.0 : 8.0),
-                      child: HomeMovieCard(state.movies[index].posterPath, state.movies[index].voteAverage,
-                          Theme.of(context).platform == TargetPlatform.android),
-                    );
-                  },
-                  itemCount: state.movies.length,
-                ),
-              );
+              return SizedBox();
             } else if (state is MoviesError) {
               return Center(
                 child: Text(
@@ -85,7 +69,25 @@ class _MoviesSectionState extends State<MoviesSection> {
               );
             } else {
               return Container(
-                child: CircularProgressIndicator(),
+                height: 224.3,
+                width: double.infinity,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: EdgeInsets.only(left: index == 0 ? 16.0 : 8.0),
+                      child: (state is MoviesIsLoaded)
+                          ? HomeMovieCard(state.movies[index].posterPath, state.movies[index].voteAverage,
+                              Theme.of(context).platform == TargetPlatform.android)
+                          : Shimmer.fromColors(
+                              baseColor: AppColors.lighterPrimary,
+                              highlightColor: Colors.grey,
+                              child: HomeMovieCard('/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg', 1.0,
+                                  Theme.of(context).platform == TargetPlatform.android)),
+                    );
+                  },
+                  itemCount: (state is MoviesIsLoaded) ? state.movies.length : 3,
+                ),
               );
             }
           },
