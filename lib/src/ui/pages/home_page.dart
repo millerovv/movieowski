@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/blocs/base/bloc_provider.dart';
-import 'package:movieowski/src/blocs/popular_movies/bloc_now_playing_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/bloc_now_playing_movies_section.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/now_playing_movies_section.dart';
 import 'package:movieowski/src/utils/consts.dart';
@@ -35,8 +35,8 @@ class _HomePageState extends State<HomePage> {
           ];
         },
         body: BlocProvider<NowPlayingMoviesSectionBloc>(
-          bloc: NowPlayingMoviesSectionBloc(moviesRepository: widget._moviesRepository),
-          child: NowPlayingMoviesSection(),
+          bloc: NowPlayingMoviesSectionBloc(widget._moviesRepository),
+          child: MoviesSection(),
         ),
       ),
     ));
