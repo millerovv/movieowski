@@ -16,7 +16,7 @@ class HomeMovieCard extends StatelessWidget {
       padding: const EdgeInsets.only(top: 16.0),
       child: Container(
         width: 147.0,
-        height: 212.3,
+        height: 214.3,
         child: LayoutBuilder(
           builder: (context, constraints) => Stack(
                 fit: StackFit.expand,
