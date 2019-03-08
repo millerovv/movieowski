@@ -44,28 +44,24 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
               ),
             );
           } else {
-            return Container(
-              //TODO: Заменить ListView на SingleChildScrollView (https://github.com/flutter/flutter/issues/26527#issuecomment-454081855)
-              height: 180,
-              child: ListView.builder(
-                shrinkWrap: true,
+          return Column(
+            children: <Widget>[
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: EdgeInsets.only(left: 16.0),
-                    child: (state is PopularActorsIsLoaded)
+                child: Row(
+                  children: List<Widget>.generate((state is PopularActorsIsLoaded) ? state.actors.length : 5, (index) {
+                    return (state is PopularActorsIsLoaded)
                         ? HomeActorCard(state.actors[index].profilePath, state.actors[index].name)
                         : Shimmer.fromColors(
                             baseColor: AppColors.lighterPrimary,
                             highlightColor: Colors.grey,
                             child: HomeActorCard('/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg', ''),
-                          ),
-                  );
-                },
-                //TODO: Заменить пятерку на высчитываемое значение относительно ширины экрана
-                itemCount: (state is PopularActorsIsLoaded) ? state.actors.length : 5,
+                          );
+                  }),
+                ),
               ),
-            );
+            ],
+          );
           }
         },
       )
