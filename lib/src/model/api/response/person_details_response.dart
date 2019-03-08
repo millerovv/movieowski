@@ -12,7 +12,6 @@ class PersonDetailsResponse {
 	String profilePath;
 	bool adult;
 	String imdbId;
-	Null homepage;
 
 	PersonDetailsResponse(
 			{this.birthday,
@@ -27,8 +26,7 @@ class PersonDetailsResponse {
 				this.placeOfBirth,
 				this.profilePath,
 				this.adult,
-				this.imdbId,
-				this.homepage});
+				this.imdbId});
 
 	PersonDetailsResponse.fromJson(Map<String, dynamic> json) {
 		birthday = json['birthday'];
@@ -44,7 +42,6 @@ class PersonDetailsResponse {
 		profilePath = json['profile_path'];
 		adult = json['adult'];
 		imdbId = json['imdb_id'];
-		homepage = json['homepage'];
 	}
 
 	Map<String, dynamic> toJson() {
@@ -62,7 +59,6 @@ class PersonDetailsResponse {
 		data['profile_path'] = this.profilePath;
 		data['adult'] = this.adult;
 		data['imdb_id'] = this.imdbId;
-		data['homepage'] = this.homepage;
 		return data;
 	}
 }

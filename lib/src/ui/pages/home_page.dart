@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/blocs/base/bloc_provider.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_now_playing_movies_section.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_trending_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/bloc_popular_actors_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
-import 'package:movieowski/src/ui/actor_card.dart';
-import 'package:movieowski/src/ui/now_playing_movies_section.dart';
+import 'package:movieowski/src/ui/movies_section.dart';
+import 'package:movieowski/src/ui/popular_actors_section.dart';
 import 'package:movieowski/src/utils/consts.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   final MoviesRepository _moviesRepository;
@@ -37,23 +37,20 @@ class _HomePageState extends State<HomePage> {
             ),
           ];
         },
-        body: Column(
+        body: ListView(
           children: <Widget>[
             BlocProvider<NowPlayingMoviesSectionBloc>(
               bloc: NowPlayingMoviesSectionBloc(widget._moviesRepository),
               child: MoviesSection(SectionType.IN_THEATRES),
             ),
-            SizedBox(
-              height: 8.0,
-            ),
             BlocProvider<TrendingMoviesSectionBloc>(
               bloc: TrendingMoviesSectionBloc(widget._moviesRepository),
               child: MoviesSection(SectionType.TRENDING),
             ),
-            SizedBox(
-              height: 8.0,
-            ),
-//            HomeActorCard('/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg', 'Monica Bellucci'),
+            BlocProvider<PopularActorsSectionBloc>(
+              bloc: PopularActorsSectionBloc(widget._moviesRepository),
+              child: PopularActorsSection(),
+            )
           ],
         ),
       ),

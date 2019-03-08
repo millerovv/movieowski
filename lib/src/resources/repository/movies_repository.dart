@@ -17,12 +17,16 @@ class MoviesRepository {
           {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.RUSSIA}) =>
       tmdpApiProvider.getNowPlayingMovies(pageIndex: pageIndex, language: language, region: region);
 
-  List<PersonDetailsResponse> fetchTrendingActorsWithDetails() {
-     List<Future<PersonDetailsResponse>> personDetailsFutures = [];
-     List<PersonDetailsResponse> personDetails = [];
-     tmdpApiProvider.getPopularPeople().then((people) => people.results.forEach(
-             (person) => personDetailsFutures.add(tmdpApiProvider.getPersonDetails(personId: person.id))));
-     Future.wait(personDetailsFutures).then((values) => personDetails = values);
-     return personDetails;
+  /// Chained API request. Firstly we get list of popular people Ids, then for each Id
+  /// we request additional details about this person
+  Future<List<PersonDetailsResponse>> fetchPopularActorsWithDetails() async {
+    List<int> peopleIds = (await tmdpApiProvider.getPopularPeople())
+        .results
+        .map((p) => p.id)
+        .toList();
+    List<PersonDetailsResponse> peopleDetails = await Future.wait(peopleIds
+            .map((id) => tmdpApiProvider.getPersonDetails(personId: id))
+            .toList());
+     return peopleDetails;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:movieowski/src/blocs/base/bloc_event_state.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_movies_section_event.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_movies_section_state.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_event.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_state.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 
 abstract class MoviesSectionBloc extends BlocEventStateBase<MoviesSectionEvent, MoviesSectionState> {

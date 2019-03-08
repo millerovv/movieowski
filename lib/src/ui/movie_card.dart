@@ -13,11 +13,11 @@ class HomeMovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var iconSize = 36.0;
+    var ratingCircleRadius = 36.0;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Container(
-        width: 147.0,
+        width: 139.0, // Image container + 8dp
         height: 214.3,
         child: LayoutBuilder(
           builder: (context, constraints) => Stack(
@@ -58,11 +58,11 @@ class HomeMovieCard extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: constraints.maxHeight - iconSize,
-                    left: constraints.maxWidth - iconSize * 1.3,
+                    top: constraints.maxHeight - ratingCircleRadius,
+                    left: constraints.maxWidth - ratingCircleRadius * 1,
                     child: Container(
-                      width: iconSize,
-                      height: iconSize,
+                      width: ratingCircleRadius,
+                      height: ratingCircleRadius,
                       decoration: BoxDecoration(
                         color: _calculateRatingColor(_rating),
                         shape: BoxShape.circle,

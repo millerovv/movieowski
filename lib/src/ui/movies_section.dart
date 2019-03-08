@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/blocs/base/bloc_event_state_builder.dart';
 import 'package:movieowski/src/blocs/base/bloc_provider.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_movies_section.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_now_playing_movies_section.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_movies_section_event.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_movies_section_state.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_trending_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_event.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_state.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
 import 'package:movieowski/src/ui/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:shimmer/shimmer.dart';
@@ -37,7 +37,7 @@ class _MoviesSectionState extends State<MoviesSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 12.0, left: 16.0, right: 16.0),
+          padding: EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -83,10 +83,11 @@ class _MoviesSectionState extends State<MoviesSection> {
                               baseColor: AppColors.lighterPrimary,
                               highlightColor: Colors.grey,
                               child: HomeMovieCard('/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg', 1.0,
-                                  Theme.of(context).platform == TargetPlatform.android)),
+                                  false)),
                     );
                   },
-                  itemCount: (state is MoviesIsLoaded) ? state.movies.length : 3,
+                  //TODO: Заменить тройку на высчитываемое значение относительно ширины экрана
+                  itemCount: (state is MoviesIsLoaded) ? state.movies.length : 5,
                 ),
               );
             }
