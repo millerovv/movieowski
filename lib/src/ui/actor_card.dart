@@ -15,7 +15,7 @@ class HomeActorCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Container(
-        constraints: BoxConstraints(maxWidth: 131, minHeight: 180, maxHeight: 180),
+        constraints: BoxConstraints(maxWidth: 131, minHeight: 150, maxHeight: 180),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

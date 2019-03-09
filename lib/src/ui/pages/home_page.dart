@@ -3,6 +3,7 @@ import 'package:movieowski/src/blocs/base/bloc_provider.dart';
 import 'package:movieowski/src/blocs/home_page/bloc_popular_actors_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_upcoming_movies_section.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/movies_section.dart';
 import 'package:movieowski/src/ui/popular_actors_section.dart';
@@ -50,6 +51,10 @@ class _HomePageState extends State<HomePage> {
             BlocProvider<PopularActorsSectionBloc>(
               bloc: PopularActorsSectionBloc(widget._moviesRepository),
               child: PopularActorsSection(),
+            ),
+            BlocProvider<UpcomingMoviesSectionBloc>(
+              bloc: UpcomingMoviesSectionBloc(widget._moviesRepository),
+              child: MoviesSection(SectionType.UPCOMING),
             )
           ],
         ),

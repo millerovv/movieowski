@@ -44,24 +44,31 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
               ),
             );
           } else {
-          return Column(
-            children: <Widget>[
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List<Widget>.generate((state is PopularActorsIsLoaded) ? state.actors.length : 5, (index) {
-                    return (state is PopularActorsIsLoaded)
-                        ? HomeActorCard(state.actors[index].profilePath, state.actors[index].name)
-                        : Shimmer.fromColors(
-                            baseColor: AppColors.lighterPrimary,
-                            highlightColor: Colors.grey,
-                            child: HomeActorCard('/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg', ''),
-                          );
-                  }),
+            return Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children:
+                          List<Widget>.generate((state is PopularActorsIsLoaded) ? state.actors.length : 5, (index) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.0),
+                          child: (state is PopularActorsIsLoaded)
+                              ? HomeActorCard(state.actors[index].profilePath, state.actors[index].name)
+                              : Shimmer.fromColors(
+                                  baseColor: AppColors.lighterPrimary,
+                                  highlightColor: Colors.grey,
+                                  child: HomeActorCard('/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg', ''),
+                                ),
+                        );
+                      }),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          );
+              ],
+            );
           }
         },
       )

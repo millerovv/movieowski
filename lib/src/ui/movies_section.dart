@@ -6,6 +6,7 @@ import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_se
 import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_state.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_upcoming_movies_section.dart';
 import 'package:movieowski/src/ui/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:shimmer/shimmer.dart';
@@ -30,9 +31,24 @@ class _MoviesSectionState extends State<MoviesSection> {
 
   @override
   Widget build(BuildContext context) {
-    _bloc = widget.sectionType == SectionType.IN_THEATRES
-        ? BlocProvider.of<NowPlayingMoviesSectionBloc>(context)
-        : BlocProvider.of<TrendingMoviesSectionBloc>(context);
+    switch (widget.sectionType) {
+      case SectionType.IN_THEATRES:
+        {
+          _bloc = BlocProvider.of<NowPlayingMoviesSectionBloc>(context);
+          break;
+        }
+      case SectionType.TRENDING:
+        {
+          _bloc = BlocProvider.of<TrendingMoviesSectionBloc>(context);
+          break;
+        }
+      case SectionType.UPCOMING:
+        {
+          _bloc = BlocProvider.of<UpcomingMoviesSectionBloc>(context);
+          break;
+        }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -69,21 +85,28 @@ class _MoviesSectionState extends State<MoviesSection> {
               );
             } else {
               return Container(
+                margin: EdgeInsets.symmetric(horizontal: 8.0),
                 height: 224.3,
                 width: double.infinity,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
-                      padding: EdgeInsets.only(left: index == 0 ? 16.0 : 8.0),
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: (state is MoviesIsLoaded)
-                          ? HomeMovieCard(state.movies[index].posterPath, state.movies[index].voteAverage,
-                              Theme.of(context).platform == TargetPlatform.android)
+                          ? (state.movies[index].posterPath != null) ? HomeMovieCard(
+                              forAndroid: Theme.of(context).platform == TargetPlatform.android,
+                              withRating: widget.sectionType != SectionType.UPCOMING,
+                              posterPath: state.movies[index].posterPath,
+                              rating: state.movies[index].voteAverage,
+                            ) : SizedBox()
                           : Shimmer.fromColors(
                               baseColor: AppColors.lighterPrimary,
                               highlightColor: Colors.grey,
-                              child: HomeMovieCard('/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg', 1.0,
-                                  false)),
+                              child: HomeMovieCard(
+                                forAndroid: false,
+                                withRating: widget.sectionType != SectionType.UPCOMING,
+                              )),
                     );
                   },
                   //TODO: Заменить тройку на высчитываемое значение относительно ширины экрана
@@ -98,4 +121,4 @@ class _MoviesSectionState extends State<MoviesSection> {
   }
 }
 
-enum SectionType { IN_THEATRES, TRENDING }
+enum SectionType { IN_THEATRES, TRENDING, UPCOMING }

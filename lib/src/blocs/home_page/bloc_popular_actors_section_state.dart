@@ -11,7 +11,7 @@ class PopularActorsIsEmpty extends PopularActorsSectionState {}
 class PopularActorsIsLoading extends PopularActorsSectionState {}
 
 class PopularActorsIsLoaded extends PopularActorsSectionState {
-	final List<PersonDetailsResponse> actors;
+	final List<PersonDetailsResponseRoot> actors;
 
 	PopularActorsIsLoaded(this.actors) :
 				assert(actors != null),

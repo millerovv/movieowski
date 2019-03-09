@@ -4,6 +4,7 @@ import 'package:movieowski/src/model/api/response/person_details_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/model/api/response/trending_movies_response.dart';
 import 'package:movieowski/src/model/api/response/now_playing_movies_response.dart';
+import 'package:movieowski/src/model/api/response/upcoming_movies_response.dart';
 import 'package:movieowski/src/resources/api/base_api_provider.dart';
 import 'dart:async';
 
@@ -34,7 +35,7 @@ class TmdbApiProvider extends BaseApiProvider {
   /// Request list of movies playing in theatres now
   /// Documentation: https://developers.themoviedb.org/3/movies/get-now-playing
   Future<NowPlayingMoviesResponseRoot> getNowPlayingMovies(
-      {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.RUSSIA}) async {
+      {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.USA}) async {
     var url = Uri.https(
       BASE_URL,
       '3/movie/now_playing',
@@ -67,7 +68,9 @@ class TmdbApiProvider extends BaseApiProvider {
     return actors;
   }
 
-  Future<PersonDetailsResponse> getPersonDetails({int personId, language: Languages.ENGLISH}) async {
+  /// Request person detailed information by id
+  /// Documentation: https://developers.themoviedb.org/3/people/get-person-details
+  Future<PersonDetailsResponseRoot> getPersonDetails({int personId, language: Languages.ENGLISH}) async {
     var url = Uri.https(
       BASE_URL,
       '3/person/$personId',
@@ -78,7 +81,27 @@ class TmdbApiProvider extends BaseApiProvider {
     );
 
     var response = await getRequest(url);
-    final PersonDetailsResponse details = PersonDetailsResponse.fromJson(json.decode(response));
+    final PersonDetailsResponseRoot details = PersonDetailsResponseRoot.fromJson(json.decode(response));
     return details;
+  }
+
+  /// Request list of upcoming movies
+  /// Documentation: https://developers.themoviedb.org/3/movies/get-upcoming
+  Future<UpcomingMoviesResponseRoot> getUpcomingMovies(
+      {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.USA}) async {
+    var url = Uri.https(
+      BASE_URL,
+      '3/movie/upcoming',
+      <String, String>{
+        'api_key': API_KEY,
+        'page': '$pageIndex',
+        'language': language,
+        'region': region,
+      },
+    );
+
+    var response = await getRequest(url);
+    final UpcomingMoviesResponseRoot movies = UpcomingMoviesResponseRoot.fromJson(json.decode(response));
+    return movies;
   }
 }

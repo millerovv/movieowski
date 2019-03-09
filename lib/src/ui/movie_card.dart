@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/logger.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class HomeMovieCard extends StatelessWidget {
-  final String _posterPath;
-  final double _rating;
-  final bool _forAndroid;
+  final String posterPath;
+  final bool forAndroid;
+  final bool withRating;
+  final double rating;
 
-  HomeMovieCard(this._posterPath, this._rating, this._forAndroid);
+  HomeMovieCard({
+    @required this.forAndroid,
+    @required this.withRating,
+    this.posterPath = "/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg",
+    this.rating = 0.0});
 
   @override
   Widget build(BuildContext context) {
+    Log.d('posterPath = $posterPath');
     var ratingCircleRadius = 36.0;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -51,41 +58,43 @@ class HomeMovieCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                         child: FadeInImage.memoryNetwork(
                           placeholder: kTransparentImage,
-                          image: TmdbApiProvider.BASE_IMAGE_URL + _posterPath,
+                          image: TmdbApiProvider.BASE_IMAGE_URL + posterPath,
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: constraints.maxHeight - ratingCircleRadius,
-                    left: constraints.maxWidth - ratingCircleRadius * 1,
-                    child: Container(
-                      width: ratingCircleRadius,
-                      height: ratingCircleRadius,
-                      decoration: BoxDecoration(
-                        color: _calculateRatingColor(_rating),
-                        shape: BoxShape.circle,
-                        boxShadow: _forAndroid
-                            ? <BoxShadow>[
-                                BoxShadow(
-                                  color: Colors.black87,
-                                  offset: Offset(1.0, 1.0),
-                                  blurRadius: 4.0,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Center(
-                          child: Text(
-                        _rating.toString(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .caption
-                            .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
-                      )),
-                    ),
-                  )
+                  withRating
+                      ? Positioned(
+                          top: constraints.maxHeight - ratingCircleRadius,
+                          left: constraints.maxWidth - ratingCircleRadius * 1,
+                          child: Container(
+                            width: ratingCircleRadius,
+                            height: ratingCircleRadius,
+                            decoration: BoxDecoration(
+                              color: _calculateRatingColor(rating),
+                              shape: BoxShape.circle,
+                              boxShadow: forAndroid
+                                  ? <BoxShadow>[
+                                      BoxShadow(
+                                        color: Colors.black87,
+                                        offset: Offset(1.0, 1.0),
+                                        blurRadius: 4.0,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Center(
+                                child: Text(
+                              rating.toString(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+                            )),
+                          ),
+                        )
+                      : SizedBox(),
                 ],
               ),
         ),

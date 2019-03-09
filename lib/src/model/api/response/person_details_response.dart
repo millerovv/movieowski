@@ -1,4 +1,4 @@
-class PersonDetailsResponse {
+class PersonDetailsResponseRoot {
 	String birthday;
 	String knownForDepartment;
 	Null deathday;
@@ -13,7 +13,7 @@ class PersonDetailsResponse {
 	bool adult;
 	String imdbId;
 
-	PersonDetailsResponse(
+	PersonDetailsResponseRoot(
 			{this.birthday,
 				this.knownForDepartment,
 				this.deathday,
@@ -28,7 +28,7 @@ class PersonDetailsResponse {
 				this.adult,
 				this.imdbId});
 
-	PersonDetailsResponse.fromJson(Map<String, dynamic> json) {
+	PersonDetailsResponseRoot.fromJson(Map<String, dynamic> json) {
 		birthday = json['birthday'];
 		knownForDepartment = json['known_for_department'];
 		deathday = json['deathday'];
