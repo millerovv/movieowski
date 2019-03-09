@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/blocs/base/bloc_provider.dart';
-import 'package:movieowski/src/blocs/popular_movies/bloc_now_playing_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/bloc_popular_actors_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_upcoming_movies_section.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
-import 'package:movieowski/src/ui/now_playing_movies_section.dart';
+import 'package:movieowski/src/ui/movies_section.dart';
+import 'package:movieowski/src/ui/popular_actors_section.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class HomePage extends StatefulWidget {
@@ -34,9 +38,25 @@ class _HomePageState extends State<HomePage> {
             ),
           ];
         },
-        body: BlocProvider<NowPlayingMoviesSectionBloc>(
-          bloc: NowPlayingMoviesSectionBloc(moviesRepository: widget._moviesRepository),
-          child: NowPlayingMoviesSection(),
+        body: ListView(
+          children: <Widget>[
+            BlocProvider<NowPlayingMoviesSectionBloc>(
+              bloc: NowPlayingMoviesSectionBloc(widget._moviesRepository),
+              child: MoviesSection(SectionType.IN_THEATRES),
+            ),
+            BlocProvider<TrendingMoviesSectionBloc>(
+              bloc: TrendingMoviesSectionBloc(widget._moviesRepository),
+              child: MoviesSection(SectionType.TRENDING),
+            ),
+            BlocProvider<PopularActorsSectionBloc>(
+              bloc: PopularActorsSectionBloc(widget._moviesRepository),
+              child: PopularActorsSection(),
+            ),
+            BlocProvider<UpcomingMoviesSectionBloc>(
+              bloc: UpcomingMoviesSectionBloc(widget._moviesRepository),
+              child: MoviesSection(SectionType.UPCOMING),
+            )
+          ],
         ),
       ),
     ));
@@ -78,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                     'Search for any movie or actor',
                     style: Theme.of(context)
                         .textTheme
-                        .caption
+                        .body1
                         .copyWith(color: _forAndroid ? AppColors.hintGrey : AppColors.hintWhite),
                   ),
                 ),
