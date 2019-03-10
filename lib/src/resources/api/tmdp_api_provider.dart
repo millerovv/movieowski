@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/model/api/response/trending_movies_response.dart';
@@ -103,5 +104,22 @@ class TmdbApiProvider extends BaseApiProvider {
     var response = await getRequest(url);
     final UpcomingMoviesResponseRoot movies = UpcomingMoviesResponseRoot.fromJson(json.decode(response));
     return movies;
+  }
+
+  /// Request the list of official genres for movies
+  /// Documentation: https://developers.themoviedb.org/3/genres/get-movie-list
+  Future<MovieGenresResponseRoot> getMovieGenresList({String language: Languages.ENGLISH}) async {
+    var url = Uri.https(
+      BASE_URL,
+      '3/genre/movie',
+      <String, String>{
+        'api_key': API_KEY,
+        'language': language,
+      },
+    );
+
+    var response = await getRequest(url);
+    final MovieGenresResponseRoot genres = MovieGenresResponseRoot.fromJson(json.decode(response));
+    return genres;
   }
 }

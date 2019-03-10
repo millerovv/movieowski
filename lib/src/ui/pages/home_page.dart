@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:movieowski/src/blocs/base/bloc_provider.dart';
-import 'package:movieowski/src/blocs/home_page/bloc_popular_actors_section.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movieowski/src/blocs/home_page/actors/bloc_popular_actors_section.dart';
+import 'package:movieowski/src/blocs/home_page/actors/bloc_popular_actors_section_event.dart';
+import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_upcoming_movies_section.dart';
@@ -19,7 +21,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  PopularActorsSectionBloc popularActorsSectionBloc;
+  NowPlayingMoviesSectionBloc nowPlayingMoviesSectionBloc;
+  TrendingMoviesSectionBloc trendingMoviesSectionBloc;
+  UpcomingMoviesSectionBloc upcomingMoviesSectionBloc;
   bool _forAndroid;
+
+  @override
+  void initState() {
+    popularActorsSectionBloc = PopularActorsSectionBloc(widget._moviesRepository);
+    nowPlayingMoviesSectionBloc = NowPlayingMoviesSectionBloc(widget._moviesRepository);
+    trendingMoviesSectionBloc = TrendingMoviesSectionBloc(widget._moviesRepository);
+    upcomingMoviesSectionBloc = UpcomingMoviesSectionBloc(widget._moviesRepository);
+    popularActorsSectionBloc.dispatch(FetchPopularActors());
+    nowPlayingMoviesSectionBloc.dispatch(FetchMovies());
+    trendingMoviesSectionBloc.dispatch(FetchMovies());
+    upcomingMoviesSectionBloc.dispatch(FetchMovies());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,19 +60,19 @@ class _HomePageState extends State<HomePage> {
         body: ListView(
           children: <Widget>[
             BlocProvider<NowPlayingMoviesSectionBloc>(
-              bloc: NowPlayingMoviesSectionBloc(widget._moviesRepository),
+              bloc: nowPlayingMoviesSectionBloc,
               child: MoviesSection(SectionType.IN_THEATRES),
             ),
             BlocProvider<TrendingMoviesSectionBloc>(
-              bloc: TrendingMoviesSectionBloc(widget._moviesRepository),
+              bloc: trendingMoviesSectionBloc,
               child: MoviesSection(SectionType.TRENDING),
             ),
             BlocProvider<PopularActorsSectionBloc>(
-              bloc: PopularActorsSectionBloc(widget._moviesRepository),
+              bloc: popularActorsSectionBloc,
               child: PopularActorsSection(),
             ),
             BlocProvider<UpcomingMoviesSectionBloc>(
-              bloc: UpcomingMoviesSectionBloc(widget._moviesRepository),
+              bloc: upcomingMoviesSectionBloc,
               child: MoviesSection(SectionType.UPCOMING),
             )
           ],

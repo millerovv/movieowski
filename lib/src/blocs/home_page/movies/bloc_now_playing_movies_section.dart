@@ -20,8 +20,7 @@ class NowPlayingMoviesSectionBloc extends MoviesSectionBloc {
         super(_moviesRepository);
 
   @override
-  Stream<MoviesSectionState> eventHandler(
-      MoviesSectionEvent event, MoviesSectionState currentState) async* {
+  Stream<MoviesSectionState> mapEventToState(MoviesSectionState currentState, MoviesSectionEvent event) async* {
     if (event is FetchMovies) {
       yield MoviesIsLoading();
       try {
@@ -33,7 +32,7 @@ class NowPlayingMoviesSectionBloc extends MoviesSectionBloc {
       } on ApiRequestException catch (e, stacktrace) {
         Log.e(e, stacktrace);
         yield MoviesError(e.message);
-      } 
+      }
     }
   }
 

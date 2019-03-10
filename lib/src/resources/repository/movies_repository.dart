@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/now_playing_movies_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
 import 'package:movieowski/src/model/api/response/trending_movies_response.dart';
@@ -34,4 +35,7 @@ class MoviesRepository {
   Future<UpcomingMoviesResponseRoot> fetchUpcomingMovies(
       {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.USA}) =>
       tmdpApiProvider.getUpcomingMovies(pageIndex: pageIndex, language: language, region: region);
+
+  Future<MovieGenresResponseRoot> fetchMovieGenres({String language: Languages.ENGLISH}) =>
+      tmdpApiProvider.getMovieGenresList(language: language);
 }

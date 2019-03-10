@@ -20,8 +20,7 @@ class UpcomingMoviesSectionBloc extends MoviesSectionBloc {
 				super(_moviesRepository);
 
 	@override
-	Stream<MoviesSectionState> eventHandler(
-			MoviesSectionEvent event, MoviesSectionState currentState) async* {
+	Stream<MoviesSectionState> mapEventToState(MoviesSectionState currentState, MoviesSectionEvent event) async* {
 		if (event is FetchMovies) {
 			yield MoviesIsLoading();
 			try {
