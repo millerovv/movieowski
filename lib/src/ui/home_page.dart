@@ -53,41 +53,42 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            new SliverAppBar(
-              flexibleSpace: _createSearchBar(),
-              floating: _forAndroid,
-              snap: _forAndroid,
-              pinned: !_forAndroid,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              new SliverAppBar(
+                flexibleSpace: _createSearchBar(),
+                floating: _forAndroid,
+                snap: _forAndroid,
+                pinned: !_forAndroid,
+              ),
+            ];
+          },
+          body: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                BlocProvider<NowPlayingMoviesSectionBloc>(
+                  bloc: nowPlayingMoviesSectionBloc,
+                  child: MoviesSection(SectionType.IN_THEATRES),
+                ),
+                BlocProvider<TrendingMoviesSectionBloc>(
+                  bloc: trendingMoviesSectionBloc,
+                  child: MoviesSection(SectionType.TRENDING),
+                ),
+                BlocProvider<PopularActorsSectionBloc>(
+                  bloc: popularActorsSectionBloc,
+                  child: PopularActorsSection(),
+                ),
+                BlocProvider<UpcomingMoviesSectionBloc>(
+                  bloc: upcomingMoviesSectionBloc,
+                  child: MoviesSection(SectionType.UPCOMING),
+                ),
+                BlocProvider<MovieGenresSectionBloc>(
+                  bloc: movieGenresSectionBloc,
+                  child: CategoriesSection(),
+                )
+              ],
             ),
-          ];
-        },
-        body: ListView(
-          children: <Widget>[
-            BlocProvider<NowPlayingMoviesSectionBloc>(
-              bloc: nowPlayingMoviesSectionBloc,
-              child: MoviesSection(SectionType.IN_THEATRES),
-            ),
-            BlocProvider<TrendingMoviesSectionBloc>(
-              bloc: trendingMoviesSectionBloc,
-              child: MoviesSection(SectionType.TRENDING),
-            ),
-            BlocProvider<PopularActorsSectionBloc>(
-              bloc: popularActorsSectionBloc,
-              child: PopularActorsSection(),
-            ),
-            BlocProvider<UpcomingMoviesSectionBloc>(
-              bloc: upcomingMoviesSectionBloc,
-              child: MoviesSection(SectionType.UPCOMING),
-            ),
-            BlocProvider<MovieGenresSectionBloc>(
-              bloc: movieGenresSectionBloc,
-              child: CategoriesSection(),
-            )
-          ],
-        ),
-      ),
+          )),
     ));
   }
 

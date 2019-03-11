@@ -29,3 +29,27 @@ class AppColors {
 	static const Color orange = Color(0xFFD18606);
 	static const Color red = Color(0xFFD13206);
 }
+
+class GenresEmojis {
+	static Map<String, String> ge = const {
+		'action': '🧨',
+		'adventure': '🚀',
+		'animation': '🧸',
+		'comedy': '😂',
+		'crime': '🔫',
+		'documentary': '🎞',
+		'drama': '🎭',
+		'family': '👨‍👩‍👧‍👦',
+		'fantasy': '🔮',
+		'history': '🏛',
+		'horror': '👻',
+		'music': '🎶',
+		'mystery': '🔎',
+		'romance': '❤️',
+		'science fiction': '🔭',
+		'tv movie': '📺',
+		'thriller': '😱',
+		'war': '⚔️',
+		'western': '🤠',
+	};
+}

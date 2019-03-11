@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
-import 'package:movieowski/src/ui/pages/home_page.dart';
+import 'package:movieowski/src/ui/home_page.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:movieowski/src/utils/consts.dart';
 

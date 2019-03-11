@@ -50,21 +50,35 @@ class _CategoriesSectionState extends State<CategoriesSection> {
               return Column(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: state.genres
-                            .map((genre) => Container(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text(
-                                      genre.name,
-                                      style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
-                                    ),
-                                  ),
-                                ))
-                            .toList(),
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Container(
+                              width: 700.0,
+                              child: Wrap(
+                                spacing: 8.0,
+                                children: state.genres
+                                    .map((genre) => Chip(
+                                          backgroundColor: AppColors.accentColor,
+                                          padding: EdgeInsets.only(left: 4.0, right: 4.0, bottom: 2.0),
+                                          label: Text(
+                                            '${GenresEmojis.ge[genre.name.toLowerCase()] ?? '📼'}  ${genre.name}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .body1
+                                                .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   )
