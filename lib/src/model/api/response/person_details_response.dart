@@ -1,7 +1,7 @@
 class PersonDetailsResponseRoot {
 	String birthday;
 	String knownForDepartment;
-	Null deathday;
+	String deathday;
 	int id;
 	String name;
 	List<String> alsoKnownAs;

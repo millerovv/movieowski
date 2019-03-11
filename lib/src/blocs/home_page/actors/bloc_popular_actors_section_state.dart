@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:movieowski/src/blocs/base/bloc_event_state.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
 
-abstract class PopularActorsSectionState extends Equatable implements BlocState {
+abstract class PopularActorsSectionState extends Equatable {
 	PopularActorsSectionState([List props = const []]);
 }
 

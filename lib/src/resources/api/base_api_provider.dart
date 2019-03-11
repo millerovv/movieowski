@@ -9,18 +9,14 @@ class BaseApiProvider {
 
   Future<String> getRequest(Uri uri) async {
     Log.d('request/url = $uri', 'httpClient');
-    try {
-      var request = await _httpClient.getUrl(uri);
-      var response = await request.close();
-      if (response.statusCode == 200) {
-        var transformedResponse = await response.transform(utf8.decoder).join();
-        Log.d('response = ${transformedResponse.toString()}', 'httpClient');
-        return transformedResponse;
-      } else {
-        throw LoadingMoviesFailedException();
-      }
-    } catch (_) {
-      throw NoInternetConnectionException();
+    var request = await _httpClient.getUrl(uri);
+    var response = await request.close();
+    var transformedResponse = await response.transform(utf8.decoder).join();
+    if (response.statusCode == 200) {
+      Log.d('response = ${transformedResponse.toString()}', 'httpClient');
+      return transformedResponse;
+    } else {
+      throw LoadingMoviesFailedException(apiResponse: transformedResponse.toString());
     }
   }
 }
@@ -32,7 +28,8 @@ abstract class ApiRequestException implements Exception {
 
 class LoadingMoviesFailedException extends ApiRequestException {
   String message;
-  LoadingMoviesFailedException({this.message = 'Failed to load movies'}) : super(message);
+  String apiResponse;
+  LoadingMoviesFailedException({this.message = 'Failed to load movies', this.apiResponse = ''}) : super(message);
 }
 
 class NoInternetConnectionException extends ApiRequestException {

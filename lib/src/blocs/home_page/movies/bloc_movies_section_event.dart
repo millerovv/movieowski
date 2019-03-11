@@ -1,8 +1,7 @@
-import 'package:movieowski/src/blocs/base/bloc_event_state.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:equatable/equatable.dart';
 
-abstract class MoviesSectionEvent extends Equatable implements BlocEvent {
+abstract class MoviesSectionEvent extends Equatable {
   MoviesSectionEvent([List props = const []]) : super(props);
 }
 

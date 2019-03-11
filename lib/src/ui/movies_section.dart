@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movieowski/src/blocs/base/bloc_event_state_builder.dart';
-import 'package:movieowski/src/blocs/base/bloc_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_event.dart';
@@ -24,13 +23,8 @@ class _MoviesSectionState extends State<MoviesSection> {
   MoviesSectionBloc _bloc;
 
   @override
-  void dispose() {
-    _bloc?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     switch (widget.sectionType) {
       case SectionType.IN_THEATRES:
         {
@@ -48,7 +42,16 @@ class _MoviesSectionState extends State<MoviesSection> {
           break;
         }
     }
+  }
 
+  @override
+  void dispose() {
+    _bloc?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -70,11 +73,10 @@ class _MoviesSectionState extends State<MoviesSection> {
             ],
           ),
         ),
-        BlocEventStateBuilder<MoviesSectionEvent, MoviesSectionState>(
+        BlocBuilder<MoviesSectionEvent, MoviesSectionState>(
           bloc: _bloc,
           builder: (BuildContext context, MoviesSectionState state) {
             if (state is MoviesIsEmpty) {
-              _bloc.emitEvent(FetchMovies(page: 1));
               return SizedBox();
             } else if (state is MoviesError) {
               return Center(
