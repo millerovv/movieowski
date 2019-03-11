@@ -10,7 +10,7 @@ class MovieGenresIsEmpty extends MovieGenresSectionState {}
 class MovieGenresIsLoading extends MovieGenresSectionState {}
 
 class MovieGenresIsLoaded extends MovieGenresSectionState {
-	final List<MovieGenresResponseRoot> genres;
+	final List<Genre> genres;
 
 	MovieGenresIsLoaded(this.genres) :
 				assert(genres != null),

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/actors/bloc_popular_actors_section.dart';
 import 'package:movieowski/src/blocs/home_page/actors/bloc_popular_actors_section_event.dart';
+import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section.dart';
+import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
 import 'package:movieowski/src/blocs/home_page/movies/bloc_upcoming_movies_section.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
+import 'package:movieowski/src/ui/categories_section.dart';
 import 'package:movieowski/src/ui/movies_section.dart';
 import 'package:movieowski/src/ui/popular_actors_section.dart';
 import 'package:movieowski/src/utils/consts.dart';
@@ -25,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   NowPlayingMoviesSectionBloc nowPlayingMoviesSectionBloc;
   TrendingMoviesSectionBloc trendingMoviesSectionBloc;
   UpcomingMoviesSectionBloc upcomingMoviesSectionBloc;
+  MovieGenresSectionBloc movieGenresSectionBloc;
   bool _forAndroid;
 
   @override
@@ -33,10 +37,12 @@ class _HomePageState extends State<HomePage> {
     nowPlayingMoviesSectionBloc = NowPlayingMoviesSectionBloc(widget._moviesRepository);
     trendingMoviesSectionBloc = TrendingMoviesSectionBloc(widget._moviesRepository);
     upcomingMoviesSectionBloc = UpcomingMoviesSectionBloc(widget._moviesRepository);
+    movieGenresSectionBloc = MovieGenresSectionBloc(widget._moviesRepository);
     popularActorsSectionBloc.dispatch(FetchPopularActors());
     nowPlayingMoviesSectionBloc.dispatch(FetchMovies());
     trendingMoviesSectionBloc.dispatch(FetchMovies());
     upcomingMoviesSectionBloc.dispatch(FetchMovies());
+    movieGenresSectionBloc.dispatch(FetchGenres());
     super.initState();
   }
 
@@ -74,6 +80,10 @@ class _HomePageState extends State<HomePage> {
             BlocProvider<UpcomingMoviesSectionBloc>(
               bloc: upcomingMoviesSectionBloc,
               child: MoviesSection(SectionType.UPCOMING),
+            ),
+            BlocProvider<MovieGenresSectionBloc>(
+              bloc: movieGenresSectionBloc,
+              child: CategoriesSection(),
             )
           ],
         ),

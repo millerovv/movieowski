@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+
 class MovieGenresResponseRoot {
 	List<Genre> genres;
 
@@ -21,7 +23,7 @@ class MovieGenresResponseRoot {
 	}
 }
 
-class Genre {
+class Genre extends Equatable {
 	int id;
 	String name;
 
@@ -38,4 +40,9 @@ class Genre {
 		data['name'] = this.name;
 		return data;
 	}
+
+	@override
+  String toString() {
+    return 'id = $id, name = $name';
+  }
 }

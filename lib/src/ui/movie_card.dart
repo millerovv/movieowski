@@ -19,7 +19,6 @@ class HomeMovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Log.d('posterPath = $posterPath');
     var ratingCircleRadius = 36.0;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),

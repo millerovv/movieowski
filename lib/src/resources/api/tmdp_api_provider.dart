@@ -111,7 +111,7 @@ class TmdbApiProvider extends BaseApiProvider {
   Future<MovieGenresResponseRoot> getMovieGenresList({String language: Languages.ENGLISH}) async {
     var url = Uri.https(
       BASE_URL,
-      '3/genre/movie',
+      '3/genre/movie/list',
       <String, String>{
         'api_key': API_KEY,
         'language': language,
