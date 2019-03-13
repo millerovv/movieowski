@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section.dart';
 import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section_state.dart';
+import 'package:movieowski/src/blocs/home_page/home_page_bloc.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class CategoriesSection extends StatefulWidget {
@@ -12,16 +13,19 @@ class CategoriesSection extends StatefulWidget {
 
 class _CategoriesSectionState extends State<CategoriesSection> {
   MovieGenresSectionBloc _bloc;
+  HomePageBloc _supervisorBloc;
 
   @override
   void initState() {
     super.initState();
     _bloc = BlocProvider.of<MovieGenresSectionBloc>(context);
+    _supervisorBloc = BlocProvider.of<HomePageBloc>(context);
   }
 
   @override
   void dispose() {
     _bloc?.dispose();
+    _supervisorBloc?.dispose();
     super.dispose();
   }
 
@@ -84,6 +88,8 @@ class _CategoriesSectionState extends State<CategoriesSection> {
                   )
                 ],
               );
+            } else {
+              return SizedBox();
             }
           },
         ),

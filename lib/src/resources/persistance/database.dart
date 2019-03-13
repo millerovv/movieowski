@@ -35,13 +35,13 @@ class DBProvider {
 	void insertGenres(List<Genre> genres) async {
 		String values = "";
 		for (Genre genre in genres) {
-			values += '(${genre.id},\'${genre.name}\'}),';
+			values += '(${genre.id},\'${genre.name}\'),';
 		}
 		values = values.substring(0, values.length-1);
 		values += ';';
 		Log.d('inserting values: $values', 'DB');
 		final db = await database;
-	  await db.rawInsert("INSERT INTO Genres (api_id, name, fetched_date_mills)"
+	  await db.rawInsert("INSERT INTO Genres (api_id, name)"
 			                " VALUES $values");
 	}
 

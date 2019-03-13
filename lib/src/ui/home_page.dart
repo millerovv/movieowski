@@ -47,48 +47,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    popularActorsSectionBloc?.dispose();
+    nowPlayingMoviesSectionBloc?.dispose();
+    trendingMoviesSectionBloc?.dispose();
+    upcomingMoviesSectionBloc?.dispose();
+    movieGenresSectionBloc?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _forAndroid = Theme.of(context).platform == TargetPlatform.android;
     return SafeArea(
         child: Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              new SliverAppBar(
-                flexibleSpace: _createSearchBar(),
-                floating: _forAndroid,
-                snap: _forAndroid,
-                pinned: !_forAndroid,
-              ),
-            ];
-          },
-          body: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                BlocProvider<NowPlayingMoviesSectionBloc>(
-                  bloc: nowPlayingMoviesSectionBloc,
-                  child: MoviesSection(SectionType.IN_THEATRES),
-                ),
-                BlocProvider<TrendingMoviesSectionBloc>(
-                  bloc: trendingMoviesSectionBloc,
-                  child: MoviesSection(SectionType.TRENDING),
-                ),
-                BlocProvider<PopularActorsSectionBloc>(
-                  bloc: popularActorsSectionBloc,
-                  child: PopularActorsSection(),
-                ),
-                BlocProvider<UpcomingMoviesSectionBloc>(
-                  bloc: upcomingMoviesSectionBloc,
-                  child: MoviesSection(SectionType.UPCOMING),
-                ),
-                BlocProvider<MovieGenresSectionBloc>(
-                  bloc: movieGenresSectionBloc,
-                  child: CategoriesSection(),
-                )
-              ],
-            ),
-          )),
+      body: _createHomePageContent(),
     ));
   }
 
@@ -138,5 +112,45 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Widget _createHomePageContent() {
+    return NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            new SliverAppBar(
+              flexibleSpace: _createSearchBar(),
+              floating: _forAndroid,
+              snap: _forAndroid,
+              pinned: !_forAndroid,
+            ),
+          ];
+        },
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              BlocProvider<NowPlayingMoviesSectionBloc>(
+                bloc: nowPlayingMoviesSectionBloc,
+                child: MoviesSection(MovieSectionType.IN_THEATRES),
+              ),
+              BlocProvider<TrendingMoviesSectionBloc>(
+                bloc: trendingMoviesSectionBloc,
+                child: MoviesSection(MovieSectionType.TRENDING),
+              ),
+              BlocProvider<PopularActorsSectionBloc>(
+                bloc: popularActorsSectionBloc,
+                child: PopularActorsSection(),
+              ),
+              BlocProvider<UpcomingMoviesSectionBloc>(
+                bloc: upcomingMoviesSectionBloc,
+                child: MoviesSection(MovieSectionType.UPCOMING),
+              ),
+              BlocProvider<MovieGenresSectionBloc>(
+                bloc: movieGenresSectionBloc,
+                child: CategoriesSection(),
+              )
+            ],
+          ),
+        ));
   }
 }

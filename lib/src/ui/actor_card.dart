@@ -5,10 +5,14 @@ import 'package:shimmer/shimmer.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class HomeActorCard extends StatelessWidget {
-  final String _posterPath;
-  final String _actorName;
+  final bool asStubCard;
+  final String posterPath;
+  final String actorName;
 
-  HomeActorCard(this._posterPath, this._actorName);
+  HomeActorCard({
+    @required this.asStubCard,
+    this.posterPath,
+    this.actorName = "John Doe"});
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +53,14 @@ class HomeActorCard extends StatelessWidget {
                       width: 131,
                       height: 131,
                       child: ClipOval(
-                        child: FadeInImage.memoryNetwork(
+                        child: !asStubCard ? FadeInImage.memoryNetwork(
                           placeholder: kTransparentImage,
-                          image: TmdbApiProvider.BASE_IMAGE_URL + _posterPath,
+                          image: TmdbApiProvider.BASE_IMAGE_URL + posterPath,
                           fit: BoxFit.cover,
+                        ) : Container(
+                          width: 300.0,
+                          height: 300.0,
+                          decoration: BoxDecoration(color: Colors.black),
                         ),
                       ),
                     ),
@@ -64,7 +72,7 @@ class HomeActorCard extends StatelessWidget {
               margin: EdgeInsets.only(top: 8.0),
               constraints: BoxConstraints(maxWidth: 131, maxHeight: 140),
               child: Text(
-                _actorName,
+                actorName,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
               ),

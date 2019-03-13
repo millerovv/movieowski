@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
-import 'package:movieowski/src/utils/logger.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -9,13 +8,15 @@ class HomeMovieCard extends StatelessWidget {
   final String posterPath;
   final bool forAndroid;
   final bool withRating;
+  final bool asStubCard;
   final double rating;
 
   HomeMovieCard({
     @required this.forAndroid,
     @required this.withRating,
-    this.posterPath = "/rDvhukiXfx1AJYZMwxeBKwfJm73.jpg",
-    this.rating = 0.0});
+    this.asStubCard = false,
+    this.posterPath,
+    this.rating});
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +56,14 @@ class HomeMovieCard extends StatelessWidget {
                       height: 196.3,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
-                        child: FadeInImage.memoryNetwork(
+                        child: !asStubCard ? FadeInImage.memoryNetwork(
                           placeholder: kTransparentImage,
                           image: TmdbApiProvider.BASE_IMAGE_URL + posterPath,
                           fit: BoxFit.cover,
+                        ) : Container(
+                          width: 300.0,
+                          height: 300.0,
+                          decoration: BoxDecoration(color: Colors.black),
                         ),
                       ),
                     ),

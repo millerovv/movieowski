@@ -16,7 +16,7 @@ void main() {
 class SimpleBlocDelegate extends BlocDelegate {
 	@override
 	onTransition(Transition transition) {
-//		print(transition);
+		print(transition);
 	}
 
 	@override
