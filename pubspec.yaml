@@ -30,7 +30,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - app_config.json
+    - assets/
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

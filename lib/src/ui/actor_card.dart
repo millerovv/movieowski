@@ -5,23 +5,27 @@ import 'package:shimmer/shimmer.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class HomeActorCard extends StatelessWidget {
-  final String _posterPath;
-  final String _actorName;
+  static const double cardWidth = 131.0;
+  static const double cardHeight = 131.0;
 
-  HomeActorCard(this._posterPath, this._actorName);
+  final bool asStubCard;
+  final String posterPath;
+  final String actorName;
+
+  HomeActorCard({this.asStubCard = false, this.posterPath, this.actorName = "John Doe"});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Container(
-        constraints: BoxConstraints(maxWidth: 131, minHeight: 150, maxHeight: 180),
+        constraints: BoxConstraints(maxWidth: cardWidth, minHeight: 150, maxHeight: 180),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             SizedBox(
-              width: 131,
-              height: 131,
+              width: cardWidth,
+              height: cardHeight,
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
@@ -32,8 +36,8 @@ class HomeActorCard extends StatelessWidget {
                       baseColor: AppColors.lighterPrimary,
                       highlightColor: Colors.grey,
                       child: Container(
-                        width: 131,
-                        height: 131,
+                        width: cardWidth,
+                        height: cardHeight,
                         child: ClipOval(
                           child: Container(
                             color: Colors.white,
@@ -46,14 +50,20 @@ class HomeActorCard extends StatelessWidget {
                     top: 0,
                     left: 0,
                     child: Container(
-                      width: 131,
-                      height: 131,
+                      width: cardWidth,
+                      height: cardHeight,
                       child: ClipOval(
-                        child: FadeInImage.memoryNetwork(
-                          placeholder: kTransparentImage,
-                          image: TmdbApiProvider.BASE_IMAGE_URL + _posterPath,
-                          fit: BoxFit.cover,
-                        ),
+                        child: !asStubCard
+                            ? FadeInImage.memoryNetwork(
+                                placeholder: kTransparentImage,
+                                image: TmdbApiProvider.BASE_IMAGE_URL + posterPath,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                width: 300.0,
+                                height: 300.0,
+                                decoration: BoxDecoration(color: Colors.black),
+                              ),
                       ),
                     ),
                   ),
@@ -62,12 +72,17 @@ class HomeActorCard extends StatelessWidget {
             ),
             Container(
               margin: EdgeInsets.only(top: 8.0),
-              constraints: BoxConstraints(maxWidth: 131, maxHeight: 140),
-              child: Text(
-                _actorName,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
-              ),
+              constraints: BoxConstraints(maxWidth: cardWidth, maxHeight: 140),
+              child: !asStubCard
+                  ? Text(
+                      actorName,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
+                    )
+                  : Text(
+                      'jason statham',
+                      style: Theme.of(context).textTheme.body1.copyWith(background: Paint()..color = Colors.black),
+                    ),
             ),
           ],
         ),

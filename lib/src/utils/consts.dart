@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class Regions {
 	Regions._internal();
-	static const String RUSSIA = 'RU';
-	static const String USA = 'US';
-	static const String GERMANY = 'DE';
+	static const String russia = 'RU';
+	static const String usa = 'US';
+	static const String germany = 'DE';
 }
 
 class Languages {
 	Languages._internal();
-	static const String ENGLISH = 'en-US';
+	static const String english = 'en-US';
 }
 
 class AppColors {
