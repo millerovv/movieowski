@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section.dart';
-import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section_event.dart';
-import 'package:movieowski/src/blocs/home_page/genres/bloc_movie_genres_section_state.dart';
-import 'package:movieowski/src/blocs/home_page/home_page_bloc.dart';
+import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
+import 'package:movieowski/src/blocs/home_page/bloc_home_page.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class CategoriesSection extends StatefulWidget {
@@ -35,7 +33,7 @@ class _CategoriesSectionState extends State<CategoriesSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 8.0, left: 16.0),
+          padding: const EdgeInsets.only(top: 8.0, left: 16.0),
           child: Text('Categories', style: Theme.of(context).textTheme.headline),
         ),
         BlocBuilder<MovieGenresSectionEvent, MovieGenresSectionState>(
@@ -51,42 +49,38 @@ class _CategoriesSectionState extends State<CategoriesSection> {
                 ),
               );
             } else if (state is MovieGenresIsLoaded) {
-              return Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Container(
-                              width: 700.0,
-                              child: Wrap(
-                                spacing: 8.0,
-                                children: state.genres
-                                    .map((genre) => Chip(
-                                          backgroundColor: AppColors.accentColor,
-                                          padding: EdgeInsets.only(left: 4.0, right: 4.0, bottom: 2.0),
-                                          label: Text(
-                                            '${GenresEmojis.ge[genre.name.toLowerCase()] ?? '📼'}  ${genre.name}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .body1
-                                                .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
-                                          ),
-                                        ))
-                                    .toList(),
-                              ),
-                            ),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Container(
+                          width: 700.0,
+                          child: Wrap(
+                            spacing: 8.0,
+                            children: state.genres
+                                .map((genre) => Chip(
+                                      backgroundColor: AppColors.accentColor,
+                                      padding: EdgeInsets.only(left: 4.0, right: 4.0, bottom: 2.0),
+                                      label: Text(
+                                        '${GenresEmojis.ge[genre.name.toLowerCase()] ?? '📼'}  ${genre.name}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .body1
+                                            .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+                                      ),
+                                    ))
+                                .toList(),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  )
-                ],
+                    ],
+                  ),
+                ),
               );
             } else {
               return SizedBox();

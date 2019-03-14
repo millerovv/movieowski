@@ -36,7 +36,7 @@ class TmdbApiProvider extends BaseApiProvider {
   /// Request list of movies playing in theatres now
   /// Documentation: https://developers.themoviedb.org/3/movies/get-now-playing
   Future<NowPlayingMoviesResponseRoot> getNowPlayingMovies(
-      {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.USA}) async {
+      {int pageIndex: 1, String language: Languages.english, String region: Regions.usa}) async {
     var url = Uri.https(
       BASE_URL,
       '3/movie/now_playing',
@@ -71,7 +71,7 @@ class TmdbApiProvider extends BaseApiProvider {
 
   /// Request person detailed information by id
   /// Documentation: https://developers.themoviedb.org/3/people/get-person-details
-  Future<PersonDetailsResponseRoot> getPersonDetails({int personId, language: Languages.ENGLISH}) async {
+  Future<PersonDetailsResponseRoot> getPersonDetails({int personId, language: Languages.english}) async {
     var url = Uri.https(
       BASE_URL,
       '3/person/$personId',
@@ -89,7 +89,7 @@ class TmdbApiProvider extends BaseApiProvider {
   /// Request list of upcoming movies
   /// Documentation: https://developers.themoviedb.org/3/movies/get-upcoming
   Future<UpcomingMoviesResponseRoot> getUpcomingMovies(
-      {int pageIndex: 1, String language: Languages.ENGLISH, String region: Regions.USA}) async {
+      {int pageIndex: 1, String language: Languages.english, String region: Regions.usa}) async {
     var url = Uri.https(
       BASE_URL,
       '3/movie/upcoming',
@@ -108,7 +108,7 @@ class TmdbApiProvider extends BaseApiProvider {
 
   /// Request the list of official genres for movies
   /// Documentation: https://developers.themoviedb.org/3/genres/get-movie-list
-  Future<MovieGenresResponseRoot> getMovieGenresList({String language: Languages.ENGLISH}) async {
+  Future<MovieGenresResponseRoot> getMovieGenresList({String language: Languages.english}) async {
     var url = Uri.https(
       BASE_URL,
       '3/genre/movie/list',

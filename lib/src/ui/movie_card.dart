@@ -5,6 +5,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class HomeMovieCard extends StatelessWidget {
+  static const double cardWidth = 139.0;
+  static const double cardHeight = 214.3;
+
   final String posterPath;
   final bool forAndroid;
   final bool withRating;
@@ -24,8 +27,8 @@ class HomeMovieCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Container(
-        width: 139.0, // Image container + 8dp
-        height: 214.3,
+        width: cardWidth, // Image container + 8dp
+        height: cardHeight,
         child: LayoutBuilder(
           builder: (context, constraints) => Stack(
                 fit: StackFit.expand,
@@ -76,7 +79,7 @@ class HomeMovieCard extends StatelessWidget {
                             width: ratingCircleRadius,
                             height: ratingCircleRadius,
                             decoration: BoxDecoration(
-                              color: _calculateRatingColor(rating),
+                              color: !asStubCard ? _calculateRatingColor(rating) : Colors.black,
                               shape: BoxShape.circle,
                               boxShadow: forAndroid
                                   ? <BoxShadow>[
@@ -88,14 +91,14 @@ class HomeMovieCard extends StatelessWidget {
                                     ]
                                   : null,
                             ),
-                            child: Center(
+                            child: !asStubCard ? Center(
                                 child: Text(
                               rating.toString(),
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
                                   .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
-                            )),
+                            )) : SizedBox(),
                           ),
                         )
                       : SizedBox(),

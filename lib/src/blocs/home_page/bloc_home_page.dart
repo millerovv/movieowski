@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:movieowski/src/blocs/home_page/home_page_event.dart';
-import 'package:movieowski/src/blocs/home_page/home_page_state.dart';
-import 'package:movieowski/src/utils/logger.dart';
+import 'package:movieowski/src/blocs/home_page/bloc_home_page_event.dart';
+import 'package:movieowski/src/blocs/home_page/bloc_home_page_state.dart';
 
 /// This BLOC controls section content loading statuses.
 /// Emits [HomePageIsLoaded] state when all sections have been loaded
@@ -46,9 +45,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   bool _allSectionsLoaded() {
     int loadedCnt = 0;
     sectionsLoadedStatuses.values.forEach((status) => status ? loadedCnt++ : null);
-//    return loadedCnt == HomeSection.values.length;
-    Log.d('loadedCnt = $loadedCnt', 'HomePageBloc');
-    return loadedCnt == 4;
+    return loadedCnt == HomeSection.values.length;
   }
 }
 

@@ -1,15 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movieowski/src/blocs/home_page/home_page_bloc.dart';
-import 'package:movieowski/src/blocs/home_page/home_page_event.dart';
-import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section.dart';
-import 'package:movieowski/src/blocs/home_page/movies/bloc_now_playing_movies_section.dart';
-import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_event.dart';
-import 'package:movieowski/src/blocs/home_page/movies/bloc_movies_section_state.dart';
-import 'package:movieowski/src/blocs/home_page/movies/bloc_trending_movies_section.dart';
-import 'package:movieowski/src/blocs/home_page/movies/bloc_upcoming_movies_section.dart';
+import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
 import 'package:movieowski/src/ui/movie_card.dart';
 
 class MoviesSection extends StatefulWidget {
@@ -23,14 +14,10 @@ class MoviesSection extends StatefulWidget {
 
 class _MoviesSectionState extends State<MoviesSection> {
   MoviesSectionBloc _bloc;
-  HomePageBloc _supervisorBloc;
-
-  StreamSubscription<MoviesSectionState> _sectionBlocSubscription;
 
   @override
   void initState() {
     super.initState();
-    _supervisorBloc = BlocProvider.of<HomePageBloc>(context);
     switch (widget.sectionType) {
       case MovieSectionType.IN_THEATRES:
         {
@@ -48,13 +35,10 @@ class _MoviesSectionState extends State<MoviesSection> {
           break;
         }
     }
-    _subscribeToSectionBloc();
   }
 
   @override
   void dispose() {
-    _unsubscribeFromSectionBloc();
-    _supervisorBloc?.dispose();
     _bloc?.dispose();
     super.dispose();
   }
@@ -65,7 +49,7 @@ class _MoviesSectionState extends State<MoviesSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+          padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -112,8 +96,7 @@ class _MoviesSectionState extends State<MoviesSection> {
                               : SizedBox()
                     );
                   },
-                  //TODO: Заменить тройку на высчитываемое значение относительно ширины экрана
-                  itemCount: (state is MoviesIsLoaded) ? state.movies.length : 5,
+                  itemCount: state.movies.length,
                 ),
               );
             } else {
@@ -124,63 +107,6 @@ class _MoviesSectionState extends State<MoviesSection> {
       ],
     );
   }
-
-  void _subscribeToSectionBloc() {
-    if (_bloc.state != null) {
-      _sectionBlocSubscription = _bloc.state.skip(1).listen((MoviesSectionState state) {
-        if (state is MoviesIsLoaded) {
-          _supervisorBloc.dispatch(_getHomeEventBaseOnSectionType(sectionType: widget.sectionType, errorEvent: false));
-        } else if (state is MoviesError) {
-          _supervisorBloc.dispatch(_getHomeEventBaseOnSectionType(
-              sectionType: widget.sectionType, errorEvent: true, errorMessage: state.errorMessage));
-        }
-      });
-    }
-  }
-
-  void _unsubscribeFromSectionBloc() {
-    if (_sectionBlocSubscription != null) {
-      _sectionBlocSubscription.cancel();
-      _sectionBlocSubscription = null;
-    }
-  }
 }
 
 enum MovieSectionType { IN_THEATRES, TRENDING, UPCOMING }
-
-/// Returns suitable HomePageEvent based on SectionType; errorEvent = true – function returns [SectionLoadingFailed],
-/// otherwise it returns "section movies loaded" events
-HomePageEvent _getHomeEventBaseOnSectionType(
-    {@required MovieSectionType sectionType, @required bool errorEvent, String errorMessage}) {
-  if (errorEvent) {
-    switch (sectionType) {
-      case MovieSectionType.IN_THEATRES:
-        return NowPlayingMoviesLoadingFailed(errorMessage);
-        break;
-      case MovieSectionType.TRENDING:
-        return TrendingMoviesLoadingFailed(errorMessage);
-        break;
-      case MovieSectionType.UPCOMING:
-        return UpcomingMoviesFailed(errorMessage);
-        break;
-      default:
-        return SectionLoadingFailed(errorMessage);
-        break;
-    }
-  } else {
-    switch (sectionType) {
-      case MovieSectionType.IN_THEATRES:
-        return NowPlayingMoviesLoaded();
-        break;
-      case MovieSectionType.TRENDING:
-        return TrendingMoviesLoaded();
-        break;
-      case MovieSectionType.UPCOMING:
-        return UpcomingMoviesLoaded();
-        break;
-      default:
-        throw ArgumentError('Unknown SectionType argument has been passed to this function');
-        break;
-    }
-  }
-}
