@@ -115,7 +115,7 @@ class HomePageShimmer extends StatelessWidget {
                           backgroundColor: AppColors.accentColor,
                           padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 2.0),
                           label: Text(
-                            GenresEmojis.ge.keys.toList()[Random().nextInt(19)],
+                            kGenresEmojis.keys.toList()[Random().nextInt(19)],
                             style: Theme.of(context).textTheme.body1,
                           ),
                         );

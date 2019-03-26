@@ -67,7 +67,7 @@ class _CategoriesSectionState extends State<CategoriesSection> {
                                       backgroundColor: AppColors.accentColor,
                                       padding: EdgeInsets.only(left: 4.0, right: 4.0, bottom: 2.0),
                                       label: Text(
-                                        '${GenresEmojis.ge[genre.name.toLowerCase()] ?? '📼'}  ${genre.name}',
+                                        '${kGenresEmojis[genre.name.toLowerCase()] ?? '📼'}  ${genre.name}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .body1

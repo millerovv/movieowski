@@ -10,7 +10,7 @@ class MoviesIsEmpty extends MoviesSectionState {}
 class MoviesIsLoading extends MoviesSectionState {}
 
 class MoviesIsLoaded extends MoviesSectionState {
-  final List<BaseResponseMovie> movies;
+  final List<Movie> movies;
 
   MoviesIsLoaded(this.movies) :
         assert(movies != null),

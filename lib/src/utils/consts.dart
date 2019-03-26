@@ -30,8 +30,7 @@ class AppColors {
 	static const Color red = Color(0xFFD13206);
 }
 
-class GenresEmojis {
-	static Map<String, String> ge = const {
+const Map<String, String> kGenresEmojis = const {
 		'action': '🧨',
 		'adventure': '🚀',
 		'animation': '🧸',
@@ -51,5 +50,4 @@ class GenresEmojis {
 		'thriller': '😱',
 		'war': '⚔️',
 		'western': '🤠',
-	};
-}
+};
