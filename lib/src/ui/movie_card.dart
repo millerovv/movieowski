@@ -61,7 +61,7 @@ class HomeMovieCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                         child: !asStubCard ? FadeInImage.memoryNetwork(
                           placeholder: kTransparentImage,
-                          image: TmdbApiProvider.BASE_IMAGE_URL + posterPath,
+                          image: TmdbApiProvider.BASE_IMAGE_URL_W300 + posterPath,
                           fit: BoxFit.cover,
                         ) : Container(
                           width: 300.0,
