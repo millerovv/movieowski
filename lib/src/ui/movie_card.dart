@@ -57,16 +57,22 @@ class HomeMovieCard extends StatelessWidget {
                     child: Container(
                       width: 131.0,
                       height: 196.3,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: !asStubCard ? FadeInImage.memoryNetwork(
-                          placeholder: kTransparentImage,
-                          image: TmdbApiProvider.BASE_IMAGE_URL_W300 + posterPath,
-                          fit: BoxFit.cover,
-                        ) : Container(
-                          width: 300.0,
-                          height: 300.0,
-                          decoration: BoxDecoration(color: Colors.black),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Hero(
+                          tag: posterPath,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: !asStubCard ? FadeInImage.memoryNetwork(
+                              placeholder: kTransparentImage,
+                              image: TmdbApiProvider.BASE_IMAGE_URL_W500 + posterPath,
+                              fit: BoxFit.cover,
+                            ) : Container(
+                              width: 300.0,
+                              height: 300.0,
+                              decoration: BoxDecoration(color: Colors.black),
+                            ),
+                          ),
                         ),
                       ),
                     ),

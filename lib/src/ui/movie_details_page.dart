@@ -32,6 +32,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
         body: PageView(
           controller: pageController,
           scrollDirection: Axis.vertical,
@@ -39,11 +40,27 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
           children: <Widget>[
             GestureDetector(
               onTap: () => pageController.animateToPage(1, duration: Duration(milliseconds: 800), curve: Curves.easeInOut),
-              child: Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  Image.network(TmdbApiProvider.BASE_IMAGE_URL_ORIGINAL + widget.movie.posterPath),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) => Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Hero(
+                        tag: widget.movie.posterPath,
+                        child: Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          child: Image.network(
+                            TmdbApiProvider.BASE_IMAGE_URL_W500 + widget.movie.posterPath,
+                            alignment: Alignment.topCenter,
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(
