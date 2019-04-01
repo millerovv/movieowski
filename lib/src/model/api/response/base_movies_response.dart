@@ -35,7 +35,7 @@ class Movie extends Equatable {
       this.video);
 
   Movie.fromJson(Map<String, dynamic> json) {
-    posterPath = json['poster_path'];
+    posterPath = (json['poster_path'] == null) ? '' : json['poster_path'];
     adult = json['adult'];
     overview = json['overview'];
     releaseDate = json['release_date'];

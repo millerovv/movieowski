@@ -18,7 +18,7 @@ class HomeMovieCard extends StatelessWidget {
     @required this.forAndroid,
     @required this.withRating,
     this.asStubCard = false,
-    this.posterPath,
+    this.posterPath = '',
     this.rating});
 
   @override

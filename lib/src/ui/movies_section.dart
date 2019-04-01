@@ -89,7 +89,7 @@ class _MoviesSectionState extends State<MoviesSection> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: GestureDetector(
                         onTap: () => goToMovieDetails(context, state.movies[index]),
-                        child: (state.movies[index].posterPath != null)
+                        child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
                                 ? HomeMovieCard(
                                     forAndroid: Theme.of(context).platform == TargetPlatform.android,
                                     withRating: widget.sectionType != MovieSectionType.UPCOMING,

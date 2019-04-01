@@ -46,15 +46,15 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children:
-                      List<Widget>.generate(state.actors.length, (index) {
+                  children: List<Widget>.generate(state.actors.length, (index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child:  HomeActorCard(
-                              asStubCard: false,
-                              posterPath: state.actors[index].profilePath,
-                              actorName: state.actors[index].name)
-                    );
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: (state.actors[index].profilePath != null && state.actors[index].profilePath != '')
+                            ? HomeActorCard(
+                                asStubCard: false,
+                                posterPath: state.actors[index].profilePath,
+                                actorName: state.actors[index].name)
+                            : SizedBox());
                   }),
                 ),
               ),
