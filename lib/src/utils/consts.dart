@@ -17,6 +17,7 @@ class Languages {
 class AppColors {
 	AppColors._internal();
 	static const Color primaryColor = Color(0xFF081B24);
+	static const Color primaryColorHalfTransparent = Color(0xF7081B24);
 	static const Color accentColor = Color(0xFF06D177);
 	static const Color primaryWhite = Color(0xE6FFFFFF);
 	static const Color hintGrey = Color(0xFF686868);

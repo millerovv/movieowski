@@ -59,7 +59,7 @@ class HomePageShimmer extends StatelessWidget {
               children: List<Widget>.generate(_calculateNumberOfMovieCardsForDisplayWidth(context), (index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: HomeMovieCard(forAndroid: false, withRating: withRating, asStubCard: true),
+                  child: HomeMovieCard(forAndroid: false, heroTag: 'heroTag', withRating: withRating, asStubCard: true),
                 );
               }),
             )),

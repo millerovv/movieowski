@@ -85,14 +85,16 @@ class _MoviesSectionState extends State<MoviesSection> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context, int index) {
+                    String cardHeroTag = '${this.hashCode}$index${state.movies[index].id}';
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: GestureDetector(
-                        onTap: () => goToMovieDetails(context, state.movies[index]),
+                        onTap: () => goToMovieDetails(context, state.movies[index], cardHeroTag),
                         child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
                                 ? HomeMovieCard(
                                     forAndroid: Theme.of(context).platform == TargetPlatform.android,
                                     withRating: widget.sectionType != MovieSectionType.UPCOMING,
+                                    heroTag: cardHeroTag,
                                     posterPath: state.movies[index].posterPath,
                                     rating: state.movies[index].voteAverage,
                                   )

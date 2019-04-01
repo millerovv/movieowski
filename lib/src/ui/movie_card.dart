@@ -13,10 +13,12 @@ class HomeMovieCard extends StatelessWidget {
   final bool withRating;
   final bool asStubCard;
   final double rating;
+  final String heroTag;
 
   HomeMovieCard({
     @required this.forAndroid,
     @required this.withRating,
+    @required this.heroTag,
     this.asStubCard = false,
     this.posterPath = '',
     this.rating});
@@ -60,7 +62,7 @@ class HomeMovieCard extends StatelessWidget {
                       child: Material(
                         color: Colors.transparent,
                         child: Hero(
-                          tag: posterPath,
+                          tag: heroTag,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: !asStubCard ? FadeInImage.memoryNetwork(
