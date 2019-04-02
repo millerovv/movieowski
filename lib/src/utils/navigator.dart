@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
-import 'package:movieowski/src/ui/movie_details_page.dart';
+import 'package:movieowski/src/ui/details/movie_details_page.dart';
 
 goToMovieDetails(BuildContext context, Movie movie, String heroTag) {
 	_pushWidgetWithFade(context, MovieDetailsPage(movie: movie, heroTag: heroTag));
