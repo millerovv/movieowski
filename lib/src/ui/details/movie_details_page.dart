@@ -6,6 +6,7 @@ import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/ui/details/animated_appbar_bg.dart';
 import 'package:movieowski/src/ui/details/animated_movie_title.dart';
+import 'package:movieowski/src/ui/details/animated_rating.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class MovieDetailsPage extends StatefulWidget {
@@ -20,6 +21,8 @@ class MovieDetailsPage extends StatefulWidget {
 
 class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProviderStateMixin {
   static const int boardingAnimationDurationMills = 800;
+  static const int onShowMoreDetailsAnimationDurationMills = 800;
+  static const int ratingAnimationDurationMills = 1400;
   static final GlobalKey<AnimatedMovieTitleState> animatedTitleKey = new GlobalKey<AnimatedMovieTitleState>();
 
   MovieDetailsPageBloc _bloc;
@@ -29,21 +32,26 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   Timer boardingAnimationTimer;
 
   AnimationController boardingAnimationController;
+  AnimationController ratingAnimationController;
   AnimationController onShowMoreDetailsAnimationController;
 
   @override
   void initState() {
     super.initState();
     pageController = PageController();
-    boardingAnimationController =
-        AnimationController(duration: Duration(milliseconds: boardingAnimationDurationMills), vsync: this);
-    onShowMoreDetailsAnimationController = AnimationController(duration: Duration(milliseconds: 800), vsync: this);
+    boardingAnimationController = AnimationController(
+        duration: Duration(milliseconds: boardingAnimationDurationMills), vsync: this);
+    ratingAnimationController = AnimationController(
+        duration: Duration(milliseconds: ratingAnimationDurationMills), vsync: this);
+    onShowMoreDetailsAnimationController = AnimationController(
+        duration: Duration(milliseconds: onShowMoreDetailsAnimationDurationMills), vsync: this);
 
     boardingAnimationTimer = Timer(const Duration(milliseconds: 100), () {
       setState(() {
         gradientHeight = 320.0;
         animatedTitleKey.currentState.prepareBoardingAnimation();
         boardingAnimationController.forward();
+        ratingAnimationController.forward();
       });
     });
   }
@@ -128,9 +136,16 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
             AnimatedMovieTitle(
               key: animatedTitleKey,
               title: widget.movie.title,
-              subTitle: widget.movie.releaseDate.split('-')[0].toString(),
-              boardingController: boardingAnimationController,
-              transitionController: onShowMoreDetailsAnimationController,
+              subTitle: '${widget.movie.releaseDate.split('-')[0].toString()} – Quentin Tarantino',
+              boardingController: boardingAnimationController.view,
+              transitionController: onShowMoreDetailsAnimationController.view,
+            ),
+            Align(
+              alignment: Alignment(0.0, 0.63),
+              child: AnimatedRating(
+                controller: ratingAnimationController,
+                targetRating: widget.movie.voteAverage,
+              ),
             ),
             _createOptionButtons(),
           ],

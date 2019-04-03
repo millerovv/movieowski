@@ -25,6 +25,7 @@ class AppColors {
 	static const Color lighterPrimary = Color(0xFF042F43);
 
 	// Rating colors
+	static const Color green = Color(0xFF06D177);
 	static const Color lightGreen = Color(0xFFB5D106);
 	static const Color yellow = Color(0xFFD1CE06);
 	static const Color orange = Color(0xFFD18606);

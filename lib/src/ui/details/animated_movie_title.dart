@@ -10,6 +10,9 @@ class AnimatedMovieTitle extends StatefulWidget {
   final Animation<double> titleOpacity;
   final Animation<double> titleAlignmentBoardingYOffset;
   final Animation<double> titleAlignmentTransitionYOffset;
+  final Animation<double> titleFontSize;
+  final Animation<double> subTitleFontSize;
+  final Animation<double> titleBottomPadding;
 
   AnimatedMovieTitle({Key key, this.title, this.subTitle, this.boardingController, this.transitionController})
       : titleOpacity = Tween<double>(
@@ -28,7 +31,28 @@ class AnimatedMovieTitle extends StatefulWidget {
         )),
         titleAlignmentTransitionYOffset = Tween<double>(
           begin: 0.55,
-          end: 0.05,
+          end: -0.96,
+        ).animate(CurvedAnimation(
+          parent: transitionController,
+          curve: Curves.easeIn,
+        )),
+        titleFontSize = Tween<double>(
+          begin: 24.0,
+          end: 14.0,
+        ).animate(CurvedAnimation(
+          parent: transitionController,
+          curve: Curves.easeIn,
+        )),
+        subTitleFontSize = Tween<double>(
+          begin: 14.0,
+          end: 10.0,
+        ).animate(CurvedAnimation(
+          parent: transitionController,
+          curve: Curves.easeIn,
+        )),
+        titleBottomPadding = Tween<double>(
+          begin: 10.0,
+          end: 4,
         ).animate(CurvedAnimation(
           parent: transitionController,
           curve: Curves.easeIn,
@@ -60,7 +84,7 @@ class AnimatedMovieTitleState extends State<AnimatedMovieTitle> {
 
   Widget _buildAnimatedAppbarBackground(BuildContext context, Widget child) {
     return Align(
-      alignment: Alignment(0, currentAlignmentAnimation.value),
+      alignment: Alignment(0.0, currentAlignmentAnimation.value),
       child: Opacity(
         opacity: widget.titleOpacity.value,
         child: Column(
@@ -72,14 +96,17 @@ class AnimatedMovieTitleState extends State<AnimatedMovieTitle> {
               style: Theme.of(context)
                   .textTheme
                   .headline
-                  .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+                  .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold,
+                fontSize: widget.titleFontSize.value,
+              ),
             ),
             SizedBox(
-              height: 10.0,
+              height: widget.titleBottomPadding.value,
             ),
             Text(widget.subTitle,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite)),
+                style: Theme.of(context).textTheme.body1.copyWith(
+                    color: AppColors.primaryWhite, fontSize: widget.subTitleFontSize.value)),
           ],
         ),
       ),
@@ -95,13 +122,16 @@ class AnimatedMovieTitleState extends State<AnimatedMovieTitle> {
   }
 
   void prepareBoardingAnimation() {
-    currentAlignmentAnimation = widget.titleAlignmentBoardingYOffset;
-    currentController = widget.boardingController;
+    setState(() {
+      currentAlignmentAnimation = widget.titleAlignmentBoardingYOffset;
+      currentController = widget.boardingController;
+    });
   }
 
   void prepareTransitionAnimation() {
-    currentAlignmentAnimation = widget.titleAlignmentTransitionYOffset;
-    currentController = widget.transitionController;
-    //TODO: почему-то не срабатывает анимация
+    setState(() {
+      currentAlignmentAnimation = widget.titleAlignmentTransitionYOffset;
+      currentController = widget.transitionController;
+    });
   }
 }

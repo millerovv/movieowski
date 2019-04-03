@@ -120,7 +120,7 @@ class HomeMovieCard extends StatelessWidget {
   /// Get color for rating circle depending on rating value
   Color _calculateRatingColor(double rating) {
     if (rating >= 7.5) {
-      return AppColors.accentColor;
+      return AppColors.green;
     } else if (rating >= 6.5) {
       return AppColors.lightGreen;
     } else if (rating >= 5.5) {
