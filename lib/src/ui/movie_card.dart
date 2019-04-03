@@ -66,6 +66,7 @@ class HomeMovieCard extends StatelessWidget {
                         color: Colors.transparent,
                         child: Hero(
                           tag: imageHeroTag,
+                          transitionOnUserGestures: true,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: !asStubCard ? FadeInImage.memoryNetwork(
@@ -90,6 +91,7 @@ class HomeMovieCard extends StatelessWidget {
                             color: Colors.transparent,
                             child: Hero(
                               tag: ratingHeroTag,
+                              transitionOnUserGestures: true,
                               child: Container(
                                 width: ratingCircleDiameter,
                                 height: ratingCircleDiameter,

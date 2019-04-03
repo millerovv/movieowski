@@ -24,7 +24,7 @@ class AnimatedMovieTitle extends StatefulWidget {
         )),
         titleAlignmentBoardingYOffset = Tween<double>(
           begin: 0.40,
-          end: 0.55,
+          end: 0.52,
         ).animate(CurvedAnimation(
           parent: boardingController,
           curve: Curves.easeIn,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
@@ -13,6 +14,7 @@ import 'package:movieowski/src/utils/ui_utils.dart';
 class MovieDetailsPage extends StatefulWidget {
   final Movie movie;
   final String posterHeroTag;
+
   // In the current implementation equals null, when hero animations for rating circle isn't needed
   final String numberRatingHeroTag;
 
@@ -26,6 +28,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   static const int boardingAnimationDurationMills = 800;
   static const int onShowMoreDetailsAnimationDurationMills = 800;
   static const int ratingAnimationDurationMills = 1400;
+  static const int pageSwitchAnimationDurationMills = 1400;
+
   static final GlobalKey<AnimatedMovieTitleState> animatedTitleKey = new GlobalKey<AnimatedMovieTitleState>();
 
   MovieDetailsPageBloc _bloc;
@@ -38,6 +42,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   AnimationController ratingAnimationController;
   AnimationController onShowMoreDetailsAnimationController;
 
+  Animation<double> backButtonRotateAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +54,14 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
         AnimationController(duration: Duration(milliseconds: ratingAnimationDurationMills), vsync: this);
     onShowMoreDetailsAnimationController =
         AnimationController(duration: Duration(milliseconds: onShowMoreDetailsAnimationDurationMills), vsync: this);
+
+    backButtonRotateAnimation = Tween<double>(
+      begin: 0.0,
+      end: math.pi / 2,
+    ).animate(CurvedAnimation(
+      parent: onShowMoreDetailsAnimationController,
+      curve: Curves.easeInOutCubic,
+    ));
 
     boardingAnimationTimer = Timer(const Duration(milliseconds: 100), () {
       setState(() {
@@ -78,52 +92,76 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
               scrollDirection: Axis.vertical,
               physics: NeverScrollableScrollPhysics(),
               children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    pageController.animateToPage(1, duration: Duration(milliseconds: 1000), curve: Curves.easeInOut);
-                    animatedTitleKey.currentState.prepareTransitionAnimation();
-                    onShowMoreDetailsAnimationController.forward();
-                  },
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Hero(
-                          tag: widget.posterHeroTag,
-                          child: Container(
-                            height: double.infinity,
-                            width: double.infinity,
-                            child: Image.network(
-                              TmdbApiProvider.BASE_IMAGE_URL_W500 + widget.movie.posterPath,
-                              alignment: Alignment.topCenter,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: AnimatedContainer(
-                          height: gradientHeight,
-                          duration: Duration(milliseconds: boardingAnimationDurationMills),
+                Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Hero(
+                        tag: widget.posterHeroTag,
+                        transitionOnUserGestures: true,
+                        child: Container(
+                          height: double.infinity,
                           width: double.infinity,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: <Color>[
-                                Colors.transparent,
-                                AppColors.primaryColorHalfTransparent,
-                                AppColors.primaryColor,
-                              ],
-                            )),
+                          child: Image.network(
+                            TmdbApiProvider.BASE_IMAGE_URL_W500 + widget.movie.posterPath,
+                            alignment: Alignment.topCenter,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: AnimatedContainer(
+                        height: gradientHeight,
+                        duration: Duration(milliseconds: boardingAnimationDurationMills),
+                        width: double.infinity,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: <Color>[
+                              Colors.transparent,
+                              AppColors.primaryColorHalfTransparent,
+                              AppColors.primaryColor,
+                            ],
+                          )),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment(0.0, 0.59),
+                      child: AnimatedRating(
+                        controller: ratingAnimationController,
+                        targetRating: widget.movie.voteAverage,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment(0.0, 0.82),
+                      child: _createRatingCircle(widget.numberRatingHeroTag != null, widget.numberRatingHeroTag),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: _animateToMoreDetailsPage,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              'More',
+                              style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppColors.primaryWhite,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   color: AppColors.primaryColor,
@@ -141,17 +179,6 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
               boardingController: boardingAnimationController.view,
               transitionController: onShowMoreDetailsAnimationController.view,
             ),
-            Align(
-              alignment: Alignment(0.0, 0.63),
-              child: AnimatedRating(
-                controller: ratingAnimationController,
-                targetRating: widget.movie.voteAverage,
-              ),
-            ),
-            Align(
-              alignment: Alignment(0.0, 0.86),
-              child: _createRatingCircle(widget.numberRatingHeroTag != null, widget.numberRatingHeroTag),
-            ),
             _createOptionButtons(),
           ],
         ),
@@ -159,17 +186,26 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     );
   }
 
+  // Возможно стоит вынести кнопку назад в отедльный виджет
   Widget _createOptionButtons() {
+
+    Widget buildAnimatedBackIcon(BuildContext context, Widget child) {
+      return Transform.rotate(
+        angle: backButtonRotateAnimation.value,
+        child: Icon(
+          Icons.keyboard_arrow_left,
+          size: 36.0,
+          color: AppColors.primaryWhite,
+        ),
+      );
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(left: 6.0, top: 10.0),
-          child: Icon(
-            Icons.keyboard_arrow_left,
-            size: 36.0,
-            color: AppColors.primaryWhite,
-          ),
+          child: AnimatedBuilder(animation: onShowMoreDetailsAnimationController, builder: buildAnimatedBackIcon),
         ),
         Padding(
           padding: const EdgeInsets.only(right: 16.0, top: 10.0),
@@ -187,6 +223,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     return (withHeroTransition)
         ? Hero(
             tag: heroTag,
+            transitionOnUserGestures: true,
             child: Container(
               width: 48.0,
               height: 48.0,
@@ -234,5 +271,15 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
               ),
             ),
           );
+  }
+
+  void _animateToMoreDetailsPage() {
+    pageController.animateToPage(
+      1,
+      duration: Duration(milliseconds: pageSwitchAnimationDurationMills),
+      curve: Curves.easeInOut,
+    );
+    animatedTitleKey.currentState.prepareTransitionAnimation();
+    onShowMoreDetailsAnimationController.forward();
   }
 }
