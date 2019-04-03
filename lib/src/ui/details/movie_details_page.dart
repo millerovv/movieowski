@@ -8,12 +8,15 @@ import 'package:movieowski/src/ui/details/animated_appbar_bg.dart';
 import 'package:movieowski/src/ui/details/animated_movie_title.dart';
 import 'package:movieowski/src/ui/details/animated_rating.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/ui_utils.dart';
 
 class MovieDetailsPage extends StatefulWidget {
   final Movie movie;
-  final String heroTag;
+  final String posterHeroTag;
+  // In the current implementation equals null, when hero animations for rating circle isn't needed
+  final String numberRatingHeroTag;
 
-  MovieDetailsPage({Key key, this.movie, this.heroTag}) : super(key: key);
+  MovieDetailsPage({Key key, this.movie, this.posterHeroTag, this.numberRatingHeroTag}) : super(key: key);
 
   @override
   _MovieDetailsPageState createState() => _MovieDetailsPageState();
@@ -39,12 +42,12 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   void initState() {
     super.initState();
     pageController = PageController();
-    boardingAnimationController = AnimationController(
-        duration: Duration(milliseconds: boardingAnimationDurationMills), vsync: this);
-    ratingAnimationController = AnimationController(
-        duration: Duration(milliseconds: ratingAnimationDurationMills), vsync: this);
-    onShowMoreDetailsAnimationController = AnimationController(
-        duration: Duration(milliseconds: onShowMoreDetailsAnimationDurationMills), vsync: this);
+    boardingAnimationController =
+        AnimationController(duration: Duration(milliseconds: boardingAnimationDurationMills), vsync: this);
+    ratingAnimationController =
+        AnimationController(duration: Duration(milliseconds: ratingAnimationDurationMills), vsync: this);
+    onShowMoreDetailsAnimationController =
+        AnimationController(duration: Duration(milliseconds: onShowMoreDetailsAnimationDurationMills), vsync: this);
 
     boardingAnimationTimer = Timer(const Duration(milliseconds: 100), () {
       setState(() {
@@ -67,9 +70,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
         body: Stack(
           children: <Widget>[
             PageView(
@@ -89,7 +90,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                       Align(
                         alignment: Alignment.topCenter,
                         child: Hero(
-                          tag: widget.heroTag,
+                          tag: widget.posterHeroTag,
                           child: Container(
                             height: double.infinity,
                             width: double.infinity,
@@ -110,14 +111,14 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: <Color>[
-                                    Colors.transparent,
-                                    AppColors.primaryColorHalfTransparent,
-                                    AppColors.primaryColor,
-                                  ],
-                                )),
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: <Color>[
+                                Colors.transparent,
+                                AppColors.primaryColorHalfTransparent,
+                                AppColors.primaryColor,
+                              ],
+                            )),
                           ),
                         ),
                       ),
@@ -146,6 +147,10 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                 controller: ratingAnimationController,
                 targetRating: widget.movie.voteAverage,
               ),
+            ),
+            Align(
+              alignment: Alignment(0.0, 0.86),
+              child: _createRatingCircle(widget.numberRatingHeroTag != null, widget.numberRatingHeroTag),
             ),
             _createOptionButtons(),
           ],
@@ -176,5 +181,58 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
         ),
       ],
     );
+  }
+
+  Widget _createRatingCircle(bool withHeroTransition, String heroTag) {
+    return (withHeroTransition)
+        ? Hero(
+            tag: heroTag,
+            child: Container(
+              width: 48.0,
+              height: 48.0,
+              decoration: BoxDecoration(
+                  color: calculateRatingColor(widget.movie.voteAverage),
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.black87,
+                      offset: Offset(1.0, 1.0),
+                      blurRadius: 4.0,
+                    ),
+                  ]),
+              child: Center(
+                child: Text(
+                  widget.movie.voteAverage.toString(),
+                  style: Theme.of(context).textTheme.body1.copyWith(
+                        color: AppColors.primaryWhite,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+            ),
+          )
+        : Container(
+            width: 48.0,
+            height: 48.0,
+            decoration: BoxDecoration(
+                color: calculateRatingColor(widget.movie.voteAverage),
+                shape: BoxShape.circle,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black87,
+                    offset: Offset(1.0, 1.0),
+                    blurRadius: 4.0,
+                  ),
+                ]),
+            child: Center(
+              child: Text(
+                widget.movie.voteAverage.toString(),
+                style: Theme.of(context).textTheme.body1.copyWith(
+                      color: AppColors.primaryWhite,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+          );
   }
 }

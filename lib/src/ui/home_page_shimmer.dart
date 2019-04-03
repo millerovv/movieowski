@@ -30,14 +30,14 @@ class HomePageShimmer extends StatelessWidget {
         children: <Widget>[
           Text('sectionhead',
               style: Theme.of(context).textTheme.headline.copyWith(
-                background: Paint()..color = Colors.black,
-              )),
+                    background: Paint()..color = Colors.black,
+                  )),
           withSeeAllOption
               ? Text('see all',
-              style: Theme.of(context).textTheme.body1.copyWith(
-                  color: Theme.of(context).accentColor,
-                  fontWeight: FontWeight.bold,
-                  background: Paint()..color = Colors.black))
+                  style: Theme.of(context).textTheme.body1.copyWith(
+                      color: Theme.of(context).accentColor,
+                      fontWeight: FontWeight.bold,
+                      background: Paint()..color = Colors.black))
               : SizedBox(),
         ],
       )),
@@ -59,7 +59,13 @@ class HomePageShimmer extends StatelessWidget {
               children: List<Widget>.generate(_calculateNumberOfMovieCardsForDisplayWidth(context), (index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: HomeMovieCard(forAndroid: false, heroTag: 'heroTag', withRating: withRating, asStubCard: true),
+                  child: HomeMovieCard(
+                    forAndroid: false,
+                    imageHeroTag: 'image_hero_tag',
+                    ratingHeroTag: 'rating_hero_tag',
+                    withRating: withRating,
+                    asStubCard: true,
+                  ),
                 );
               }),
             )),
