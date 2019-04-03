@@ -56,7 +56,7 @@ class HomeActorCard extends StatelessWidget {
                         child: !asStubCard
                             ? FadeInImage.memoryNetwork(
                                 placeholder: kTransparentImage,
-                                image: TmdbApiProvider.BASE_IMAGE_URL + posterPath,
+                                image: '${TmdbApiProvider.BASE_IMAGE_URL_W300}$posterPath',
                                 fit: BoxFit.cover,
                               )
                             : Container(

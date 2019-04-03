@@ -11,7 +11,7 @@ void main() {
 
 	BlocSupervisor().delegate = SimpleBlocDelegate();
 
-	runApp(Movieowski(moviesRepository));
+	runApp(MovieowskiApp(moviesRepository));
 }
 
 class SimpleBlocDelegate extends BlocDelegate {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
 import 'package:movieowski/src/ui/movie_card.dart';
+import 'package:movieowski/src/utils/navigator.dart';
 
 class MoviesSection extends StatefulWidget {
   final sectionType;
@@ -84,16 +85,24 @@ class _MoviesSectionState extends State<MoviesSection> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context, int index) {
+                    String cardHeroTag = 'card${this.hashCode}$index${state.movies[index].id}';
+                    String ratingHeroTag = (widget.sectionType != MovieSectionType.UPCOMING) ?
+                      'rating${this.hashCode}$index${state.movies[index].id}' : null;
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: (state.movies[index].posterPath != null)
-                              ? HomeMovieCard(
-                                  forAndroid: Theme.of(context).platform == TargetPlatform.android,
-                                  withRating: widget.sectionType != MovieSectionType.UPCOMING,
-                                  posterPath: state.movies[index].posterPath,
-                                  rating: state.movies[index].voteAverage,
-                                )
-                              : SizedBox()
+                      child: GestureDetector(
+                        onTap: () => goToMovieDetails(context, state.movies[index], cardHeroTag, ratingHeroTag),
+                        child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
+                                ? HomeMovieCard(
+                                    forAndroid: Theme.of(context).platform == TargetPlatform.android,
+                                    withRating: widget.sectionType != MovieSectionType.UPCOMING,
+                                    imageHeroTag: cardHeroTag,
+                                    ratingHeroTag: ratingHeroTag,
+                                    posterPath: state.movies[index].posterPath,
+                                    rating: state.movies[index].voteAverage,
+                                  )
+                                : SizedBox(),
+                      )
                     );
                   },
                   itemCount: state.movies.length,
