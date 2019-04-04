@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/ui/details/animated_appbar_bg.dart';
 import 'package:movieowski/src/ui/details/animated_movie_title.dart';
 import 'package:movieowski/src/ui/details/animated_rating.dart';
+import 'package:movieowski/src/ui/details/movie_more_details_page.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
@@ -47,6 +49,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   @override
   void initState() {
     super.initState();
+    _bloc = BlocProvider.of<MovieDetailsPageBloc>(context);
+    _bloc.dispatch(FetchMovieDetails());
     pageController = PageController();
     boardingAnimationController =
         AnimationController(duration: Duration(milliseconds: boardingAnimationDurationMills), vsync: this);
@@ -95,6 +99,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                 Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
+
+                    // Poster
                     Align(
                       alignment: Alignment.topCenter,
                       child: Hero(
@@ -111,6 +117,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                         ),
                       ),
                     ),
+
+                    // Gradient
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: AnimatedContainer(
@@ -131,6 +139,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                         ),
                       ),
                     ),
+
+                    // Stars rating
                     Align(
                       alignment: Alignment(0.0, 0.59),
                       child: AnimatedRating(
@@ -138,10 +148,14 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                         targetRating: widget.movie.voteAverage,
                       ),
                     ),
+
+                    // Rating Circle
                     Align(
                       alignment: Alignment(0.0, 0.82),
                       child: _createRatingCircle(widget.numberRatingHeroTag != null, widget.numberRatingHeroTag),
                     ),
+
+                    // More details button
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: GestureDetector(
@@ -163,9 +177,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                     ),
                   ],
                 ),
-                Container(
-                  color: AppColors.primaryColor,
-                ),
+                MovieMoreDetails(),
               ],
             ),
             Align(

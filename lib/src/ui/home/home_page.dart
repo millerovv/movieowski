@@ -4,10 +4,10 @@ import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_blo
 import 'package:movieowski/src/blocs/home_page/home_page_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
-import 'package:movieowski/src/ui/categories_section.dart';
-import 'package:movieowski/src/ui/home_page_shimmer.dart';
-import 'package:movieowski/src/ui/movies_section.dart';
-import 'package:movieowski/src/ui/popular_actors_section.dart';
+import 'package:movieowski/src/ui/home/section/categories_section.dart';
+import 'package:movieowski/src/ui/home/home_page_shimmer.dart';
+import 'package:movieowski/src/ui/home/section/movies_section.dart';
+import 'package:movieowski/src/ui/home/section/popular_actors_section.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class HomePage extends StatefulWidget {

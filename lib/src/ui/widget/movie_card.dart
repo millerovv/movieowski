@@ -110,7 +110,7 @@ class HomeMovieCard extends StatelessWidget {
                                 ),
                                 child: !asStubCard ? Center(
                                     child: Text(
-                                  rating.toString(),
+                                      (rating != 0) ? rating.toString() : '–',
                                   style: Theme.of(context)
                                       .textTheme
                                       .caption

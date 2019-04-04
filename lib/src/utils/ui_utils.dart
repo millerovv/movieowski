@@ -11,7 +11,9 @@ Color calculateRatingColor(double rating) {
     return AppColors.yellow;
   } else if (rating >= 4.5) {
     return AppColors.orange;
-  } else {
+  } else if (rating != 0.0) {
     return AppColors.red;
+  } else {
+    return AppColors.hintGrey;
   }
 }

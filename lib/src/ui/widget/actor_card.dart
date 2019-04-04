@@ -4,40 +4,53 @@ import 'package:movieowski/src/utils/consts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class HomeActorCard extends StatelessWidget {
-  static const double cardWidth = 131.0;
-  static const double cardHeight = 131.0;
+class HomeActorCircleImage extends StatelessWidget {
+  static const double defaultWidth = 131.0;
 
+  final double width;
   final bool asStubCard;
   final String posterPath;
   final String actorName;
 
-  HomeActorCard({this.asStubCard = false, this.posterPath, this.actorName = "John Doe"});
+  /// With additional information e.g character name under actor name
+  final bool withSubTitle;
+  final bool withShimmer;
+  final String subTitle;
+
+  HomeActorCircleImage({
+    this.width = defaultWidth,
+    this.asStubCard = false,
+    this.posterPath,
+    this.actorName = "John Doe",
+    this.withSubTitle = false,
+    this.withShimmer = true,
+    this.subTitle
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return (posterPath.isNotEmpty) ? Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Container(
-        constraints: BoxConstraints(maxWidth: cardWidth, minHeight: 150, maxHeight: 180),
+        constraints: BoxConstraints(maxWidth: defaultWidth, minHeight: 150, maxHeight: 200),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             SizedBox(
-              width: cardWidth,
-              height: cardHeight,
+              width: width,
+              height: width,
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  Positioned(
+                  withShimmer ? Positioned(
                     top: 0,
                     left: 0,
                     child: Shimmer.fromColors(
                       baseColor: AppColors.lighterPrimary,
                       highlightColor: Colors.grey,
                       child: Container(
-                        width: cardWidth,
-                        height: cardHeight,
+                        width: width,
+                        height: width,
                         child: ClipOval(
                           child: Container(
                             color: Colors.white,
@@ -45,13 +58,13 @@ class HomeActorCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
+                  ) : SizedBox(),
                   Positioned(
                     top: 0,
                     left: 0,
                     child: Container(
-                      width: cardWidth,
-                      height: cardHeight,
+                      width: width,
+                      height: width,
                       child: ClipOval(
                         child: !asStubCard
                             ? FadeInImage.memoryNetwork(
@@ -72,21 +85,46 @@ class HomeActorCard extends StatelessWidget {
             ),
             Container(
               margin: EdgeInsets.only(top: 8.0),
-              constraints: BoxConstraints(maxWidth: cardWidth, maxHeight: 140),
-              child: !asStubCard
-                  ? Text(
-                      actorName,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
-                    )
-                  : Text(
-                      'jason statham',
-                      style: Theme.of(context).textTheme.body1.copyWith(background: Paint()..color = Colors.black),
-                    ),
+              constraints: BoxConstraints(maxWidth: width, maxHeight: 140),
+              child: _createTitle(context),
             ),
           ],
         ),
       ),
-    );
+    ) : SizedBox();
+  }
+
+  Widget _createTitle(BuildContext context) {
+    if (!asStubCard && !withSubTitle) {
+      return Text(
+        actorName,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
+      );
+    } else if (withSubTitle) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            actorName,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
+          ),
+          SizedBox(
+            height: 4.0,
+          ),
+          Text(
+            subTitle,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
+          )
+        ],
+      );
+    } else {
+      return Text(
+        'jason statham',
+        style: Theme.of(context).textTheme.body1.copyWith(background: Paint()..color = Colors.black),
+      );
+    }
   }
 }

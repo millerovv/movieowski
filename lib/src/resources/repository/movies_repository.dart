@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/now_playing_movies_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
@@ -76,5 +77,8 @@ class MoviesRepository {
     var difference = lastFetch.difference(DateTime.now());
     return difference.inDays >= 14;
   }
+
+  Future<MovieDetailsWithCreditsResponseRoot> fetchMovieDetailsWithCredits(int movieId,
+      {String language: Languages.english}) => tmdpApiProvider.getMovieDetailsWithCredits(movieId: movieId);
 }
 

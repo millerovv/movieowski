@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
+import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
@@ -123,5 +125,24 @@ class TmdbApiProvider extends BaseApiProvider {
     var response = await getRequest(url);
     final MovieGenresResponseRoot genres = MovieGenresResponseRoot.fromJson(json.decode(response));
     return genres;
+  }
+
+  /// Request the primary information about movie with appended credits
+  /// Documentation https://developers.themoviedb.org/3/movies/get-movie-details
+  Future<MovieDetailsWithCreditsResponseRoot> getMovieDetailsWithCredits({
+    @required int movieId, String language: Languages.english}) async {
+    var url = Uri.https(
+      BASE_URL,
+      '3/movie/$movieId',
+      <String, String>{
+        'api_key': API_KEY,
+        'language': language,
+        'append_to_response': 'credits'
+      },
+    );
+
+    var response = await getRequest(url);
+    final MovieDetailsWithCreditsResponseRoot details = MovieDetailsWithCreditsResponseRoot.fromJson(json.decode(response));
+    return details;
   }
 }

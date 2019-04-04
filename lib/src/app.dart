@@ -6,7 +6,7 @@ import 'package:movieowski/src/blocs/home_page/bloc_home_page_event.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
-import 'package:movieowski/src/ui/home_page.dart';
+import 'package:movieowski/src/ui/home/home_page.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
