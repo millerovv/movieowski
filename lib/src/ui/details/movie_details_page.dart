@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
+import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/ui/details/animated_appbar_bg.dart';
 import 'package:movieowski/src/ui/details/animated_movie_title.dart';
@@ -20,7 +21,8 @@ class MovieDetailsPage extends StatefulWidget {
   // In the current implementation equals null, when hero animations for rating circle isn't needed
   final String numberRatingHeroTag;
 
-  MovieDetailsPage({Key key, this.movie, this.posterHeroTag, this.numberRatingHeroTag}) : super(key: key);
+  MovieDetailsPage({Key key, this.movie, this.posterHeroTag, this.numberRatingHeroTag})
+      : super(key: key);
 
   @override
   _MovieDetailsPageState createState() => _MovieDetailsPageState();
@@ -46,18 +48,38 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
 
   Animation<double> backButtonRotateAnimation;
 
+  bool animatedTitlePreparedForTransitionAnim;
+  double screenHeight;
+
+  void _afterLayout(_) {
+    screenHeight = MediaQuery.of(context).size.height;
+  }
+
   @override
   void initState() {
     super.initState();
     _bloc = BlocProvider.of<MovieDetailsPageBloc>(context);
     _bloc.dispatch(FetchMovieDetails());
-    pageController = PageController();
+
+    WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
+
+    animatedTitlePreparedForTransitionAnim = false;
+
     boardingAnimationController =
         AnimationController(duration: Duration(milliseconds: boardingAnimationDurationMills), vsync: this);
     ratingAnimationController =
         AnimationController(duration: Duration(milliseconds: ratingAnimationDurationMills), vsync: this);
     onShowMoreDetailsAnimationController =
         AnimationController(duration: Duration(milliseconds: onShowMoreDetailsAnimationDurationMills), vsync: this);
+
+    pageController = PageController()..addListener(() {
+//      debugPrint('pageController offset = ${pageController.offset}, percentage = ${pageController.offset / widget.screenHeight}');
+//      if (!animatedTitlePreparedForTransitionAnim) {
+//        animatedTitleKey.currentState?.prepareTransitionAnimation();
+//        animatedTitlePreparedForTransitionAnim = true;
+//      }
+//      onShowMoreDetailsAnimationController.animateTo(pageController.offset / screenHeight);
+    });
 
     backButtonRotateAnimation = Tween<double>(
       begin: 0.0,
@@ -70,7 +92,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     boardingAnimationTimer = Timer(const Duration(milliseconds: 100), () {
       setState(() {
         gradientHeight = 320.0;
-        animatedTitleKey.currentState.prepareBoardingAnimation();
+        animatedTitleKey.currentState?.prepareBoardingAnimation();
         boardingAnimationController.forward();
         ratingAnimationController.forward();
       });
@@ -99,7 +121,6 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                 Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
-
                     // Poster
                     Align(
                       alignment: Alignment.topCenter,
@@ -184,13 +205,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
               alignment: Alignment.topCenter,
               child: AnimatedAppbarBackground(controller: onShowMoreDetailsAnimationController.view),
             ),
-            AnimatedMovieTitle(
-              key: animatedTitleKey,
-              title: widget.movie.title,
-              subTitle: '${widget.movie.releaseDate.split('-')[0].toString()} – Quentin Tarantino',
-              boardingController: boardingAnimationController.view,
-              transitionController: onShowMoreDetailsAnimationController.view,
-            ),
+            _createAnimatedMovieTitle(),
             _createOptionButtons(),
           ],
         ),
@@ -198,9 +213,57 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     );
   }
 
+  Widget _createAnimatedMovieTitle() {
+    return BlocBuilder(
+      bloc: _bloc,
+      builder: (BuildContext context, MovieDetailsPageState state) {
+        if (state is MovieDetailsIsLoaded) {
+          return AnimatedMovieTitle(
+            key: animatedTitleKey,
+            title: widget.movie.title,
+            subTitle: '${widget.movie.releaseDate.split('-')[0].toString()} – '
+                '${state.details.credits.crew.firstWhere((member) => member.job == 'Director', orElse: () => Crew()..name = 'Unknown Director').name}',
+            boardingController: boardingAnimationController.view,
+            transitionController: onShowMoreDetailsAnimationController.view,
+          );
+        } else if (state is MovieDetailsIsEmpty || state is MovieDetailsIsLoading) {
+          return Align(
+            alignment: Alignment(0.0, 0.52),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  widget.movie.title,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline
+                      .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                shimmer(Text('1984 – Quentin Tarantino',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.body1.copyWith(
+                        color: AppColors.primaryWhite,
+                        background: Paint()..color = Colors.black,
+                    ))),
+              ],
+            ),
+          );
+        } else {
+          return Text(
+            'Error',
+            style: Theme.of(context).textTheme.headline.copyWith(color: AppColors.primaryWhite),
+          );
+        }
+      },
+    );
+  }
+
   // Возможно стоит вынести кнопку назад в отедльный виджет
   Widget _createOptionButtons() {
-
     Widget buildAnimatedBackIcon(BuildContext context, Widget child) {
       return Transform.rotate(
         angle: backButtonRotateAnimation.value,
@@ -292,6 +355,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       curve: Curves.easeInOut,
     );
     animatedTitleKey.currentState.prepareTransitionAnimation();
+    animatedTitlePreparedForTransitionAnim = true;
     onShowMoreDetailsAnimationController.forward();
   }
 }

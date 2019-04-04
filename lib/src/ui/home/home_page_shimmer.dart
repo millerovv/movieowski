@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:movieowski/src/ui/widget/actor_card.dart';
 import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:movieowski/src/utils/ui_utils.dart';
 
 class HomePageShimmer extends StatelessWidget {
   @override
@@ -147,14 +147,5 @@ class HomePageShimmer extends StatelessWidget {
     double displayWidth = MediaQuery.of(context).size.width;
     double actorCardWidth = HomeActorCircleImage.defaultWidth;
     return (displayWidth / actorCardWidth).round() + 1;
-  }
-
-  Widget shimmer(Widget child, [int duration = 1500]) {
-    return Shimmer.fromColors(
-      baseColor: AppColors.lighterPrimary,
-      highlightColor: Colors.grey,
-      period: Duration(milliseconds: duration),
-      child: child,
-    );
   }
 }

@@ -47,6 +47,21 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                 ],
               ),
             );
+          } else if (state is MovieDetailsIsEmpty || state is MovieDetailsIsLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Center(
+                child: Text(
+                  'An error has occured while trying to download movie details. \n\n'
+                      'Please check your internet connection and try again',
+                  style: Theme.of(context).textTheme.headline.copyWith(color: AppColors.primaryWhite),
+                ),
+              ),
+            );
           }
         },
       ),
@@ -93,6 +108,7 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
   }
 
   Widget _createBasicTitleSubtitleSection(String title, String subtitle) {
+    debugPrint('_createBasicTitleSubtitleSection, title = $title, subtitle = $subtitle');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -101,15 +117,14 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
           child: Text(
             title,
             style:
-            Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+                Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0),
           child: Text(
             subtitle,
-            style:
-            Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
+            style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
           ),
         ),
       ],

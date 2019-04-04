@@ -29,7 +29,7 @@ class HomeActorCircleImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (posterPath.isNotEmpty) ? Padding(
+    return (asStubCard || (posterPath != null && posterPath.isNotEmpty)) ? Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Container(
         constraints: BoxConstraints(maxWidth: defaultWidth, minHeight: 150, maxHeight: 200),
@@ -114,7 +114,7 @@ class HomeActorCircleImage extends StatelessWidget {
             height: 4.0,
           ),
           Text(
-            subTitle,
+            (subTitle.length <= 60) ? subTitle : subTitle.substring(0, 60),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
           )
