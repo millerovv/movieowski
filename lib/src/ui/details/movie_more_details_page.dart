@@ -89,7 +89,8 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: List<Widget>.generate((cast.length <= 16) ? cast.length : 16, (index) {
                 return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: ((cast[index].profilePath != null && cast[index].profilePath.isNotEmpty))
+                        ? const EdgeInsets.symmetric(horizontal: 8.0) : const EdgeInsets.all(0),
                     child: HomeActorCircleImage(
                       width: 96.0,
                       asStubCard: false,

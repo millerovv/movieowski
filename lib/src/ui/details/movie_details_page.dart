@@ -14,6 +14,7 @@ import 'package:movieowski/src/ui/details/movie_more_details_page.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
+// TODO: fix animation state loss on immediate opening of another movie details page after closing current one
 class MovieDetailsPage extends StatefulWidget {
   final Movie movie;
   final String posterHeroTag;
@@ -132,6 +133,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                 Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
+
                     // Poster
                     Align(
                       alignment: Alignment.topCenter,
@@ -233,7 +235,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
             key: _animatedTitleKey,
             title: widget.movie.title,
             subTitle: '${widget.movie.releaseDate.split('-')[0].toString()} – '
-                '${state.details.credits.crew.firstWhere((member) => member.job == 'Director', orElse: () => Crew()..name = 'Unknown Director').name}',
+                '${state.details.credits.crew.firstWhere((member) => member.job == 'Director',
+                orElse: () => Crew()..name = 'Unknown Director').name}',
             boardingController: boardingAnimationController.view,
             transitionController: onShowMoreDetailsAnimationController.view,
           );
@@ -289,9 +292,12 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 6.0, top: 10.0),
-          child: AnimatedBuilder(animation: onShowMoreDetailsAnimationController, builder: buildAnimatedBackIcon),
+        GestureDetector(
+          onTap: _backButtonPressed,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 6.0, top: 10.0),
+            child: AnimatedBuilder(animation: onShowMoreDetailsAnimationController, builder: buildAnimatedBackIcon),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(right: 16.0, top: 10.0),
@@ -366,5 +372,14 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     );
     _animatedTitleKey.currentState.prepareTransitionAnimation();
     animatedTitlePreparedForTransitionAnim = true;
+  }
+
+  void _backButtonPressed() {
+    if (pageController.page == 0) {
+      Navigator.pop(context);
+    } else if (pageController.page == 1) {
+      pageController.animateTo(0,
+          duration: Duration(milliseconds: pageSwitchAnimationDurationMills), curve: Curves.easeInOut);
+    }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class AnimatedAppbarBackground extends StatelessWidget {
   final AnimationController controller;
@@ -14,18 +13,26 @@ class AnimatedAppbarBackground extends StatelessWidget {
         super(key: key);
 
   Widget _buildAnimatedAppbarBackground(BuildContext context, Widget child) {
-    return Transform.rotate(
-      angle: math.pi,
-      child: Card(
-        margin: EdgeInsets.all(0.0),
-        elevation: 3,
+      return PreferredSize(
+        preferredSize: Size.fromHeight(appBarHeight.value),
         child: Container(
           height: appBarHeight.value,
           width: MediaQuery.of(context).size.width,
-          color: Theme.of(context).primaryColor,
+
+          decoration: controller.value >= 0.8 ? BoxDecoration(
+              color: Theme.of(context).primaryColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black54,
+                offset: Offset(1.0, 1.0),
+                blurRadius: 2.0,
+              )
+            ]
+          ) : BoxDecoration(
+            color: Theme.of(context).primaryColor,
+          ),
         ),
-      ),
-    );
+      );
   }
 
   @override

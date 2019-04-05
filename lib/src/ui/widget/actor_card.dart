@@ -114,7 +114,9 @@ class HomeActorCircleImage extends StatelessWidget {
             height: 4.0,
           ),
           Text(
-            (subTitle.length <= 60) ? subTitle : subTitle.substring(0, 60),
+            subTitle,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
           )
