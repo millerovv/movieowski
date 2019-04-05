@@ -108,7 +108,6 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
   }
 
   Widget _createBasicTitleSubtitleSection(String title, String subtitle) {
-    debugPrint('_createBasicTitleSubtitleSection, title = $title, subtitle = $subtitle');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

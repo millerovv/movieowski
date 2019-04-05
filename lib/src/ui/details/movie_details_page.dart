@@ -32,9 +32,10 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   static const int boardingAnimationDurationMills = 800;
   static const int onShowMoreDetailsAnimationDurationMills = 800;
   static const int ratingAnimationDurationMills = 1400;
-  static const int pageSwitchAnimationDurationMills = 1400;
+  static const int pageSwitchAnimationDurationMills = 1000;
 
-  static final GlobalKey<AnimatedMovieTitleState> animatedTitleKey = new GlobalKey<AnimatedMovieTitleState>();
+  static final GlobalKey<AnimatedMovieTitleState> _animatedTitleKey = new GlobalKey<AnimatedMovieTitleState>();
+  static final GlobalKey _pageViewKey = new GlobalKey();
 
   MovieDetailsPageBloc _bloc;
   PageController pageController;
@@ -49,10 +50,16 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   Animation<double> backButtonRotateAnimation;
 
   bool animatedTitlePreparedForTransitionAnim;
-  double screenHeight;
+  double pageViewHeight;
 
   void _afterLayout(_) {
-    screenHeight = MediaQuery.of(context).size.height;
+    pageViewHeight = _pageViewKey.currentContext.size.height;
+
+    if (pageController.page != pageController.initialPage) {
+      setState(() {
+        pageController.jumpToPage(pageController.initialPage);
+      });
+    }
   }
 
   @override
@@ -72,13 +79,13 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     onShowMoreDetailsAnimationController =
         AnimationController(duration: Duration(milliseconds: onShowMoreDetailsAnimationDurationMills), vsync: this);
 
-    pageController = PageController()..addListener(() {
-//      debugPrint('pageController offset = ${pageController.offset}, percentage = ${pageController.offset / widget.screenHeight}');
-//      if (!animatedTitlePreparedForTransitionAnim) {
-//        animatedTitleKey.currentState?.prepareTransitionAnimation();
-//        animatedTitlePreparedForTransitionAnim = true;
-//      }
-//      onShowMoreDetailsAnimationController.animateTo(pageController.offset / screenHeight);
+    pageController = PageController()
+      ..addListener(() {
+      if (!animatedTitlePreparedForTransitionAnim) {
+        _animatedTitleKey.currentState?.prepareTransitionAnimation();
+        animatedTitlePreparedForTransitionAnim = true;
+      }
+      onShowMoreDetailsAnimationController.value = pageController.offset / pageViewHeight;
     });
 
     backButtonRotateAnimation = Tween<double>(
@@ -92,7 +99,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     boardingAnimationTimer = Timer(const Duration(milliseconds: 100), () {
       setState(() {
         gradientHeight = 320.0;
-        animatedTitleKey.currentState?.prepareBoardingAnimation();
+        _animatedTitleKey.currentState?.prepareBoardingAnimation();
         boardingAnimationController.forward();
         ratingAnimationController.forward();
       });
@@ -103,6 +110,10 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   void dispose() {
     _bloc?.dispose();
     boardingAnimationTimer?.cancel();
+    pageController?.dispose();
+    boardingAnimationController?.dispose();
+    ratingAnimationController?.dispose();
+    onShowMoreDetailsAnimationController?.dispose();
     super.dispose();
   }
 
@@ -114,9 +125,9 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
         body: Stack(
           children: <Widget>[
             PageView(
+              key: _pageViewKey,
               controller: pageController,
               scrollDirection: Axis.vertical,
-              physics: NeverScrollableScrollPhysics(),
               children: <Widget>[
                 Stack(
                   fit: StackFit.expand,
@@ -219,7 +230,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       builder: (BuildContext context, MovieDetailsPageState state) {
         if (state is MovieDetailsIsLoaded) {
           return AnimatedMovieTitle(
-            key: animatedTitleKey,
+            key: _animatedTitleKey,
             title: widget.movie.title,
             subTitle: '${widget.movie.releaseDate.split('-')[0].toString()} – '
                 '${state.details.credits.crew.firstWhere((member) => member.job == 'Director', orElse: () => Crew()..name = 'Unknown Director').name}',
@@ -349,13 +360,11 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   }
 
   void _animateToMoreDetailsPage() {
-    pageController.animateToPage(
-      1,
+    pageController.nextPage(
       duration: Duration(milliseconds: pageSwitchAnimationDurationMills),
       curve: Curves.easeInOut,
     );
-    animatedTitleKey.currentState.prepareTransitionAnimation();
+    _animatedTitleKey.currentState.prepareTransitionAnimation();
     animatedTitlePreparedForTransitionAnim = true;
-    onShowMoreDetailsAnimationController.forward();
   }
 }

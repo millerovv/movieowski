@@ -20,7 +20,7 @@ class MoviesRepository {
   Future<TrendingMoviesResponseRoot> fetchTrendingMovies() => tmdpApiProvider.getTrendingMovies();
 
   Future<NowPlayingMoviesResponseRoot> fetchNowPlayingMovies(
-          {int pageIndex: 1, String language: Languages.english, String region: Regions.usa}) =>
+          {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) =>
       tmdpApiProvider.getNowPlayingMovies(pageIndex: pageIndex, language: language, region: region);
 
   /// Chained API request. Firstly we get list of popular people Ids, then for each Id
@@ -37,13 +37,13 @@ class MoviesRepository {
   }
 
   Future<UpcomingMoviesResponseRoot> fetchUpcomingMovies(
-      {int pageIndex: 1, String language: Languages.english, String region: Regions.usa}) =>
+      {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) =>
       tmdpApiProvider.getUpcomingMovies(pageIndex: pageIndex, language: language, region: region);
 
   /// Fetching genres based on date of last genres list upload from the tmdb api.
   /// If 14 days have passed since last upload from api or there are no genres in local DB, make new request.
   /// Fetch genres from database otherwise
-  Future<List<Genre>> fetchMovieGenres({String language: Languages.english}) async {
+  Future<List<Genre>> fetchMovieGenres({String language = Languages.english}) async {
     List<Genre> genresFromDb = await DBProvider.dbProvider.getAllGenres();
     DateTime lastGenresFetchFromApiDate = await getLastGenresFetchFromApiDate();
     bool updateNeeded = _needToUpdateGenresBasedOnDate(lastGenresFetchFromApiDate);
@@ -79,6 +79,6 @@ class MoviesRepository {
   }
 
   Future<MovieDetailsWithCreditsResponseRoot> fetchMovieDetailsWithCredits(int movieId,
-      {String language: Languages.english}) => tmdpApiProvider.getMovieDetailsWithCredits(movieId: movieId);
+      {String language = Languages.english}) => tmdpApiProvider.getMovieDetailsWithCredits(movieId: movieId);
 }
 

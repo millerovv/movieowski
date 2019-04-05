@@ -22,10 +22,9 @@ class AnimatedRating extends StatefulWidget {
 
 class _AnimatedRatingState extends State<AnimatedRating> {
   static const double starsWidth = 92.0;
-  int numberOfColorStages;
-  int currentColorStage;
+  int _numberOfColorStages;
+  int _currentColorStage;
   double singleColorStageControllerValueInterval;
-  int numberOfStarHalves;
   Animation<double> starsPercent;
   Animation<double> starsOpacity;
   Animation colorRed;
@@ -35,29 +34,23 @@ class _AnimatedRatingState extends State<AnimatedRating> {
   Animation<Color> colorLightGreenToGreen;
   List<Animation> animationStages = [];
 
+  int get currentColorStage {
+    _currentColorStage = _calculateAnimationStage(widget.controller.value);
+    return _currentColorStage;
+  }
+
+  int get numberOfColorStages {
+    _numberOfColorStages = _calculateNumberOfColorTransitionStages(widget.targetRating);
+    return _numberOfColorStages;
+  }
+
+
   @override
   void initState() {
     super.initState();
-    currentColorStage = 0;
-    numberOfColorStages = _calculateNumberOfColorTransitionStages(widget.targetRating);
+    _currentColorStage = 0;
     singleColorStageControllerValueInterval = (numberOfColorStages > 0) ? 1.0 / numberOfColorStages : 1.0;
-    numberOfStarHalves = _calculateNumberOfStarTransitionStages(widget.targetRating);
     _initAnimations();
-    widget.controller.addListener(() {
-      int newStage = _calculateAnimationStage(widget.controller.value);
-      if (newStage != currentColorStage) {
-        setState(() {
-          currentColorStage = newStage;
-        });
-      }
-    });
-
-    widget.controller.addStatusListener((status) {
-      if (status == AnimationStatus.dismissed) {
-        currentColorStage = 0;
-      }
-      debugPrint(status.toString());
-    });
   }
 
   Widget _buildAnimation(BuildContext context, Widget child) {
@@ -106,23 +99,19 @@ class _AnimatedRatingState extends State<AnimatedRating> {
     }
   }
 
-  int _calculateNumberOfStarTransitionStages(double rating) {
-    return rating.floor() + 1;
-  }
-
   int _calculateAnimationStage(double controllerValue) {
-    if (numberOfColorStages == 0 && controllerValue < singleColorStageControllerValueInterval) {
+    if (numberOfColorStages == 0 && controllerValue <= singleColorStageControllerValueInterval) {
       return 0;
-    } else if (numberOfColorStages > 0 && controllerValue < singleColorStageControllerValueInterval) {
+    } else if (numberOfColorStages > 0 && controllerValue <= singleColorStageControllerValueInterval) {
       return 1;
-    } else if (numberOfColorStages > 1 && controllerValue < singleColorStageControllerValueInterval * 2) {
+    } else if (numberOfColorStages > 1 && controllerValue <= singleColorStageControllerValueInterval * 2) {
       return 2;
-    } else if (numberOfColorStages > 2 && controllerValue < singleColorStageControllerValueInterval * 3) {
+    } else if (numberOfColorStages > 2 && controllerValue <= singleColorStageControllerValueInterval * 3) {
       return 3;
-    } else if (numberOfColorStages > 3 && controllerValue < singleColorStageControllerValueInterval * 4) {
+    } else if (numberOfColorStages > 3 && controllerValue <= singleColorStageControllerValueInterval * 4) {
       return 4;
     } else {
-      return currentColorStage;
+      return _currentColorStage;
     }
   }
 

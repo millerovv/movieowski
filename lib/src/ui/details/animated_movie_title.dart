@@ -30,35 +30,34 @@ class AnimatedMovieTitle extends StatefulWidget {
           curve: Curves.easeIn,
         )),
         titleAlignmentTransitionYOffset = Tween<double>(
-          begin: 0.55,
+          begin: 0.52,
           end: -0.96,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Curves.easeIn,
+          curve: Interval(0.0, 0.85, curve: Curves.easeIn),
         )),
         titleFontSize = Tween<double>(
           begin: 24.0,
           end: 14.0,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Curves.easeIn,
+          curve: Interval(0.0, 0.85, curve: Curves.easeIn),
         )),
         subTitleFontSize = Tween<double>(
           begin: 14.0,
           end: 10.0,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Curves.easeIn,
+          curve: Interval(0.0, 0.85, curve: Curves.easeIn),
         )),
         titleBottomPadding = Tween<double>(
           begin: 10.0,
           end: 4,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Curves.easeIn,
+          curve: Interval(0.0, 0.85, curve: Curves.easeIn),
         )),
         super(key: key);
-
 
   @override
   AnimatedMovieTitleState createState() => AnimatedMovieTitleState();
@@ -93,20 +92,21 @@ class AnimatedMovieTitleState extends State<AnimatedMovieTitle> {
             Text(
               widget.title,
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline
-                  .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold,
-                fontSize: widget.titleFontSize.value,
-              ),
+              style: Theme.of(context).textTheme.headline.copyWith(
+                    color: AppColors.primaryWhite,
+                    fontWeight: FontWeight.bold,
+                    fontSize: widget.titleFontSize.value,
+                  ),
             ),
             SizedBox(
               height: widget.titleBottomPadding.value,
             ),
             Text(widget.subTitle,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.body1.copyWith(
-                    color: AppColors.primaryWhite, fontSize: widget.subTitleFontSize.value)),
+                style: Theme.of(context)
+                    .textTheme
+                    .body1
+                    .copyWith(color: AppColors.primaryWhite, fontSize: widget.subTitleFontSize.value)),
           ],
         ),
       ),

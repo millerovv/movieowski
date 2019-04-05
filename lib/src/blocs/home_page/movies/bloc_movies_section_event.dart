@@ -10,5 +10,5 @@ class FetchMovies extends MoviesSectionEvent {
   final String language;
   final String region;
 
-  FetchMovies({this.page: 1, this.language: Languages.english, this.region: Regions.russia});
+  FetchMovies({this.page = 1, this.language = Languages.english, this.region = Regions.russia});
 }
