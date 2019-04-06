@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/bloc_home_page.dart';
@@ -7,7 +8,6 @@ import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/home/home_page.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 /// Base application class
@@ -59,10 +59,10 @@ class _MovieowskiAppState extends State<MovieowskiApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      FlutterStatusbarcolor.setStatusBarColor(AppColors.primaryColor);
-      FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
-    }
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Movieowski',

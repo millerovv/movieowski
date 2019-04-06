@@ -31,31 +31,31 @@ class AnimatedMovieTitle extends StatefulWidget {
         )),
         titleAlignmentTransitionYOffset = Tween<double>(
           begin: 0.52,
-          end: -0.96,
+          end: -0.89,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Interval(0.0, 0.72, curve: Curves.linear),
+          curve: Interval(0.0, 0.7, curve: Curves.linear),
         )),
         titleFontSize = Tween<double>(
           begin: 24.0,
           end: 14.0,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Interval(0.0, 0.72, curve: Curves.linear),
+          curve: Interval(0.0, 0.7, curve: Curves.linear),
         )),
         subTitleFontSize = Tween<double>(
           begin: 14.0,
           end: 10.0,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Interval(0.0, 0.72, curve: Curves.linear),
+          curve: Interval(0.0, 0.7, curve: Curves.linear),
         )),
         titleBottomPadding = Tween<double>(
           begin: 10.0,
           end: 4,
         ).animate(CurvedAnimation(
           parent: transitionController,
-          curve: Interval(0.0, 0.72, curve: Curves.linear),
+          curve: Interval(0.0, 0.7, curve: Curves.linear),
         )),
         super(key: key);
 

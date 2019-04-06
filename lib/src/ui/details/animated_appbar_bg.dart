@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movieowski/src/utils/consts.dart';
 
 class AnimatedAppbarBackground extends StatelessWidget {
   final AnimationController controller;
@@ -7,8 +8,8 @@ class AnimatedAppbarBackground extends StatelessWidget {
   AnimatedAppbarBackground({Key key, this.controller})
       : appBarHeight = Tween<double>(
           begin: 0,
-          end: kToolbarHeight,
-        ).animate(CurvedAnimation(parent: controller, curve: Curves.easeIn)),
+          end: kToolbarHeight + kStatusBarHeight, //Toolbar height + Status bar height
+        ).animate(CurvedAnimation(parent: controller, curve: Interval(0.0, 0.8, curve: Curves.easeIn))),
 
         super(key: key);
 

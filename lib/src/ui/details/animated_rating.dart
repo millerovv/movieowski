@@ -2,14 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:movieowski/src/ui/details/stars.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
-const Map<String, Color> kRatingColors = {
-  'green': Color(0xFF06D177),
-  'light_green': Color(0xFFB5D106),
-  'yellow': Color(0xFFD1CE06),
-  'orange': Color(0xFFD18606),
-  'red': Color(0xFFD13206),
-};
-
 class AnimatedRating extends StatefulWidget {
   final AnimationController controller;
   final double targetRating;
@@ -140,7 +132,7 @@ class _AnimatedRatingState extends State<AnimatedRating> {
         ),
     ));
 
-    animationStages.add(colorRed = ConstantTween(kRatingColors['red']).animate(widget.controller));
+    animationStages.add(colorRed = ConstantTween(AppColors.red).animate(widget.controller));
 
     void initRedToOrange() => animationStages.add(colorRedToOrange = ColorTween(
       begin: AppColors.red,

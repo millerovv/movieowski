@@ -39,38 +39,37 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _forAndroid = Theme.of(context).platform == TargetPlatform.android;
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              new SliverAppBar(
-                flexibleSpace: _createSearchBar(),
-                floating: _forAndroid,
-                snap: _forAndroid,
-                pinned: !_forAndroid,
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return <Widget>[
+          new SliverAppBar(
+            flexibleSpace: _createSearchBar(),
+            floating: _forAndroid,
+            snap: _forAndroid,
+            pinned: !_forAndroid,
+          ),
+        ];
+      },
+      body: BlocBuilder<HomePageEvent, HomePageState>(
+        bloc: _bloc,
+        builder: (BuildContext context, HomePageState state) {
+          if (state is HomePageNotLoaded || state is HomePageIsLoading) {
+            return HomePageShimmer();
+          } else if (state is HomePageIsLoaded) {
+            return _createHomePageContent(context);
+          } else {
+            return Center(
+              child: Text('Couldn\'t connect to the server.\nPlease try again later',
+                style: Theme.of(context).textTheme.headline,
               ),
-            ];
-          },
-          body: BlocBuilder<HomePageEvent, HomePageState>(
-            bloc: _bloc,
-            builder: (BuildContext context, HomePageState state) {
-              if (state is HomePageNotLoaded || state is HomePageIsLoading) {
-                return HomePageShimmer();
-              } else if (state is HomePageIsLoaded) {
-                return _createHomePageContent(context);
-              } else {
-                return Center(
-                  child: Text('Couldn\'t connect to the server.\nPlease try again later',
-                    style: Theme.of(context).textTheme.headline,
-                  ),
-                );
-              }
-            },
-          )
+            );
+          }
+        },
+      )
       ),
-    ));
+    );
   }
 
   Widget _createSearchBar() {
@@ -78,7 +77,7 @@ class _HomePageState extends State<HomePage> {
       child: ConstrainedBox(
         constraints: BoxConstraints.expand(),
         child: Container(
-          margin: EdgeInsets.all(12.0),
+          margin: EdgeInsets.fromLTRB(12.0, kStatusBarHeight + 10.0, 12.0, 12.0),
           decoration: BoxDecoration(
             color: _forAndroid ? AppColors.primaryWhite : AppColors.lighterPrimary,
             borderRadius: BorderRadius.all(Radius.circular(8.0)),

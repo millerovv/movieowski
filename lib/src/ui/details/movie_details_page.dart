@@ -14,7 +14,7 @@ import 'package:movieowski/src/ui/details/movie_more_details_page.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
-// TODO: fix animation state loss on immediate opening of another movie details page after closing current one
+// TODO: fix rating state loss on immediate opening of another movie details page after closing current one
 class MovieDetailsPage extends StatefulWidget {
   final Movie movie;
   final String posterHeroTag;
@@ -41,8 +41,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   MovieDetailsPageBloc _bloc;
   PageController pageController;
 
-  double gradientHeight = 0;
-  Timer boardingAnimationTimer;
+  double gradientHeight;
+  Timer gradientAppearTimer;
 
   AnimationController boardingAnimationController;
   AnimationController ratingAnimationController;
@@ -71,6 +71,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
 
     WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
 
+    gradientHeight = 0.0;
     animatedTitlePreparedForTransitionAnim = false;
 
     boardingAnimationController =
@@ -97,12 +98,9 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       curve: Curves.easeInOutCubic,
     ));
 
-    boardingAnimationTimer = Timer(const Duration(milliseconds: 100), () {
+    gradientAppearTimer = Timer(const Duration(milliseconds: 100), () {
       setState(() {
         gradientHeight = 320.0;
-        _animatedTitleKey.currentState?.prepareBoardingAnimation();
-        boardingAnimationController.forward();
-        ratingAnimationController.forward();
       });
     });
   }
@@ -110,7 +108,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   @override
   void dispose() {
     _bloc?.dispose();
-    boardingAnimationTimer?.cancel();
+    gradientAppearTimer?.cancel();
     pageController?.dispose();
     boardingAnimationController?.dispose();
     ratingAnimationController?.dispose();
@@ -120,108 +118,111 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        body: Stack(
-          children: <Widget>[
-            PageView(
-              key: _pageViewKey,
-              controller: pageController,
-              scrollDirection: Axis.vertical,
-              children: <Widget>[
-                Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      body: Stack(
+        children: <Widget>[
+          PageView(
+            key: _pageViewKey,
+            controller: pageController,
+            scrollDirection: Axis.vertical,
+            children: <Widget>[
+              Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
 
-                    // Poster
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Hero(
-                        tag: widget.posterHeroTag,
-                        transitionOnUserGestures: true,
-                        child: Container(
-                          height: double.infinity,
-                          width: double.infinity,
-                          child: Image.network(
-                            TmdbApiProvider.BASE_IMAGE_URL_W500 + widget.movie.posterPath,
-                            alignment: Alignment.topCenter,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Gradient
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: AnimatedContainer(
-                        height: gradientHeight,
-                        duration: Duration(milliseconds: boardingAnimationDurationMills),
+                  // Poster
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Hero(
+                      tag: widget.posterHeroTag,
+                      transitionOnUserGestures: true,
+                      child: Container(
+                        height: double.infinity,
                         width: double.infinity,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: <Color>[
-                              Colors.transparent,
-                              AppColors.primaryColorHalfTransparent,
-                              AppColors.primaryColor,
-                            ],
-                          )),
+                        child: Image.network(
+                          TmdbApiProvider.BASE_IMAGE_URL_W500 + widget.movie.posterPath,
+                          alignment: Alignment.topCenter,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
+                  ),
 
-                    // Stars rating
-                    Align(
-                      alignment: Alignment(0.0, 0.59),
-                      child: AnimatedRating(
-                        controller: ratingAnimationController,
-                        targetRating: widget.movie.voteAverage,
-                      ),
-                    ),
-
-                    // Rating Circle
-                    Align(
-                      alignment: Alignment(0.0, 0.82),
-                      child: _createRatingCircle(widget.numberRatingHeroTag != null, widget.numberRatingHeroTag),
-                    ),
-
-                    // More details button
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: GestureDetector(
-                        onTap: _animateToMoreDetailsPage,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(
-                              'More',
-                              style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
-                            ),
-                            Icon(
-                              Icons.keyboard_arrow_down,
-                              color: AppColors.primaryWhite,
-                            ),
+                  // Gradient
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: AnimatedContainer(
+                      height: gradientHeight,
+                      duration: Duration(milliseconds: boardingAnimationDurationMills),
+                      width: double.infinity,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: <Color>[
+                            Colors.transparent,
+                            AppColors.primaryColorHalfTransparent,
+                            AppColors.primaryColor,
                           ],
-                        ),
+                        )),
                       ),
                     ),
-                  ],
-                ),
-                MovieMoreDetails(),
-              ],
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: AnimatedAppbarBackground(controller: onShowMoreDetailsAnimationController.view),
-            ),
-            _createAnimatedMovieTitle(),
-            _createOptionButtons(),
-          ],
-        ),
+                  ),
+
+                  // Stars rating
+                  Align(
+                    alignment: Alignment(0.0, 0.59),
+                    child: AnimatedRating(
+                      controller: ratingAnimationController,
+                      targetRating: widget.movie.voteAverage,
+                    ),
+                  ),
+
+                  // Rating Circle
+                  Align(
+                    alignment: Alignment(0.0, 0.82),
+                    child: _createRatingCircle(widget.numberRatingHeroTag != null, widget.numberRatingHeroTag),
+                  ),
+
+                  // More details button
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: GestureDetector(
+                      onTap: _animateToMoreDetailsPage,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            'More',
+                            style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: AppColors.primaryWhite,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: kStatusBarHeight),
+                child: MovieMoreDetails(),
+              ),
+            ],
+          ),
+
+          // Animated appbar background
+          Align(
+            alignment: Alignment.topCenter,
+            child: AnimatedAppbarBackground(controller: onShowMoreDetailsAnimationController.view),
+          ),
+          _createAnimatedMovieTitle(),
+          _createOptionButtons(),
+        ],
       ),
     );
   }
@@ -231,6 +232,10 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       bloc: _bloc,
       builder: (BuildContext context, MovieDetailsPageState state) {
         if (state is MovieDetailsIsLoaded) {
+          _animatedTitleKey.currentState?.prepareBoardingAnimation();
+          boardingAnimationController.forward();
+          ratingAnimationController.forward();
+
           return AnimatedMovieTitle(
             key: _animatedTitleKey,
             title: widget.movie.title,
@@ -241,34 +246,10 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
             transitionController: onShowMoreDetailsAnimationController.view,
           );
         } else if (state is MovieDetailsIsEmpty || state is MovieDetailsIsLoading) {
-          return Align(
-            alignment: Alignment(0.0, 0.52),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  widget.movie.title,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline
-                      .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                shimmer(Text('1984 – Quentin Tarantino',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.body1.copyWith(
-                        color: AppColors.primaryWhite,
-                        background: Paint()..color = Colors.black,
-                    ))),
-              ],
-            ),
-          );
+        return SizedBox();
         } else {
           return Text(
-            'Error',
+            'Error occured while trying to get movie info :(',
             style: Theme.of(context).textTheme.headline.copyWith(color: AppColors.primaryWhite),
           );
         }
@@ -289,25 +270,28 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       );
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        GestureDetector(
-          onTap: _backButtonPressed,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 6.0, top: 10.0),
-            child: AnimatedBuilder(animation: onShowMoreDetailsAnimationController, builder: buildAnimatedBackIcon),
+    return Padding(
+      padding: const EdgeInsets.only(top: kStatusBarHeight),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          GestureDetector(
+            onTap: _backButtonPressed,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 6.0, top: 10.0),
+              child: AnimatedBuilder(animation: onShowMoreDetailsAnimationController, builder: buildAnimatedBackIcon),
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0, top: 10.0),
-          child: Icon(
-            Icons.favorite_border,
-            size: 28.0,
-            color: AppColors.primaryWhite,
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0, top: 10.0),
+            child: Icon(
+              Icons.favorite_border,
+              size: 28.0,
+              color: AppColors.primaryWhite,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -331,7 +315,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                   ]),
               child: Center(
                 child: Text(
-                  widget.movie.voteAverage.toString(),
+                  (widget.movie.voteAverage != 0) ? widget.movie.voteAverage.toString() : '–',
                   style: Theme.of(context).textTheme.body1.copyWith(
                         color: AppColors.primaryWhite,
                         fontWeight: FontWeight.bold,

@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+const double kStatusBarHeight = 24.0;
+
 class Regions {
 	Regions._internal();
 	static const String russia = 'RU';

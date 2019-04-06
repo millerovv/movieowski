@@ -29,6 +29,10 @@ goToMovieDetails(
 }
 
 _pushWidgetWithFade(BuildContext context, Widget widget, int durationMills) {
+//  Navigator.push(
+//    context,
+//    MaterialPageRoute(builder: (context) => widget),
+//  );
   Navigator.of(context).push(
     PageRouteBuilder(
         transitionDuration:
