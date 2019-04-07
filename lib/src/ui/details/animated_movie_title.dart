@@ -74,13 +74,6 @@ class AnimatedMovieTitleState extends State<AnimatedMovieTitle> {
     currentController = widget.boardingController;
   }
 
-  @override
-  void dispose() {
-    widget.boardingController?.dispose();
-    widget.transitionController?.dispose();
-    super.dispose();
-  }
-
   Widget _buildAnimatedAppbarBackground(BuildContext context, Widget child) {
     return Align(
       alignment: Alignment(0.0, currentAlignmentAnimation.value),

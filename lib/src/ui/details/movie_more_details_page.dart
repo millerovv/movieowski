@@ -97,7 +97,6 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                       posterPath: cast[index].profilePath,
                       actorName: cast[index].name,
                       withSubTitle: true,
-                      withShimmer: false,
                       subTitle: cast[index].character,
                     ));
               }),

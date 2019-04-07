@@ -11,10 +11,10 @@ class HomePageShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(children: <Widget>[
-        _createMoviesSection(context, true, true),
-        _createMoviesSection(context, false, true),
+        _createMoviesSection(context, true, true, 0),
+        _createMoviesSection(context, false, true, 1),
         _createActorsSection(context),
-        _createMoviesSection(context, true, false),
+        _createMoviesSection(context, true, false, 2),
         _createGenresSection(context)
       ]),
     );
@@ -44,7 +44,7 @@ class HomePageShimmer extends StatelessWidget {
     );
   }
 
-  Widget _createMoviesSection(BuildContext context, bool withSeeAllOption, bool withRating) {
+  Widget _createMoviesSection(BuildContext context, bool withSeeAllOption, bool withRating, int uniqueTagForHeroAnim) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -55,14 +55,15 @@ class HomePageShimmer extends StatelessWidget {
           width: double.infinity,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            physics: NeverScrollableScrollPhysics(),
             child: shimmer(Row(
               children: List<Widget>.generate(_calculateNumberOfMovieCardsForDisplayWidth(context), (index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: HomeMovieCard(
                     forAndroid: false,
-                    imageHeroTag: 'image_hero_tag',
-                    ratingHeroTag: 'rating_hero_tag',
+                    imageHeroTag: 'stub_image_hero_tag_$index : ${uniqueTagForHeroAnim}',
+                    ratingHeroTag: 'stub_rating_hero_tag_$index : ${uniqueTagForHeroAnim}',
                     withRating: withRating,
                     asStubCard: true,
                   ),
@@ -84,6 +85,7 @@ class HomePageShimmer extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            physics: NeverScrollableScrollPhysics(),
             child: shimmer(Row(
               children: List<Widget>.generate(_calculateNumberOfActorCardsForDisplayWidth(context), (index) {
                 return Padding(
@@ -107,6 +109,7 @@ class HomePageShimmer extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            physics: NeverScrollableScrollPhysics(),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_bloc_export.dart';
@@ -20,13 +22,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static const int shimmerOpacityAnimationDurationMills = 3000;
+
   HomePageBloc _bloc;
   bool _forAndroid;
+  double shimmerOpacity;
+  bool showShimmer;
 
   @override
   void initState() {
     widget.onInit();
     _bloc = BlocProvider.of<HomePageBloc>(context);
+    shimmerOpacity = 1.0;
+    showShimmer = true;
     super.initState();
   }
 
@@ -55,21 +63,42 @@ class _HomePageState extends State<HomePage> {
       body: BlocBuilder<HomePageEvent, HomePageState>(
         bloc: _bloc,
         builder: (BuildContext context, HomePageState state) {
-          if (state is HomePageNotLoaded || state is HomePageIsLoading) {
-            return HomePageShimmer();
-          } else if (state is HomePageIsLoaded) {
-            return _createHomePageContent(context);
-          } else {
+          if (state is HomePageIsLoaded) {
+            if (showShimmer) _closeShimmer();
+            shimmerOpacity = 0.0;
+          }
+          if (state is HomePageLoadingFailed) {
             return Center(
               child: Text('Couldn\'t connect to the server.\nPlease try again later',
                 style: Theme.of(context).textTheme.headline,
               ),
+            );
+          } else {
+            return Stack(
+              children: <Widget>[
+                (state is HomePageIsLoaded) ? _createHomePageContent(context) : SizedBox(),
+                showShimmer ? IgnorePointer(
+                  child: AnimatedOpacity(
+                    opacity: shimmerOpacity,
+                    duration: const Duration(milliseconds: shimmerOpacityAnimationDurationMills),
+                    child: HomePageShimmer(),
+                  ),
+                ) : SizedBox(),
+              ],
             );
           }
         },
       )
       ),
     );
+  }
+
+  Future<void> _closeShimmer() async {
+    await Future.delayed(const Duration(milliseconds: shimmerOpacityAnimationDurationMills), () {
+      setState(() {
+        showShimmer = false;
+      });
+    });
   }
 
   Widget _createSearchBar() {

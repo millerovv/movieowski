@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class HomeActorCircleImage extends StatelessWidget {
   static const double defaultWidth = 131.0;
@@ -14,7 +12,6 @@ class HomeActorCircleImage extends StatelessWidget {
 
   /// With additional information e.g character name under actor name
   final bool withSubTitle;
-  final bool withShimmer;
   final String subTitle;
 
   HomeActorCircleImage({
@@ -23,7 +20,6 @@ class HomeActorCircleImage extends StatelessWidget {
     this.posterPath,
     this.actorName = "John Doe",
     this.withSubTitle = false,
-    this.withShimmer = true,
     this.subTitle
   });
 
@@ -42,23 +38,6 @@ class HomeActorCircleImage extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  withShimmer ? Positioned(
-                    top: 0,
-                    left: 0,
-                    child: Shimmer.fromColors(
-                      baseColor: AppColors.lighterPrimary,
-                      highlightColor: Colors.grey,
-                      child: Container(
-                        width: width,
-                        height: width,
-                        child: ClipOval(
-                          child: Container(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ) : SizedBox(),
                   Positioned(
                     top: 0,
                     left: 0,
@@ -67,8 +46,8 @@ class HomeActorCircleImage extends StatelessWidget {
                       height: width,
                       child: ClipOval(
                         child: !asStubCard
-                            ? FadeInImage.memoryNetwork(
-                                placeholder: kTransparentImage,
+                            ? FadeInImage.assetNetwork(
+                                placeholder: 'assets/card_placeholder.png',
                                 image: '${TmdbApiProvider.BASE_IMAGE_URL_W300}$posterPath',
                                 fit: BoxFit.cover,
                               )

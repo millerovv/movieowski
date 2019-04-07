@@ -14,7 +14,6 @@ import 'package:movieowski/src/ui/details/movie_more_details_page.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
-// TODO: fix rating state loss on immediate opening of another movie details page after closing current one
 class MovieDetailsPage extends StatefulWidget {
   final Movie movie;
   final String posterHeroTag;
@@ -31,17 +30,19 @@ class MovieDetailsPage extends StatefulWidget {
 
 class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProviderStateMixin {
   static const int boardingAnimationDurationMills = 800;
+  static const int gradientAppearTimerOffsetMills = 400;
   static const int onShowMoreDetailsAnimationDurationMills = 800;
   static const int ratingAnimationDurationMills = 1400;
   static const int pageSwitchAnimationDurationMills = 1000;
 
-  static final GlobalKey<AnimatedMovieTitleState> _animatedTitleKey = new GlobalKey<AnimatedMovieTitleState>();
-  static final GlobalKey _pageViewKey = new GlobalKey();
+  final GlobalKey<AnimatedMovieTitleState> _animatedTitleKey = new GlobalKey<AnimatedMovieTitleState>();
+  final GlobalKey _pageViewKey = new GlobalKey();
 
   MovieDetailsPageBloc _bloc;
   PageController pageController;
 
   double gradientHeight;
+  double optionButtonsOpacity;
   Timer gradientAppearTimer;
 
   AnimationController boardingAnimationController;
@@ -72,6 +73,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
 
     gradientHeight = 0.0;
+    optionButtonsOpacity = 0.0;
     animatedTitlePreparedForTransitionAnim = false;
 
     boardingAnimationController =
@@ -98,9 +100,10 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       curve: Curves.easeInOutCubic,
     ));
 
-    gradientAppearTimer = Timer(const Duration(milliseconds: 100), () {
+    gradientAppearTimer = Timer(const Duration(milliseconds: gradientAppearTimerOffsetMills), () {
       setState(() {
         gradientHeight = 320.0;
+        optionButtonsOpacity = 1.0;
       });
     });
   }
@@ -175,7 +178,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                   Align(
                     alignment: Alignment(0.0, 0.59),
                     child: AnimatedRating(
-                      controller: ratingAnimationController,
+                      controller: ratingAnimationController.view,
                       targetRating: widget.movie.voteAverage,
                     ),
                   ),
@@ -187,22 +190,26 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                   ),
 
                   // More details button
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: GestureDetector(
-                      onTap: _animateToMoreDetailsPage,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            'More',
-                            style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
-                          ),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: AppColors.primaryWhite,
-                          ),
-                        ],
+                  AnimatedOpacity(
+	                  opacity: optionButtonsOpacity,
+                    duration: Duration(milliseconds: boardingAnimationDurationMills),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: _animateToMoreDetailsPage,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              'More',
+                              style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppColors.primaryWhite,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -221,7 +228,11 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
             child: AnimatedAppbarBackground(controller: onShowMoreDetailsAnimationController.view),
           ),
           _createAnimatedMovieTitle(),
-          _createOptionButtons(),
+          AnimatedOpacity(
+	          opacity: optionButtonsOpacity,
+	          duration: Duration(milliseconds: boardingAnimationDurationMills),
+	          child: _createOptionButtons(),
+          ),
         ],
       ),
     );
@@ -235,7 +246,6 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
           _animatedTitleKey.currentState?.prepareBoardingAnimation();
           boardingAnimationController.forward();
           ratingAnimationController.forward();
-
           return AnimatedMovieTitle(
             key: _animatedTitleKey,
             title: widget.movie.title,
@@ -315,7 +325,9 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                   ]),
               child: Center(
                 child: Text(
-                  (widget.movie.voteAverage != 0) ? widget.movie.voteAverage.toString() : '–',
+                  (widget.movie.voteAverage != null && widget.movie.voteAverage != 0)
+                      ? widget.movie.voteAverage.toString()
+                      : '–',
                   style: Theme.of(context).textTheme.body1.copyWith(
                         color: AppColors.primaryWhite,
                         fontWeight: FontWeight.bold,
@@ -339,7 +351,9 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                 ]),
             child: Center(
               child: Text(
-                widget.movie.voteAverage.toString(),
+                (widget.movie.voteAverage != null && widget.movie.voteAverage != 0)
+                    ? widget.movie.voteAverage.toString()
+                    : '–',
                 style: Theme.of(context).textTheme.body1.copyWith(
                       color: AppColors.primaryWhite,
                       fontWeight: FontWeight.bold,

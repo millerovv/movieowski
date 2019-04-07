@@ -14,7 +14,7 @@ goToMovieDetails(
   String imageHeroTag,
   String ratingHeroTag,
 ) {
-  _pushWidgetWithFade(
+  _pushWidgetWithDuration(
     context,
     BlocProvider<MovieDetailsPageBloc>(
       bloc: MovieDetailsPageBloc(repository, movie.id),
@@ -28,12 +28,14 @@ goToMovieDetails(
   );
 }
 
-_pushWidgetWithFade(BuildContext context, Widget widget, int durationMills) {
-//  Navigator.push(
-//    context,
-//    MaterialPageRoute(builder: (context) => widget),
-//  );
+void _pushWidgetWithDuration(BuildContext context, Widget widget, int durationMills) {
   Navigator.of(context).push(
+    CustomDurationMaterialPageRoute(builder: (context) => widget, durationMills: durationMills),
+  );
+}
+
+void _pushWidgetWithFade(BuildContext context, Widget widget, int durationMills) {
+    Navigator.of(context).push(
     PageRouteBuilder(
         transitionDuration:
             (durationMills != null) ? Duration(milliseconds: durationMills) : const Duration(milliseconds: 300),
@@ -43,4 +45,23 @@ _pushWidgetWithFade(BuildContext context, Widget widget, int durationMills) {
           return widget;
         }),
   );
+}
+
+class CustomDurationMaterialPageRoute<T> extends MaterialPageRoute<T> {
+  final int durationMills;
+
+  CustomDurationMaterialPageRoute({
+    @required builder,
+    this.durationMills = 300,
+    RouteSettings settings,
+    bool maintainState = true,
+    bool fullscreenDialog = false,
+  })  : assert(builder != null),
+        assert(maintainState != null),
+        assert(fullscreenDialog != null),
+        assert(durationMills != null),
+        super(builder: builder, settings: settings, maintainState: maintainState, fullscreenDialog: fullscreenDialog);
+
+  @override
+  Duration get transitionDuration => Duration(milliseconds: durationMills);
 }
