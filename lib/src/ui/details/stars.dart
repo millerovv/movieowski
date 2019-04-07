@@ -75,7 +75,7 @@ class StarsPainter extends CustomPainter {
   double currentMaxWidth;
   Color color;
 
-  StarsPainter({@required this.targetPercent, @required this.currentPercent, this.color: Colors.white});
+  StarsPainter({@required this.targetPercent, @required this.currentPercent, this.color = Colors.white});
 
   @override
   void paint(Canvas canvas, Size size) {

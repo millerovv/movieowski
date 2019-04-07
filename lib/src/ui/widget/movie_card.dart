@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class HomeMovieCard extends StatelessWidget {
   static const double cardWidth = 139.0;
@@ -41,24 +39,6 @@ class HomeMovieCard extends StatelessWidget {
                   Positioned(
                     top: 0,
                     left: 0,
-                    child: Shimmer.fromColors(
-                      baseColor: AppColors.lighterPrimary,
-                      highlightColor: Colors.grey,
-                      child: Container(
-                        width: 131.0,
-                        height: 196.3,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Container(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
                     child: Container(
                       width: 131.0,
                       height: 196.3,
@@ -66,10 +46,11 @@ class HomeMovieCard extends StatelessWidget {
                         color: Colors.transparent,
                         child: Hero(
                           tag: imageHeroTag,
+                          transitionOnUserGestures: true,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: !asStubCard ? FadeInImage.memoryNetwork(
-                              placeholder: kTransparentImage,
+                            child: !asStubCard ? FadeInImage.assetNetwork(
+                              placeholder: 'assets/card_placeholder.png',
                               image: TmdbApiProvider.BASE_IMAGE_URL_W500 + posterPath,
                               fit: BoxFit.cover,
                             ) : Container(
@@ -90,6 +71,7 @@ class HomeMovieCard extends StatelessWidget {
                             color: Colors.transparent,
                             child: Hero(
                               tag: ratingHeroTag,
+                              transitionOnUserGestures: true,
                               child: Container(
                                 width: ratingCircleDiameter,
                                 height: ratingCircleDiameter,
@@ -108,7 +90,7 @@ class HomeMovieCard extends StatelessWidget {
                                 ),
                                 child: !asStubCard ? Center(
                                     child: Text(
-                                  rating.toString(),
+                                      (rating != 0) ? rating.toString() : '–',
                                   style: Theme.of(context)
                                       .textTheme
                                       .caption

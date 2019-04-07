@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
-import 'package:movieowski/src/ui/movie_card.dart';
+import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/navigator.dart';
 
 class MoviesSection extends StatefulWidget {
@@ -91,7 +91,8 @@ class _MoviesSectionState extends State<MoviesSection> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: GestureDetector(
-                        onTap: () => goToMovieDetails(context, state.movies[index], cardHeroTag, ratingHeroTag),
+                        onTap: () => goToMovieDetails(context, _bloc.moviesRepository, state.movies[index],
+                            cardHeroTag, ratingHeroTag),
                         child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
                                 ? HomeMovieCard(
                                     forAndroid: Theme.of(context).platform == TargetPlatform.android,

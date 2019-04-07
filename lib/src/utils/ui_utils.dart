@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:shimmer/shimmer.dart';
 
 /// Get color for rating circle depending on rating value
 Color calculateRatingColor(double rating) {
@@ -11,7 +12,18 @@ Color calculateRatingColor(double rating) {
     return AppColors.yellow;
   } else if (rating >= 4.5) {
     return AppColors.orange;
-  } else {
+  } else if (rating != 0.0) {
     return AppColors.red;
+  } else {
+    return AppColors.hintGrey;
   }
+}
+
+Widget shimmer(Widget child, [int durationMills = 1500]) {
+  return Shimmer.fromColors(
+    baseColor: AppColors.lighterPrimary,
+    highlightColor: Colors.grey,
+    period: Duration(milliseconds: durationMills),
+    child: child,
+  );
 }

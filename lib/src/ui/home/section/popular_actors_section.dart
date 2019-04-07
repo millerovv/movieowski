@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_bloc_export.dart';
-import 'package:movieowski/src/ui/actor_card.dart';
+import 'package:movieowski/src/ui/widget/actor_card.dart';
 
 class PopularActorsSection extends StatefulWidget {
   @override
@@ -46,11 +46,12 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: List<Widget>.generate(state.actors.length, (index) {
                     return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: (state.actors[index].profilePath != null && state.actors[index].profilePath != '')
-                            ? HomeActorCard(
+                            ? HomeActorCircleImage(
                                 asStubCard: false,
                                 posterPath: state.actors[index].profilePath,
                                 actorName: state.actors[index].name)

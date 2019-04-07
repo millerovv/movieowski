@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
+import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
@@ -38,7 +40,7 @@ class TmdbApiProvider extends BaseApiProvider {
   /// Request list of movies playing in theatres now
   /// Documentation: https://developers.themoviedb.org/3/movies/get-now-playing
   Future<NowPlayingMoviesResponseRoot> getNowPlayingMovies(
-      {int pageIndex: 1, String language: Languages.english, String region: Regions.usa}) async {
+      {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) async {
     var url = Uri.https(
       BASE_URL,
       '3/movie/now_playing',
@@ -73,7 +75,7 @@ class TmdbApiProvider extends BaseApiProvider {
 
   /// Request person detailed information by id
   /// Documentation: https://developers.themoviedb.org/3/people/get-person-details
-  Future<PersonDetailsResponseRoot> getPersonDetails({int personId, language: Languages.english}) async {
+  Future<PersonDetailsResponseRoot> getPersonDetails({int personId, language = Languages.english}) async {
     var url = Uri.https(
       BASE_URL,
       '3/person/$personId',
@@ -91,7 +93,7 @@ class TmdbApiProvider extends BaseApiProvider {
   /// Request list of upcoming movies
   /// Documentation: https://developers.themoviedb.org/3/movies/get-upcoming
   Future<UpcomingMoviesResponseRoot> getUpcomingMovies(
-      {int pageIndex: 1, String language: Languages.english, String region: Regions.usa}) async {
+      {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) async {
     var url = Uri.https(
       BASE_URL,
       '3/movie/upcoming',
@@ -110,7 +112,7 @@ class TmdbApiProvider extends BaseApiProvider {
 
   /// Request the list of official genres for movies
   /// Documentation: https://developers.themoviedb.org/3/genres/get-movie-list
-  Future<MovieGenresResponseRoot> getMovieGenresList({String language: Languages.english}) async {
+  Future<MovieGenresResponseRoot> getMovieGenresList({String language = Languages.english}) async {
     var url = Uri.https(
       BASE_URL,
       '3/genre/movie/list',
@@ -123,5 +125,24 @@ class TmdbApiProvider extends BaseApiProvider {
     var response = await getRequest(url);
     final MovieGenresResponseRoot genres = MovieGenresResponseRoot.fromJson(json.decode(response));
     return genres;
+  }
+
+  /// Request the primary information about movie with appended credits
+  /// Documentation https://developers.themoviedb.org/3/movies/get-movie-details
+  Future<MovieDetailsWithCreditsResponseRoot> getMovieDetailsWithCredits({
+    @required int movieId, String language = Languages.english}) async {
+    var url = Uri.https(
+      BASE_URL,
+      '3/movie/$movieId',
+      <String, String>{
+        'api_key': API_KEY,
+        'language': language,
+        'append_to_response': 'credits'
+      },
+    );
+
+    var response = await getRequest(url);
+    final MovieDetailsWithCreditsResponseRoot details = MovieDetailsWithCreditsResponseRoot.fromJson(json.decode(response));
+    return details;
   }
 }
