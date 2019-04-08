@@ -2,7 +2,7 @@ class PopularPeopleResponseRoot {
 	int page;
 	int totalResults;
 	int totalPages;
-	List<PopularPerson> results;
+	List<Person> results;
 
 	PopularPeopleResponseRoot({this.page, this.totalResults, this.totalPages, this.results});
 
@@ -11,9 +11,9 @@ class PopularPeopleResponseRoot {
 		totalResults = json['total_results'];
 		totalPages = json['total_pages'];
 		if (json['results'] != null) {
-			results = new List<PopularPerson>();
+			results = new List<Person>();
 			json['results'].forEach((v) {
-				results.add(new PopularPerson.fromJson(v));
+				results.add(new Person.fromJson(v));
 			});
 		}
 	}
@@ -30,7 +30,7 @@ class PopularPeopleResponseRoot {
 	}
 }
 
-class PopularPerson {
+class Person {
 	double popularity;
 	int id;
 	String profilePath;
@@ -38,7 +38,7 @@ class PopularPerson {
 	List<KnownFor> knownFor;
 	bool adult;
 
-	PopularPerson(
+	Person(
 			{this.popularity,
 				this.id,
 				this.profilePath,
@@ -46,7 +46,7 @@ class PopularPerson {
 				this.knownFor,
 				this.adult});
 
-	PopularPerson.fromJson(Map<String, dynamic> json) {
+	Person.fromJson(Map<String, dynamic> json) {
 		popularity = json['popularity'];
 		id = json['id'];
 		profilePath = json['profile_path'];

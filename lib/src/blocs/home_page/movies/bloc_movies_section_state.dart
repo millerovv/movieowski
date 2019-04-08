@@ -13,7 +13,6 @@ class MoviesIsLoaded extends MoviesSectionState {
   final List<Movie> movies;
 
   MoviesIsLoaded(this.movies) :
-        assert(movies != null),
         super(movies);
 }
 

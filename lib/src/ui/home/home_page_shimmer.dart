@@ -61,7 +61,6 @@ class HomePageShimmer extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: HomeMovieCard(
-                    forAndroid: false,
                     imageHeroTag: 'stub_image_hero_tag_$index : ${uniqueTagForHeroAnim}',
                     ratingHeroTag: 'stub_rating_hero_tag_$index : ${uniqueTagForHeroAnim}',
                     withRating: withRating,

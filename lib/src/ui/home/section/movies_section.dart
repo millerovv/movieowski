@@ -40,6 +40,7 @@ class _MoviesSectionState extends State<MoviesSection> {
 
   @override
   void dispose() {
+    // TODO: перенести диспозы в основной HomePage, чтобы сохранять стейт
     _bloc?.dispose();
     super.dispose();
   }
@@ -95,7 +96,6 @@ class _MoviesSectionState extends State<MoviesSection> {
                             cardHeroTag, ratingHeroTag),
                         child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
                                 ? HomeMovieCard(
-                                    forAndroid: Theme.of(context).platform == TargetPlatform.android,
                                     withRating: widget.sectionType != MovieSectionType.UPCOMING,
                                     imageHeroTag: cardHeroTag,
                                     ratingHeroTag: ratingHeroTag,

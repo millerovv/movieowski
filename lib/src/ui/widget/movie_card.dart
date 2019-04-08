@@ -9,7 +9,6 @@ class HomeMovieCard extends StatelessWidget {
   static const double ratingCircleDiameter = 36.0;
 
   final String posterPath;
-  final bool forAndroid;
   final bool withRating;
   final bool asStubCard;
   final double rating;
@@ -17,7 +16,6 @@ class HomeMovieCard extends StatelessWidget {
   final String ratingHeroTag;
 
   HomeMovieCard({
-    @required this.forAndroid,
     @required this.withRating,
     @required this.imageHeroTag,
     this.ratingHeroTag,
@@ -78,15 +76,13 @@ class HomeMovieCard extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: !asStubCard ? calculateRatingColor(rating) : Colors.black,
                                   shape: BoxShape.circle,
-                                  boxShadow: forAndroid
-                                      ? <BoxShadow>[
-                                          BoxShadow(
-                                            color: Colors.black87,
-                                            offset: Offset(1.0, 1.0),
-                                            blurRadius: 4.0,
-                                          ),
-                                        ]
-                                      : null,
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                      color: Colors.black87,
+                                      offset: Offset(1.0, 1.0),
+                                      blurRadius: 4.0,
+                                    ),
+                                  ],
                                 ),
                                 child: !asStubCard ? Center(
                                     child: Text(

@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   static const int shimmerOpacityAnimationDurationMills = 3000;
 
   HomePageBloc _bloc;
-  bool _forAndroid;
+  TextEditingController searchController;
   double shimmerOpacity;
   bool showShimmer;
 
@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     widget.onInit();
     _bloc = BlocProvider.of<HomePageBloc>(context);
+    searchController = TextEditingController();
     shimmerOpacity = 1.0;
     showShimmer = true;
     super.initState();
@@ -46,7 +47,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _forAndroid = Theme.of(context).platform == TargetPlatform.android;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: NestedScrollView(
@@ -54,9 +54,7 @@ class _HomePageState extends State<HomePage> {
         return <Widget>[
           new SliverAppBar(
             flexibleSpace: _createSearchBar(),
-            floating: _forAndroid,
-            snap: _forAndroid,
-            pinned: !_forAndroid,
+            pinned: true,
           ),
         ];
       },
@@ -103,46 +101,43 @@ class _HomePageState extends State<HomePage> {
 
   Widget _createSearchBar() {
     return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints.expand(),
-        child: Container(
-          margin: EdgeInsets.fromLTRB(12.0, kStatusBarHeight + 10.0, 12.0, 12.0),
-          decoration: BoxDecoration(
-            color: _forAndroid ? AppColors.primaryWhite : AppColors.lighterPrimary,
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            boxShadow: _forAndroid
-                ? <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.black87,
-                      offset: Offset(1.0, 1.0),
-                      blurRadius: 4.0,
+      child: Container(
+        height: 24,
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.fromLTRB(12.0, kStatusBarHeight + 16.0, 12.0, 12.0),
+        decoration: BoxDecoration(
+          color: AppColors.primaryWhite,
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Icon(
+                  Icons.search,
+                color: AppColors.hintGrey,
+                ),
+              ),
+              Flexible(
+                //https://github.com/flutter/flutter/issues/24705
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 12.0),
+                  child: TextField(
+                    controller: searchController,
+                    style: Theme.of(context).textTheme.body1,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hasFloatingPlaceholder: false,
+                      hintText: 'Search for any movie or actor',
                     ),
-                  ]
-                : null,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: Icon(
-                    Icons.search,
-                    color: _forAndroid ? AppColors.hintGrey : AppColors.hintWhite,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Text(
-                    'Search for any movie or actor',
-                    style: Theme.of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(color: _forAndroid ? AppColors.hintGrey : AppColors.hintWhite),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

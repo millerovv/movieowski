@@ -10,6 +10,7 @@ class MovieMoreDetails extends StatefulWidget {
   _MovieMoreDetailsState createState() => _MovieMoreDetailsState();
 }
 
+//TODO: delete hardcoded genres and budget, format runtime correctly
 class _MovieMoreDetailsState extends State<MovieMoreDetails> {
   MovieDetailsPageBloc _bloc;
 
