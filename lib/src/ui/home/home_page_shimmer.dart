@@ -118,7 +118,7 @@ class HomePageShimmer extends StatelessWidget {
                     width: 500.0,
                     child: shimmer(Wrap(
                       spacing: 8.0,
-                      children: List<Widget>.generate(15, (index) {
+                      children: List<Widget>.generate(14, (index) {
                         return Chip(
                           backgroundColor: AppColors.accentColor,
                           padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 2.0),

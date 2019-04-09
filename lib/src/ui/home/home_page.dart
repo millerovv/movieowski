@@ -26,14 +26,34 @@ class _HomePageState extends State<HomePage> {
 
   HomePageBloc _bloc;
   TextEditingController searchController;
+  FocusNode searchFocusNode;
   double shimmerOpacity;
   bool showShimmer;
+  
+  bool showClearSearchButton;
+  bool searchIsFocused;
 
   @override
   void initState() {
     widget.onInit();
     _bloc = BlocProvider.of<HomePageBloc>(context);
+
+    showClearSearchButton = false;
+    searchIsFocused = false;
     searchController = TextEditingController();
+    searchFocusNode = FocusNode()
+    ..addListener(() {
+      setState(() {
+        if (searchFocusNode.hasFocus) {
+          showClearSearchButton = true;
+          searchIsFocused = true;
+        } else {
+          showClearSearchButton = false;
+          searchIsFocused = false;
+        }
+      });
+    });
+
     shimmerOpacity = 1.0;
     showShimmer = true;
     super.initState();
@@ -48,46 +68,48 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: searchIsFocused ? AppColors.darkerPrimary : Theme.of(context).primaryColor,
       body: NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          new SliverAppBar(
-            flexibleSpace: _createSearchBar(),
-            pinned: true,
-          ),
-        ];
-      },
-      body: BlocBuilder<HomePageEvent, HomePageState>(
-        bloc: _bloc,
-        builder: (BuildContext context, HomePageState state) {
-          if (state is HomePageIsLoaded) {
-            if (showShimmer) _closeShimmer();
-            shimmerOpacity = 0.0;
-          }
-          if (state is HomePageLoadingFailed) {
-            return Center(
-              child: Text('Couldn\'t connect to the server.\nPlease try again later',
-                style: Theme.of(context).textTheme.headline,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              new SliverAppBar(
+                flexibleSpace: _createSearchBar(),
+                pinned: true,
               ),
-            );
-          } else {
-            return Stack(
-              children: <Widget>[
-                (state is HomePageIsLoaded) ? _createHomePageContent(context) : SizedBox(),
-                showShimmer ? IgnorePointer(
-                  child: AnimatedOpacity(
-                    opacity: shimmerOpacity,
-                    duration: const Duration(milliseconds: shimmerOpacityAnimationDurationMills),
-                    child: HomePageShimmer(),
+            ];
+          },
+          body: BlocBuilder<HomePageEvent, HomePageState>(
+            bloc: _bloc,
+            builder: (BuildContext context, HomePageState state) {
+              if (state is HomePageIsLoaded) {
+                if (showShimmer) _closeShimmer();
+                shimmerOpacity = 0.0;
+              }
+              if (state is HomePageLoadingFailed) {
+                return Center(
+                  child: Text(
+                    'Couldn\'t connect to the server.\nPlease try again later',
+                    style: Theme.of(context).textTheme.headline,
                   ),
-                ) : SizedBox(),
-              ],
-            );
-          }
-        },
-      )
-      ),
+                );
+              } else {
+                return Stack(
+                  children: <Widget>[
+                    (state is HomePageIsLoaded) ? _createHomePageContent(context) : SizedBox(),
+                    showShimmer
+                        ? IgnorePointer(
+                            child: AnimatedOpacity(
+                              opacity: shimmerOpacity,
+                              duration: const Duration(milliseconds: shimmerOpacityAnimationDurationMills),
+                              child: HomePageShimmer(),
+                            ),
+                          )
+                        : SizedBox(),
+                  ],
+                );
+              }
+            },
+          )),
     );
   }
 
@@ -100,47 +122,73 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _createSearchBar() {
-    return Center(
-      child: Container(
-        height: 24,
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.fromLTRB(12.0, kStatusBarHeight + 16.0, 12.0, 12.0),
-        decoration: BoxDecoration(
-          color: AppColors.primaryWhite,
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.search,
-                color: AppColors.hintGrey,
-                ),
-              ),
-              Flexible(
-                //https://github.com/flutter/flutter/issues/24705
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, bottom: 12.0),
-                  child: TextField(
-                    controller: searchController,
-                    style: Theme.of(context).textTheme.body1,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hasFloatingPlaceholder: false,
-                      hintText: 'Search for any movie or actor',
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.fromLTRB(12.0, kStatusBarHeight + 16.0, 12.0, 12.0),
+            decoration: BoxDecoration(
+              color: AppColors.primaryWhite,
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Icon(
+                      Icons.search,
+                      size: 22.0,
+                      color: AppColors.hintGrey,
                     ),
                   ),
-                ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TextField(
+                        controller: searchController,
+                        focusNode: searchFocusNode,
+                        style: Theme.of(context).textTheme.subhead,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.search,
+                        textCapitalization: TextCapitalization.sentences,
+                        cursorColor: Colors.black87,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            // Set contentPadding to prevent incorrect layout of this TextField (bug?)
+                            contentPadding: EdgeInsets.all(0.0),
+                            hintText: 'Search for any movie or actor',
+                            hintStyle: Theme.of(context).textTheme.body1.copyWith(color: AppColors.hintGrey)),
+                      ),
+                    ),
+                  ),
+                  showClearSearchButton ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Icon(
+                      Icons.clear,
+                      size: 22.0,
+                      color: AppColors.hintGrey,
+                    ),
+                  ) : SizedBox(),
+                ],
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        searchIsFocused ? Padding(
+          padding: const EdgeInsets.only(top: 22.0, right: 12.0),
+          child: Text(
+            'Cancel',
+            style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
+          ),
+        ) : SizedBox(),
+      ],
     );
   }
 
