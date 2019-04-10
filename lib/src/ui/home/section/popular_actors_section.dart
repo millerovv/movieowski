@@ -18,12 +18,6 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
   }
 
   @override
-  void dispose() {
-    _bloc?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
       Padding(

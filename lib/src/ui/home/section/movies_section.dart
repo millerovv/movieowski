@@ -39,13 +39,6 @@ class _MoviesSectionState extends State<MoviesSection> {
   }
 
   @override
-  void dispose() {
-    // TODO: перенести диспозы в основной HomePage, чтобы сохранять стейт
-    _bloc?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

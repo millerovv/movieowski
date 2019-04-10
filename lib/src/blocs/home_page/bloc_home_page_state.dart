@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:movieowski/src/model/api/response/base_movies_response.dart';
-import 'package:movieowski/src/model/api/response/popular_people_response.dart';
+import 'package:movieowski/src/model/api/response/search_movies_response.dart';
+import 'package:movieowski/src/model/api/response/search_people_response.dart';
 
 abstract class HomePageState extends Equatable {
   HomePageState([List props = const []]);
@@ -21,8 +21,8 @@ class HomePageLoadingFailed extends HomePageState {
 class SearchByQueryIsLoading extends HomePageState {}
 
 class SearchByQueryIsLoaded extends HomePageState {
-  final List<Movie> movies;
-  final List<Person> people;
+  final SearchMoviesResponseRoot movies;
+  final SearchPeopleResponseRoot people;
 
   SearchByQueryIsLoaded(this.movies, this.people);
 }

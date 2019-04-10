@@ -12,6 +12,7 @@ import 'package:movieowski/src/model/api/response/search_people_response.dart';
 import 'package:movieowski/src/resources/api/base_api_provider.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/utils/logger.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// This BLOC controls section content loading statuses.
 /// Emits [HomePageIsLoaded] state when all sections have been loaded
@@ -36,6 +37,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   StreamSubscription<MoviesSectionState> _upcomingMoviesSectionSubscription;
   StreamSubscription<PopularActorsSectionState> _popularActorsSectionSubscription;
   StreamSubscription<MovieGenresSectionState> _movieGenresSectionSubscription;
+  BehaviorSubject<String> _searchQueriesSubject;
 
   bool homePageLoadingFailed;
   String errorMessage;
@@ -54,8 +56,20 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     assert(upcomingMoviesSectionBloc != null);
     assert(movieGenresSectionBloc != null);
     assert(moviesRepository != null);
-    _subscribeToSectionBlocs();
     homePageLoadingFailed = false;
+    _subscribeToSectionBlocs();
+    _initSearchQueriesSubject();
+  }
+  
+  void _initSearchQueriesSubject() {
+    _searchQueriesSubject = BehaviorSubject<String>();
+    _searchQueriesSubject.debounce(Duration(milliseconds: 250))
+        .where((query) => query.isNotEmpty)
+        .listen((query) => dispatch(FetchSearchByQuery(query)));
+  }
+
+  void dispatchSearchQuery(String query) {
+    _searchQueriesSubject.add(query);
   }
 
   @override
@@ -72,9 +86,9 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     } else if (event is FetchSearchByQuery) {
       yield SearchByQueryIsLoading();
       try {
-        final SearchMoviesResponseRoot movies = await moviesRepository.fetchMoviesByQuery(event.query);
-        final SearchPeopleResponseRoot people = await moviesRepository.fetchPeopleByQuery(event.query);
-        yield SearchByQueryIsLoaded(movies.movies, people.people);
+        final SearchMoviesResponseRoot moviesRoot = await moviesRepository.fetchMoviesByQuery(event.query);
+        final SearchPeopleResponseRoot peopleRoot = await moviesRepository.fetchPeopleByQuery(event.query);
+        yield SearchByQueryIsLoaded(moviesRoot, peopleRoot);
       } on ApiRequestException catch (e, stacktrace) {
         Log.e(e, stacktrace);
         yield SearchByQueryLoadingFailed(e.message);
@@ -107,6 +121,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   @override
   void dispose() {
     _unsubscribeFromSectionBlocs();
+    _searchQueriesSubject.close();
     super.dispose();
   }
 

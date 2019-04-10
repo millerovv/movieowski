@@ -6,10 +6,12 @@ import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_blo
 import 'package:movieowski/src/blocs/home_page/home_page_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
+import 'package:movieowski/src/ui/home/query_search_results.dart';
 import 'package:movieowski/src/ui/home/section/categories_section.dart';
 import 'package:movieowski/src/ui/home/home_page_shimmer.dart';
 import 'package:movieowski/src/ui/home/section/movies_section.dart';
 import 'package:movieowski/src/ui/home/section/popular_actors_section.dart';
+import 'package:movieowski/src/ui/widget/search_bar.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,38 +23,48 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   static const int shimmerOpacityAnimationDurationMills = 3000;
+  static const int searchFocusAnimationDurationMills = 500;
 
   HomePageBloc _bloc;
   TextEditingController searchController;
   FocusNode searchFocusNode;
   double shimmerOpacity;
   bool showShimmer;
-  
+
   bool showClearSearchButton;
   bool searchIsFocused;
+
+  Animation<Color> backgroundColor;
+  AnimationController searchFocusAnimationController;
 
   @override
   void initState() {
     widget.onInit();
     _bloc = BlocProvider.of<HomePageBloc>(context);
 
+    searchFocusAnimationController =
+        AnimationController(duration: Duration(milliseconds: searchFocusAnimationDurationMills), vsync: this)
+          ..addListener(() {
+            setState(() {});
+          });
+    backgroundColor =
+        ColorTween(begin: AppColors.primaryColor, end: AppColors.darkerPrimary).animate(searchFocusAnimationController);
+
     showClearSearchButton = false;
     searchIsFocused = false;
     searchController = TextEditingController();
     searchFocusNode = FocusNode()
-    ..addListener(() {
-      setState(() {
-        if (searchFocusNode.hasFocus) {
-          showClearSearchButton = true;
-          searchIsFocused = true;
-        } else {
-          showClearSearchButton = false;
-          searchIsFocused = false;
-        }
+      ..addListener(() {
+        setState(() {
+          if (searchFocusNode.hasFocus) {
+            searchFocusAnimationController.forward();
+            showClearSearchButton = true;
+            searchIsFocused = true;
+          }
+        });
       });
-    });
 
     shimmerOpacity = 1.0;
     showShimmer = true;
@@ -65,16 +77,30 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _onSearchBarValueChangeCallback(String value) {
+    if (value.isNotEmpty) {
+      _bloc.dispatchSearchQuery(value);
+    } else {
+      _bloc.dispatch(CancelSearch());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: searchIsFocused ? AppColors.darkerPrimary : Theme.of(context).primaryColor,
+      backgroundColor: backgroundColor.value,
       body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               new SliverAppBar(
-                flexibleSpace: _createSearchBar(),
+                backgroundColor: backgroundColor.value,
                 pinned: true,
+                flexibleSpace: SearchBar(
+                  textFieldController: searchController,
+                  focusNode: searchFocusNode,
+                  showClearSearchButton: showClearSearchButton,
+                  onChanged: _onSearchBarValueChangeCallback,
+                ),
               ),
             ];
           },
@@ -105,6 +131,13 @@ class _HomePageState extends State<HomePage> {
                             ),
                           )
                         : SizedBox(),
+                    (state is SearchByQueryIsLoading || state is SearchByQueryIsLoaded)
+                        ? QuerySearchResults(
+                            loaded: state is SearchByQueryIsLoaded,
+                            moviesRoot: (state is SearchByQueryIsLoaded) ? state.movies : null,
+                            peopleRoot: (state is SearchByQueryIsLoaded) ? state.people : null,
+                          )
+                        : SizedBox(),
                   ],
                 );
               }
@@ -119,77 +152,6 @@ class _HomePageState extends State<HomePage> {
         showShimmer = false;
       });
     });
-  }
-
-  Widget _createSearchBar() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.fromLTRB(12.0, kStatusBarHeight + 16.0, 12.0, 12.0),
-            decoration: BoxDecoration(
-              color: AppColors.primaryWhite,
-              borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Icon(
-                      Icons.search,
-                      size: 22.0,
-                      color: AppColors.hintGrey,
-                    ),
-                  ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: TextField(
-                        controller: searchController,
-                        focusNode: searchFocusNode,
-                        style: Theme.of(context).textTheme.subhead,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.search,
-                        textCapitalization: TextCapitalization.sentences,
-                        cursorColor: Colors.black87,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            // Set contentPadding to prevent incorrect layout of this TextField (bug?)
-                            contentPadding: EdgeInsets.all(0.0),
-                            hintText: 'Search for any movie or actor',
-                            hintStyle: Theme.of(context).textTheme.body1.copyWith(color: AppColors.hintGrey)),
-                      ),
-                    ),
-                  ),
-                  showClearSearchButton ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Icon(
-                      Icons.clear,
-                      size: 22.0,
-                      color: AppColors.hintGrey,
-                    ),
-                  ) : SizedBox(),
-                ],
-              ),
-            ),
-          ),
-        ),
-        searchIsFocused ? Padding(
-          padding: const EdgeInsets.only(top: 22.0, right: 12.0),
-          child: Text(
-            'Cancel',
-            style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
-          ),
-        ) : SizedBox(),
-      ],
-    );
   }
 
   Widget _createHomePageContent(BuildContext context) {
