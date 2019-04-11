@@ -21,20 +21,14 @@ class _MoviesSectionState extends State<MoviesSection> {
     super.initState();
     switch (widget.sectionType) {
       case MovieSectionType.IN_THEATRES:
-        {
           _bloc = BlocProvider.of<NowPlayingMoviesSectionBloc>(context);
           break;
-        }
       case MovieSectionType.TRENDING:
-        {
           _bloc = BlocProvider.of<TrendingMoviesSectionBloc>(context);
           break;
-        }
       case MovieSectionType.UPCOMING:
-        {
           _bloc = BlocProvider.of<UpcomingMoviesSectionBloc>(context);
           break;
-        }
     }
   }
 
@@ -87,15 +81,19 @@ class _MoviesSectionState extends State<MoviesSection> {
                       child: GestureDetector(
                         onTap: () => goToMovieDetails(context, _bloc.moviesRepository, state.movies[index],
                             cardHeroTag, ratingHeroTag),
-                        child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
-                                ? HomeMovieCard(
-                                    withRating: widget.sectionType != MovieSectionType.UPCOMING,
-                                    imageHeroTag: cardHeroTag,
-                                    ratingHeroTag: ratingHeroTag,
-                                    posterPath: state.movies[index].posterPath,
-                                    rating: state.movies[index].voteAverage,
-                                  )
-                                : SizedBox(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
+                                  ? MovieCard(
+                                      withRating: widget.sectionType != MovieSectionType.UPCOMING,
+                                      withHero: true,
+                                      imageHeroTag: cardHeroTag,
+                                      ratingHeroTag: ratingHeroTag,
+                                      posterPath: state.movies[index].posterPath,
+                                      rating: state.movies[index].voteAverage,
+                                    )
+                                  : SizedBox(),
+                        ),
                       )
                     );
                   },

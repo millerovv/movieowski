@@ -27,3 +27,15 @@ Widget shimmer(Widget child, [int durationMills = 1500]) {
     child: child,
   );
 }
+
+Widget heroWidget(bool withHero, String tag, Widget child) {
+  return withHero
+      ? Material(
+          color: Colors.transparent,
+          child: Hero(
+            tag: tag,
+            child: child,
+          ),
+        )
+      : child;
+}

@@ -11,10 +11,10 @@ class HomePageShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(children: <Widget>[
-        _createMoviesSection(context, true, true, 0),
-        _createMoviesSection(context, false, true, 1),
+        _createMoviesSection(context, true, true),
+        _createMoviesSection(context, false, true),
         _createActorsSection(context),
-        _createMoviesSection(context, true, false, 2),
+        _createMoviesSection(context, true, false),
         _createGenresSection(context)
       ]),
     );
@@ -44,7 +44,7 @@ class HomePageShimmer extends StatelessWidget {
     );
   }
 
-  Widget _createMoviesSection(BuildContext context, bool withSeeAllOption, bool withRating, int uniqueTagForHeroAnim) {
+  Widget _createMoviesSection(BuildContext context, bool withSeeAllOption, bool withRating) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -59,10 +59,8 @@ class HomePageShimmer extends StatelessWidget {
             child: shimmer(Row(
               children: List<Widget>.generate(_calculateNumberOfMovieCardsForDisplayWidth(context), (index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: HomeMovieCard(
-                    imageHeroTag: 'stub_image_hero_tag_$index : ${uniqueTagForHeroAnim}',
-                    ratingHeroTag: 'stub_rating_hero_tag_$index : ${uniqueTagForHeroAnim}',
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                  child: MovieCard(
                     withRating: withRating,
                     asStubCard: true,
                   ),
@@ -141,7 +139,7 @@ class HomePageShimmer extends StatelessWidget {
 
   int _calculateNumberOfMovieCardsForDisplayWidth(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
-    double movieCardWidth = HomeMovieCard.cardWidth;
+    double movieCardWidth = MovieCard.defaultImageWidth;
     return (displayWidth / movieCardWidth).round() + 1;
   }
 

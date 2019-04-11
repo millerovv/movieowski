@@ -11,6 +11,7 @@ import 'package:movieowski/src/ui/details/animated_appbar_bg.dart';
 import 'package:movieowski/src/ui/details/animated_movie_title.dart';
 import 'package:movieowski/src/ui/details/animated_rating.dart';
 import 'package:movieowski/src/ui/details/movie_more_details_page.dart';
+import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
@@ -186,7 +187,12 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
                   // Rating Circle
                   Align(
                     alignment: Alignment(0.0, 0.82),
-                    child: _createRatingCircle(widget.numberRatingHeroTag != null, widget.numberRatingHeroTag),
+                    child: RatingCircle(
+                      withHero: widget.numberRatingHeroTag != null,
+                      heroTag: widget.numberRatingHeroTag,
+                      rating: widget.movie.voteAverage,
+                      color: calculateRatingColor(widget.movie.voteAverage),
+                    ),
                   ),
 
                   // More details button
@@ -249,14 +255,14 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
           return AnimatedMovieTitle(
             key: _animatedTitleKey,
             title: widget.movie.title,
-            subTitle: '${widget.movie.releaseDate.split('-')[0].toString()} – '
+            subTitle: '${widget.movie.releaseDate.split('-')[0]} – '
                 '${state.details.credits.crew.firstWhere((member) => member.job == 'Director',
                 orElse: () => Crew()..name = 'Unknown Director').name}',
             boardingController: boardingAnimationController.view,
             transitionController: onShowMoreDetailsAnimationController.view,
           );
         } else if (state is MovieDetailsIsEmpty || state is MovieDetailsIsLoading) {
-        return SizedBox();
+          return SizedBox();
         } else {
           return Text(
             'Error occured while trying to get movie info :(',
@@ -267,7 +273,6 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
     );
   }
 
-  // Возможно стоит вынести кнопку назад в отедльный виджет
   Widget _createOptionButtons() {
     Widget buildAnimatedBackIcon(BuildContext context, Widget child) {
       return Transform.rotate(
@@ -303,64 +308,6 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
         ],
       ),
     );
-  }
-
-  Widget _createRatingCircle(bool withHeroTransition, String heroTag) {
-    return (withHeroTransition)
-        ? Hero(
-            tag: heroTag,
-            transitionOnUserGestures: true,
-            child: Container(
-              width: 48.0,
-              height: 48.0,
-              decoration: BoxDecoration(
-                  color: calculateRatingColor(widget.movie.voteAverage),
-                  shape: BoxShape.circle,
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.black87,
-                      offset: Offset(1.0, 1.0),
-                      blurRadius: 4.0,
-                    ),
-                  ]),
-              child: Center(
-                child: Text(
-                  (widget.movie.voteAverage != null && widget.movie.voteAverage != 0)
-                      ? widget.movie.voteAverage.toString()
-                      : '–',
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                        color: AppColors.primaryWhite,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ),
-            ),
-          )
-        : Container(
-            width: 48.0,
-            height: 48.0,
-            decoration: BoxDecoration(
-                color: calculateRatingColor(widget.movie.voteAverage),
-                shape: BoxShape.circle,
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: Colors.black87,
-                    offset: Offset(1.0, 1.0),
-                    blurRadius: 4.0,
-                  ),
-                ]),
-            child: Center(
-              child: Text(
-                (widget.movie.voteAverage != null && widget.movie.voteAverage != 0)
-                    ? widget.movie.voteAverage.toString()
-                    : '–',
-                style: Theme.of(context).textTheme.body1.copyWith(
-                      color: AppColors.primaryWhite,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ),
-          );
   }
 
   void _animateToMoreDetailsPage() {

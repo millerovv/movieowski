@@ -6,6 +6,7 @@ class SearchBar extends StatelessWidget {
   final FocusNode focusNode;
   final bool showClearSearchButton;
   final Function(String text) onChanged;
+  final Function() onCancelButtonClick;
 
   SearchBar({
     Key key,
@@ -13,6 +14,7 @@ class SearchBar extends StatelessWidget {
     this.focusNode,
     this.showClearSearchButton,
     this.onChanged,
+    this.onCancelButtonClick,
   }) : super(key: key);
 
   @override
@@ -87,6 +89,7 @@ class SearchBar extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     focusNode.unfocus();
+                    onCancelButtonClick();
                   },
                   child: Text(
                     'Cancel',

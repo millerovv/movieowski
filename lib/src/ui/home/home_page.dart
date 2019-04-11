@@ -85,6 +85,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     }
   }
 
+  void _onCancelSearchBarButtonClickCallback() {
+    _bloc.dispatch(CancelSearch());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,6 +104,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   focusNode: searchFocusNode,
                   showClearSearchButton: showClearSearchButton,
                   onChanged: _onSearchBarValueChangeCallback,
+                  onCancelButtonClick: _onCancelSearchBarButtonClickCallback,
                 ),
               ),
             ];
@@ -136,6 +141,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                             loaded: state is SearchByQueryIsLoaded,
                             moviesRoot: (state is SearchByQueryIsLoaded) ? state.movies : null,
                             peopleRoot: (state is SearchByQueryIsLoaded) ? state.people : null,
+                            moviesRepository: _bloc.moviesRepository,
                           )
                         : SizedBox(),
                   ],
