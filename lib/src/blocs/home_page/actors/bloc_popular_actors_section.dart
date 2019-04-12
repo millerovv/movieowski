@@ -1,5 +1,6 @@
 import 'package:movieowski/src/blocs/home_page/actors/bloc_popular_actors_section_event.dart';
 import 'package:movieowski/src/blocs/home_page/actors/bloc_popular_actors_section_state.dart';
+import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/resources/api/base_api_provider.dart';
 import 'package:movieowski/src/utils/logger.dart';
@@ -21,7 +22,8 @@ class PopularActorsSectionBloc extends Bloc<PopularActorsSectionEvent, PopularAc
     if (event is FetchPopularActors) {
       yield PopularActorsIsLoading();
       try {
-        yield PopularActorsIsLoaded(await _moviesRepository.fetchPopularActorsWithDetails());
+        PopularPeopleResponseRoot responseRoot = await _moviesRepository.fetchPopularPeople();
+        yield PopularActorsIsLoaded(responseRoot.results);
       } on ApiRequestException catch (e, stacktrace) {
         Log.e(e, stacktrace);
         yield PopularActorsError(e.message);

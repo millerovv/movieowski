@@ -77,23 +77,20 @@ class _MoviesSectionState extends State<MoviesSection> {
                     String ratingHeroTag = (widget.sectionType != MovieSectionType.UPCOMING) ?
                       'rating${this.hashCode}$index${state.movies[index].id}' : null;
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                       child: GestureDetector(
                         onTap: () => goToMovieDetails(context, _bloc.moviesRepository, state.movies[index],
                             cardHeroTag, ratingHeroTag),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
-                                  ? MovieCard(
-                                      withRating: widget.sectionType != MovieSectionType.UPCOMING,
-                                      withHero: true,
-                                      imageHeroTag: cardHeroTag,
-                                      ratingHeroTag: ratingHeroTag,
-                                      posterPath: state.movies[index].posterPath,
-                                      rating: state.movies[index].voteAverage,
-                                    )
-                                  : SizedBox(),
-                        ),
+                        child: (state.movies[index].posterPath != null && state.movies[index].posterPath != '')
+                                ? MovieCard(
+                                    withRating: widget.sectionType != MovieSectionType.UPCOMING,
+                                    withHero: true,
+                                    imageHeroTag: cardHeroTag,
+                                    ratingHeroTag: ratingHeroTag,
+                                    posterPath: state.movies[index].posterPath,
+                                    rating: state.movies[index].voteAverage,
+                                  )
+                                : SizedBox(),
                       )
                     );
                   },

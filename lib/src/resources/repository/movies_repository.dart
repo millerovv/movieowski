@@ -4,6 +4,7 @@ import 'package:movieowski/src/model/api/response/movie_details_with_credits_res
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/now_playing_movies_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
+import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/model/api/response/search_movies_response.dart';
 import 'package:movieowski/src/model/api/response/search_people_response.dart';
 import 'package:movieowski/src/model/api/response/trending_movies_response.dart';
@@ -24,6 +25,13 @@ class MoviesRepository {
   Future<NowPlayingMoviesResponseRoot> fetchNowPlayingMovies(
           {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) =>
       tmdpApiProvider.getNowPlayingMovies(pageIndex: pageIndex, language: language, region: region);
+
+  Future<PopularPeopleResponseRoot> fetchPopularPeople(
+          {int pageIndex = 1, String language = Languages.english}) async =>
+      tmdpApiProvider.getPopularPeople(pageIndex: pageIndex, language: language);
+
+  Future<PersonDetailsResponseRoot> fetchPersonDetails({int personId, language = Languages.english}) async =>
+      tmdpApiProvider.getPersonDetails(personId: personId, language: language);
 
   /// Chained API request. Firstly we get list of popular people Ids, then for each Id
   /// we request additional details about this person
@@ -80,14 +88,16 @@ class MoviesRepository {
     int page = 1,
     String language = Languages.english,
     bool includeAdult = false,
-  }) => tmdpApiProvider.getMoviesByQuery(query: query, page: page, language: language, includeAdult: includeAdult);
+  }) =>
+      tmdpApiProvider.getMoviesByQuery(query: query, page: page, language: language, includeAdult: includeAdult);
 
   Future<SearchPeopleResponseRoot> fetchPeopleByQuery(
     String query, {
     int page = 1,
     String language = Languages.english,
     bool includeAdult = false,
-  }) => tmdpApiProvider.getPeopleByQuery(query: query, page: page, language: language, includeAdult: includeAdult);
+  }) =>
+      tmdpApiProvider.getPeopleByQuery(query: query, page: page, language: language, includeAdult: includeAdult);
 
   _needToUpdateGenresBasedOnDate(DateTime lastFetch) {
     var difference = lastFetch.difference(DateTime.now());

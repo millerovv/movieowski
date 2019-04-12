@@ -7,10 +7,10 @@ import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
-import 'package:movieowski/src/ui/details/animated_appbar_bg.dart';
-import 'package:movieowski/src/ui/details/animated_movie_title.dart';
-import 'package:movieowski/src/ui/details/animated_rating.dart';
-import 'package:movieowski/src/ui/details/movie_more_details_page.dart';
+import 'package:movieowski/src/ui/details/movie/animated_appbar_bg.dart';
+import 'package:movieowski/src/ui/details/movie/animated_movie_title.dart';
+import 'package:movieowski/src/ui/details/movie/animated_rating.dart';
+import 'package:movieowski/src/ui/details/movie/movie_more_details_page.dart';
 import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/ui_utils.dart';
 
 class ActorCircleImage extends StatelessWidget {
   static const double defaultWidth = 131.0;
@@ -15,14 +16,20 @@ class ActorCircleImage extends StatelessWidget {
   final bool withSubTitle;
   final String subTitle;
 
-  ActorCircleImage(
-      {this.width = defaultWidth,
-      this.asStubCard = false,
-      this.posterPath,
-      this.withName = true,
-      this.actorName = "John Doe",
-      this.withSubTitle = false,
-      this.subTitle});
+  final bool withHero;
+  final String posterHeroTag;
+
+  ActorCircleImage({
+    this.width = defaultWidth,
+    this.asStubCard = false,
+    this.posterPath,
+    this.withName = true,
+    this.actorName = "John Doe",
+    this.withSubTitle = false,
+    this.subTitle,
+    this.withHero = false,
+    this.posterHeroTag = 'posterHeroTag',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,18 +50,21 @@ class ActorCircleImage extends StatelessWidget {
                   child: Container(
                     width: width,
                     height: width,
-                    child: ClipOval(
-                      child: (!asStubCard && posterPath != null && posterPath.isNotEmpty)
-                          ? FadeInImage.assetNetwork(
-                              placeholder: 'assets/card_placeholder.png',
-                              image: '${TmdbApiProvider.BASE_IMAGE_URL_W300}$posterPath',
-                              fit: BoxFit.cover,
-                            )
-                          : Container(
-                              width: width,
-                              height: width,
-                              child: Image.asset('assets/person_placeholder.jpg', fit: BoxFit.cover)),
-                    ),
+                    child: heroWidget(
+                        withHero,
+                        posterHeroTag,
+                        ClipOval(
+                          child: (!asStubCard && posterPath != null && posterPath.isNotEmpty)
+                              ? FadeInImage.assetNetwork(
+                                  placeholder: 'assets/card_placeholder.png',
+                                  image: '${TmdbApiProvider.BASE_IMAGE_URL_W300}$posterPath',
+                                  fit: BoxFit.cover,
+                                )
+                              : Container(
+                                  width: width,
+                                  height: width,
+                                  child: Image.asset('assets/person_placeholder.jpg', fit: BoxFit.cover)),
+                        )),
                   ),
                 ),
               ],

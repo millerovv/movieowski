@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movieowski/src/ui/details/stars.dart';
+import 'package:movieowski/src/ui/details/movie/stars.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
 class AnimatedRating extends StatefulWidget {

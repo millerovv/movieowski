@@ -61,12 +61,14 @@ class TmdbApiProvider extends BaseApiProvider {
 
   /// Request list of trending actors
   /// Documentation: https://developers.themoviedb.org/3/people/get-popular-people
-  Future<PopularPeopleResponseRoot> getPopularPeople() async {
+  Future<PopularPeopleResponseRoot> getPopularPeople({int pageIndex = 1, String language = Languages.english}) async {
     var url = Uri.https(
       BASE_URL,
       '3/person/popular',
       <String, String>{
         'api_key': API_KEY,
+        'page': '$pageIndex',
+        'language': language,
       },
     );
 

@@ -20,7 +20,7 @@ class QuerySearchResults extends StatelessWidget {
   QuerySearchResults({Key key, this.loaded, this.moviesRoot, this.peopleRoot, this.moviesRepository})
       : movies = moviesRoot?.movies,
         people = peopleRoot?.people,
-        super(key: key);
+        super(key: key);  
 
   Widget _createFoundMoviesPage(BuildContext context) {
     return Container(

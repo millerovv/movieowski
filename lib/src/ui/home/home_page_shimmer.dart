@@ -10,6 +10,7 @@ class HomePageShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
       child: Column(children: <Widget>[
         _createMoviesSection(context, true, true),
         _createMoviesSection(context, false, true),
