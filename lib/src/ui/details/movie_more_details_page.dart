@@ -91,8 +91,8 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
               children: List<Widget>.generate((cast.length <= 16) ? cast.length : 16, (index) {
                 return Padding(
                     padding: ((cast[index].profilePath != null && cast[index].profilePath.isNotEmpty))
-                        ? const EdgeInsets.symmetric(horizontal: 8.0) : const EdgeInsets.all(0),
-                    child: HomeActorCircleImage(
+                        ? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0) : const EdgeInsets.all(0),
+                    child: ActorCircleImage(
                       width: 96.0,
                       asStubCard: false,
                       posterPath: cast[index].profilePath,

@@ -86,8 +86,8 @@ class HomePageShimmer extends StatelessWidget {
             child: shimmer(Row(
               children: List<Widget>.generate(_calculateNumberOfActorCardsForDisplayWidth(context), (index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: HomeActorCircleImage(asStubCard: true),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                  child: ActorCircleImage(asStubCard: true),
                 );
               }),
             )),
@@ -145,7 +145,7 @@ class HomePageShimmer extends StatelessWidget {
 
   int _calculateNumberOfActorCardsForDisplayWidth(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
-    double actorCardWidth = HomeActorCircleImage.defaultWidth;
+    double actorCardWidth = ActorCircleImage.defaultWidth;
     return (displayWidth / actorCardWidth).round() + 1;
   }
 }

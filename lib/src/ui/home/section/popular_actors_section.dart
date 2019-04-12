@@ -43,9 +43,9 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: List<Widget>.generate(state.actors.length, (index) {
                     return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
                         child: (state.actors[index].profilePath != null && state.actors[index].profilePath != '')
-                            ? HomeActorCircleImage(
+                            ? ActorCircleImage(
                                 asStubCard: false,
                                 posterPath: state.actors[index].profilePath,
                                 actorName: state.actors[index].name)

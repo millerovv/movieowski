@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   bool showClearSearchButton;
   bool searchIsFocused;
+  String searchValue;
 
   Animation<Color> backgroundColor;
   AnimationController searchFocusAnimationController;
@@ -44,6 +45,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     widget.onInit();
     _bloc = BlocProvider.of<HomePageBloc>(context);
 
+    searchValue = "";
     searchFocusAnimationController =
         AnimationController(duration: Duration(milliseconds: searchFocusAnimationDurationMills), vsync: this)
           ..addListener(() {
@@ -78,7 +80,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _onSearchBarValueChangeCallback(String value) {
-    if (value.isNotEmpty) {
+    if (value.isNotEmpty && value.trim() != searchValue) {
+      searchValue = value;
       _bloc.dispatchSearchQuery(value);
     } else {
       _bloc.dispatch(CancelSearch());

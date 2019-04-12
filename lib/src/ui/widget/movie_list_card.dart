@@ -4,7 +4,7 @@ import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
 class MovieListCard extends StatelessWidget {
-  static const double listCardHeight = 152.0;
+  static const double cardHeight = 152.0;
   static const double backgroundHeight = 136.0;
   static const double imageHeight = 144.0;
   static const double imageWidth = 96.1;
@@ -34,7 +34,7 @@ class MovieListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: listCardHeight,
+      height: cardHeight,
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
@@ -59,20 +59,32 @@ class MovieListCard extends StatelessWidget {
             alignment: Alignment.bottomLeft,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 8.0, left: 8.0),
-              child: MovieCard(
-                withRating: false,
-                withHero: withHero,
-                imageHeroTag: imageHeroTag,
-                posterPath: posterPath,
-                height: imageHeight,
-                width: imageWidth,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.black87,
+                      offset: Offset(1.0, 1.0),
+                      blurRadius: 2.0,
+                    ),
+                  ],
+                ),
+                child: MovieCard(
+                  withRating: false,
+                  withHero: withHero,
+                  imageHeroTag: imageHeroTag,
+                  posterPath: posterPath,
+                  height: imageHeight,
+                  width: imageWidth,
+                ),
               ),
             ),
           ),
           Align(
             alignment: Alignment.topLeft,
             child: Padding(
-              padding: const EdgeInsets.only(left: 8.0 + imageWidth + 16.0, top: 24.0),
+              padding: const EdgeInsets.only(left: 8.0 + imageWidth + 16.0, top: 24.0, right: 8.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,

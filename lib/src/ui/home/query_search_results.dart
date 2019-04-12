@@ -4,10 +4,10 @@ import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/model/api/response/search_movies_response.dart';
 import 'package:movieowski/src/model/api/response/search_people_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
+import 'package:movieowski/src/ui/widget/actor_list_card.dart';
 import 'package:movieowski/src/ui/widget/movie_list_card.dart';
 import 'package:movieowski/src/utils/navigator.dart';
 
-// TODO: add show more results button
 // TODO: delete genres hardcode
 class QuerySearchResults extends StatelessWidget {
   final bool loaded;
@@ -31,7 +31,7 @@ class QuerySearchResults extends StatelessWidget {
           String imageHeroTag = 'searched_movie_card$index/${movie.id}';
           String ratingHeroTag = 'searched_movie_rating$index/${movie.id}';
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
             child: GestureDetector(
               onTap: () => goToMovieDetails(context, moviesRepository, movie, imageHeroTag, ratingHeroTag),
               child: MovieListCard(
@@ -43,6 +43,30 @@ class QuerySearchResults extends StatelessWidget {
                 title: movie.title,
                 releaseYear: movie.releaseDate.split('-')[0],
                 genres: 'Animation, Family, Adventure',
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _createFoundPeoplePage(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 4.0),
+      child: ListView.builder(
+        itemCount: movies.length,
+        itemBuilder: (context, index) {
+          Person person = people[index];
+//          String imageHeroTag = 'searched_movie_card$index/${person.id}';
+//          String ratingHeroTag = 'searched_movie_rating$index/${person.id}';
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: GestureDetector(
+              onTap: () {},
+              child: ActorListCard(
+                photoPath: person.profilePath,
+                name: person.name,
               ),
             ),
           );
@@ -69,6 +93,11 @@ class QuerySearchResults extends StatelessWidget {
                 Center(
                   child: (loaded && movies != null)
                       ? _createFoundMoviesPage(context)
+                      : CircularProgressIndicator(),
+                ),
+                Center(
+                  child: (loaded && people != null)
+                      ? _createFoundPeoplePage(context)
                       : CircularProgressIndicator(),
                 ),
               ],
