@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movieowski/src/ui/widget/actor_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/ui_utils.dart';
 
 class ActorListCard extends StatelessWidget {
   static const double cardHeight = 96;
@@ -8,8 +9,16 @@ class ActorListCard extends StatelessWidget {
 
   final String photoPath;
   final String name;
+  final bool withHero;
+  final String imageHeroTag;
 
-  ActorListCard({Key key, this.photoPath, this.name}) : super(key: key);
+  ActorListCard({
+    Key key,
+    this.photoPath,
+    this.name,
+    this.withHero = false,
+    this.imageHeroTag = 'heroTag',
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +59,14 @@ class ActorListCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: ActorCircleImage(
-                  width: cardHeight,
-                  posterPath: photoPath,
-                  withName: false,
-                ),
+                child: heroWidget(
+                    withHero,
+                    imageHeroTag,
+                    ActorCircleImage(
+                      width: cardHeight,
+                      posterPath: photoPath,
+                      withName: false,
+                    )),
               ),
             ),
           ),
@@ -62,7 +74,11 @@ class ActorListCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(left: 16.0 + cardHeight + 24.0, right: 16.0),
-              child: Text(name, style: Theme.of(context).textTheme.subhead.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold)),
+              child: Text(name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold)),
             ),
           )
         ],

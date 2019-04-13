@@ -39,3 +39,35 @@ Widget heroWidget(bool withHero, String tag, Widget child) {
         )
       : child;
 }
+
+Widget createBasicTitleSubtitleSection(BuildContext context, String title, String subtitle) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      (title.isNotEmpty) ? Padding(
+        padding: EdgeInsets.only(left: 16.0, top: 16.0),
+        child: Text(
+          title,
+          style:
+          Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+        ),
+      ) : SizedBox(),
+      (subtitle.isNotEmpty) ? Padding(
+        padding: EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0),
+        child: Text(
+          subtitle,
+          style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
+        ),
+      ) : SizedBox(),
+    ],
+  );
+}
+
+/// Behavior used to disable scrollable views vertical borders glow
+class NoGlowBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}

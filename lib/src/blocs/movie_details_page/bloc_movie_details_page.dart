@@ -29,7 +29,7 @@ class MovieDetailsPageBloc extends Bloc<MovieDetailsPageEvent, MovieDetailsPageS
         yield MovieDetailsIsLoaded(details);
       } on ApiRequestException catch (e, stacktrace) {
         Log.e(e, stacktrace);
-        if (e is LoadingMoviesFailedException) {
+        if (e is ApiRequestFailedException) {
           Log.e(e, e.apiResponse);
         }
         yield MovieDetailsError(e.message);

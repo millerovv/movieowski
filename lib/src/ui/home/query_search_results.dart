@@ -58,15 +58,16 @@ class QuerySearchResults extends StatelessWidget {
         itemCount: movies.length,
         itemBuilder: (context, index) {
           Person person = people[index];
-//          String imageHeroTag = 'searched_movie_card$index/${person.id}';
-//          String ratingHeroTag = 'searched_movie_rating$index/${person.id}';
+          String imageHeroTag = 'searched_movie_card$index/${person.id}';
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: GestureDetector(
-              onTap: () {},
+              onTap: () => goToPersonDetails(context, moviesRepository, person, imageHeroTag),
               child: ActorListCard(
                 photoPath: person.profilePath,
                 name: person.name,
+                withHero: true,
+                imageHeroTag: imageHeroTag,
               ),
             ),
           );

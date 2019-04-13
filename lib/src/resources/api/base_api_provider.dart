@@ -16,7 +16,7 @@ class BaseApiProvider {
       Log.d('response = ${transformedResponse.toString()}', 'httpClient');
       return transformedResponse;
     } else {
-      throw LoadingMoviesFailedException(apiResponse: transformedResponse.toString());
+      throw ApiRequestFailedException(apiResponse: transformedResponse.toString());
     }
   }
 }
@@ -26,10 +26,10 @@ abstract class ApiRequestException implements Exception {
   ApiRequestException(this.message);
 }
 
-class LoadingMoviesFailedException extends ApiRequestException {
+class ApiRequestFailedException extends ApiRequestException {
   String message;
   String apiResponse;
-  LoadingMoviesFailedException({this.message = 'Failed to load movies', this.apiResponse = ''}) : super(message);
+  ApiRequestFailedException({this.message = 'Problem connecting to the server', this.apiResponse = ''}) : super(message);
 }
 
 class NoInternetConnectionException extends ApiRequestException {

@@ -57,7 +57,7 @@ class ActorCircleImage extends StatelessWidget {
                           child: (!asStubCard && posterPath != null && posterPath.isNotEmpty)
                               ? FadeInImage.assetNetwork(
                                   placeholder: 'assets/card_placeholder.png',
-                                  image: '${TmdbApiProvider.BASE_IMAGE_URL_W300}$posterPath',
+                                  image: '${TmdbApiProvider.BASE_IMAGE_URL_W500}$posterPath',
                                   fit: BoxFit.cover,
                                 )
                               : Container(

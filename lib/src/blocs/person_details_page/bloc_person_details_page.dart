@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:movieowski/src/blocs/movie_details_page/bloc_movie_details_page_event.dart';
 import 'package:movieowski/src/blocs/person_details_page/bloc_person_details_page_event.dart';
 import 'package:movieowski/src/blocs/person_details_page/bloc_person_details_page_state.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
@@ -23,14 +22,14 @@ class PersonDetailsPageBloc extends Bloc<PersonDetailsPageEvent, PersonDetailsPa
 	@override
 	Stream<PersonDetailsPageState> mapEventToState(
 			PersonDetailsPageState currentState, PersonDetailsPageEvent event) async* {
-		if (event is FetchMovieDetails) {
+		if (event is FetchPersonDetails) {
 			yield PersonDetailsIsLoading();
 			try {
 				PersonDetailsResponseRoot details = await _moviesRepository.fetchPersonDetails(personId: _personId);
 				yield PersonDetailsIsLoaded(details);
 			} on ApiRequestException catch (e, stacktrace) {
 				Log.e(e, stacktrace);
-				if (e is LoadingMoviesFailedException) {
+				if (e is ApiRequestFailedException) {
 					Log.e(e, e.apiResponse);
 				}
 				yield PersonDetailsError(e.message);

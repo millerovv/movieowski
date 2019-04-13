@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movieowski/src/blocs/person_details_page/bloc_person_details_page.dart';
+import 'package:movieowski/src/blocs/person_details_page/person_details_page_bloc_export.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/ui_utils.dart';
 
-// TODO: add hero animation for appbar https://github.com/flutter/flutter/issues/12518
 class PersonDetailsPage extends StatefulWidget {
   final Person person;
   final String posterHeroTag;
@@ -19,67 +21,172 @@ class PersonDetailsPage extends StatefulWidget {
 }
 
 class _PersonDetailsPageState extends State<PersonDetailsPage> {
+  static const int boardingTimerOffsetMills = 400;
+  static const int gradientHeightAnimationDurationMills = 300;
+  static const int titleAndBackButtonOpacityAnimationDurationMills = 800;
+  static const double defaultGradientHeightAfterBorder = kToolbarHeight + 60;
+
   PersonDetailsPageBloc _bloc;
+  Timer boardingTimer;
+
+  double gradientHeight;
+  double titleAndBackButtonOpacity;
 
   @override
   void initState() {
     _bloc = BlocProvider.of<PersonDetailsPageBloc>(context);
+    _bloc.dispatch(FetchPersonDetails());
+    gradientHeight = 0.0;
+    titleAndBackButtonOpacity = 0.0;
+
+    boardingTimer = Timer(const Duration(milliseconds: boardingTimerOffsetMills), () {
+      setState(() {
+        gradientHeight = defaultGradientHeightAfterBorder;
+        titleAndBackButtonOpacity = 1.0;
+      });
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     _bloc?.dispose();
+    boardingTimer?.cancel();
     super.dispose();
   }
 
+  /// Calculate font size for title based on appbar collapse percent 100% => 24.0, 0% => 16.0
+  double _calculateAppBarTitleFontSize(double percent) => 16.0 + 8.0 / 100 * percent;
+
+  /// Calculate bottom padding for title based on appbar collapse percent 100% => 8.0, 0% => 18.0
+  double _calculateAppBarTitleBottomPadding(double percent) => 18.0 - 8.0 / 100 * percent;
+
   @override
   Widget build(BuildContext context) {
+    var profileImage = Hero(
+      tag: widget.posterHeroTag,
+      transitionOnUserGestures: true,
+      child: Image.network(
+        '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.person.profilePath}',
+        fit: BoxFit.cover,
+      ),
+    );
+
+    var backButton = AnimatedOpacity(
+      opacity: titleAndBackButtonOpacity,
+      duration: Duration(milliseconds: titleAndBackButtonOpacityAnimationDurationMills),
+      child: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 6.0, top: kStatusBarHeight + 10.0),
+          child: Icon(
+            Icons.keyboard_arrow_left,
+            size: 36.0,
+            color: AppColors.primaryWhite,
+          ),
+        ),
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return <Widget>[
-            new SliverAppBar(
-              expandedHeight: MediaQuery.of(context).size.width,
-              floating: false,
-              pinned: true,
-              flexibleSpace: Stack(
-                children: <Widget>[
-                  FlexibleSpaceBar(
-                      centerTitle: true,
-                      title: Text(widget.person.name,
-                          style: Theme.of(context).textTheme.headline.copyWith(color: AppColors.primaryWhite)),
-                      background: Image.network(
-                        '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.person.profilePath}',
-                        fit: BoxFit.cover,
-                      )),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: AnimatedContainer(
-                      height: 50,
-                      duration: Duration(milliseconds: 300),
-                      width: double.infinity,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: <Color>[
-                                Colors.transparent,
-                                AppColors.primaryColorHalfTransparent,
-                                AppColors.primaryColor,
-                              ],
+      body: Stack(
+        children: <Widget>[
+          NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return <Widget>[
+                new SliverAppBar(
+                  automaticallyImplyLeading: false,
+                  backgroundColor: Colors.transparent,
+                  expandedHeight: MediaQuery.of(context).size.width + kToolbarHeight,
+                  floating: false,
+                  pinned: true,
+                  flexibleSpace: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                    double collapsePercent =
+                        ((constraints.maxHeight - kToolbarHeight) * 100 / (MediaQuery.of(context).size.width));
+                    return Stack(
+                      children: <Widget>[
+                        FlexibleSpaceBar(
+                            centerTitle: true,
+                            background: Material(
+                              child: profileImage,
                             )),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: AnimatedContainer(
+                            height: gradientHeight,
+                            duration: Duration(milliseconds: gradientHeightAnimationDurationMills),
+                            width: double.infinity,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: <Color>[
+                                  collapsePercent >= 10 ? Colors.transparent : AppColors.primaryColor,
+                                  collapsePercent >= 30
+                                      ? AppColors.primaryColorHalfTransparent
+                                      : AppColors.primaryColor,
+                                  AppColors.primaryColor,
+                                ],
+                              )),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: AnimatedOpacity(
+                            opacity: titleAndBackButtonOpacity,
+                            duration: Duration(milliseconds: titleAndBackButtonOpacityAnimationDurationMills),
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: _calculateAppBarTitleBottomPadding(collapsePercent)),
+                              child: Text(widget.person.name,
+                                  style: Theme.of(context).textTheme.headline.copyWith(
+                                      color: AppColors.primaryWhite,
+                                      fontSize: _calculateAppBarTitleFontSize(collapsePercent))),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: backButton,
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              ];
+            },
+            body: BlocBuilder(
+              bloc: _bloc,
+              builder: (context, PersonDetailsPageState state) {
+                if (state is PersonDetailsIsEmpty || state is PersonDetailsIsLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is PersonDetailsIsLoaded) {
+                  return ScrollConfiguration(
+                    behavior: NoGlowBehavior(),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          createBasicTitleSubtitleSection(context, '', state.details.biography),
+                          createBasicTitleSubtitleSection(context, 'Birthday', state.details.birthday),
+                          createBasicTitleSubtitleSection(context, 'Place of Birth', state.details.placeOfBirth),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  );
+                } else {
+                  return Text(
+                    'Error occured while trying to get this person info :(',
+                    style: Theme.of(context).textTheme.headline.copyWith(color: AppColors.primaryWhite),
+                  );
+                }
+              },
             ),
-          ];
-        },
-        body: Center(child: Text('hello tought world', style: Theme.of(context).textTheme.subtitle)),
+          ),
+        ],
       ),
     );
   }
