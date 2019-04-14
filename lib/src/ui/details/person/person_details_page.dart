@@ -24,9 +24,9 @@ class PersonDetailsPage extends StatefulWidget {
 }
 
 class _PersonDetailsPageState extends State<PersonDetailsPage> {
-  static const int boardingTimerOffsetMills = 400;
+  static const int boardingTimerOffsetMills = 600;
   static const int gradientHeightAnimationDurationMills = 300;
-  static const int titleAndBackButtonOpacityAnimationDurationMills = 800;
+  static const int titleAndBackButtonOpacityAnimationDurationMills = 1400;
   static const double defaultGradientHeightAfterBorder = kToolbarHeight + 60;
 
   PersonDetailsPageBloc _bloc;

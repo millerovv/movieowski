@@ -90,13 +90,13 @@ class SearchBar extends StatelessWidget {
           ),
         ),
         showCancelButton
-            ? Padding(
-                padding: const EdgeInsets.only(top: 24.0, right: 12.0),
-                child: GestureDetector(
-                  onTap: () {
-                    focusNode.unfocus();
-                    onCancelButtonClick();
-                  },
+            ? GestureDetector(
+                onTap: () {
+                  focusNode.unfocus();
+                  onCancelButtonClick();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 24.0, right: 12.0),
                   child: Text(
                     'Cancel',
                     style: Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite),
