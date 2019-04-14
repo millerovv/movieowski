@@ -1,11 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 
 class MovieDetailsWithCreditsResponseRoot extends Equatable {
   bool adult;
   String backdropPath;
   BelongsToCollection belongsToCollection;
   int budget;
-  List<Genres> genres;
+  List<Genre> genres;
   String homepage;
   int id;
   String imdbId;
@@ -63,9 +64,9 @@ class MovieDetailsWithCreditsResponseRoot extends Equatable {
         json['belongs_to_collection'] != null ? new BelongsToCollection.fromJson(json['belongs_to_collection']) : null;
     budget = json['budget'];
     if (json['genres'] != null) {
-      genres = new List<Genres>();
+      genres = new List<Genre>();
       json['genres'].forEach((v) {
-        genres.add(new Genres.fromJson(v));
+        genres.add(new Genre.fromJson(v));
       });
     }
     homepage = json['homepage'];
@@ -171,25 +172,6 @@ class BelongsToCollection extends Equatable {
     data['name'] = this.name;
     data['poster_path'] = this.posterPath;
     data['backdrop_path'] = this.backdropPath;
-    return data;
-  }
-}
-
-class Genres extends Equatable {
-  int id;
-  String name;
-
-  Genres({this.id, this.name});
-
-  Genres.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
     return data;
   }
 }

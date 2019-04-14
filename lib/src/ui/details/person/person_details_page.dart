@@ -10,6 +10,7 @@ import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/navigator.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
+import 'package:date_format/date_format.dart';
 
 class PersonDetailsPage extends StatefulWidget {
   final Person person;
@@ -79,10 +80,12 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
             ),
           ],
         ),
-        child: Image.network(
-          '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.person.profilePath}',
-          fit: BoxFit.fitHeight,
-        ),
+        child: (widget.person.profilePath != null && widget.person.profilePath.isNotEmpty)
+            ? Image.network(
+                '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.person.profilePath}',
+                fit: BoxFit.fitHeight,
+              )
+            : Image.asset('assets/person_placeholder.jpg', fit: BoxFit.fitHeight),
       ),
     );
 
@@ -185,11 +188,22 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          createBasicTitleSubtitleSection(context, '', state.details.biography),
-                          createBasicTitleSubtitleSection(context, 'Birthday', state.details.birthday),
-                          createBasicTitleSubtitleSection(context, 'Place of Birth', state.details.placeOfBirth),
-                          createBasicTitleSubtitleSection(context, 'Known for', ''),
-                          _createPersonRelatedMoviesSection(widget.person.knownFor),
+                          state.details.biography != null
+                              ? createBasicTitleSubtitleSection(context, '', state.details.biography)
+                              : SizedBox,
+                          state.details.birthday != null
+                              ? createBasicTitleSubtitleSection(context, 'Birthday',
+                                  formatDate(DateTime.parse(state.details.birthday), [d, ' ', M, ', ', yyyy]))
+                              : SizedBox(),
+                          state.details.placeOfBirth != null
+                              ? createBasicTitleSubtitleSection(context, 'Place of Birth', state.details.placeOfBirth)
+                              : SizedBox(),
+                          widget.person.knownFor != null
+                              ? createBasicTitleSubtitleSection(context, 'Known for', '')
+                              : SizedBox(),
+                          widget.person.knownFor != null
+                              ? _createPersonRelatedMoviesSection(widget.person.knownFor)
+                              : SizedBox(),
                         ],
                       ),
                     ),
@@ -210,33 +224,32 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
 
   Widget _createPersonRelatedMoviesSection(List<Movie> movies) {
     return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        height: 224.3,
-        width: double.infinity,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: movies.length,
-          itemBuilder: (BuildContext context, int index) {
-            String cardHeroTag = 'card${this.hashCode}${movies[index].id}';
-            String ratingHeroTag = 'rating${this.hashCode}${movies[index].id}';
-            return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-                child: GestureDetector(
-                  onTap: () =>
-                      goToMovieDetails(context, _bloc.moviesRepository, movies[index], cardHeroTag, ratingHeroTag),
-                  child: (movies[index].posterPath != null && movies[index].posterPath != '')
-                      ? MovieCard(
-                          withRating: false,
-                          withHero: true,
-                          imageHeroTag: cardHeroTag,
-                          ratingHeroTag: ratingHeroTag,
-                          posterPath: movies[index].posterPath,
-                        )
-                      : SizedBox(),
-                ),
-            );
-          },
-        ),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      height: 224.3,
+      width: double.infinity,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: movies.length,
+        itemBuilder: (BuildContext context, int index) {
+          String cardHeroTag = 'card${this.hashCode}${movies[index].id}';
+          String ratingHeroTag = 'rating${this.hashCode}${movies[index].id}';
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+            child: GestureDetector(
+              onTap: () => goToMovieDetails(context, _bloc.moviesRepository, movies[index], cardHeroTag, ratingHeroTag),
+              child: (movies[index].posterPath != null && movies[index].posterPath != '')
+                  ? MovieCard(
+                      withRating: false,
+                      withHero: true,
+                      imageHeroTag: cardHeroTag,
+                      ratingHeroTag: ratingHeroTag,
+                      posterPath: movies[index].posterPath,
+                    )
+                  : SizedBox(),
+            ),
+          );
+        },
+      ),
     );
   }
 }

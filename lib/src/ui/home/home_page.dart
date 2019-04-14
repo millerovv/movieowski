@@ -6,6 +6,7 @@ import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_blo
 import 'package:movieowski/src/blocs/home_page/home_page_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
+import 'package:movieowski/src/blocs/query_search_results/query_search_results_export.dart';
 import 'package:movieowski/src/ui/home/query_search_results.dart';
 import 'package:movieowski/src/ui/home/section/categories_section.dart';
 import 'package:movieowski/src/ui/home/home_page_shimmer.dart';
@@ -109,68 +110,83 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     });
   }
 
+  Future<bool> _onWillPop() {
+    bool override = true;
+    if(_bloc.currentState is SearchByQueryIsLoaded || _bloc.currentState is SearchByQueryIsLoading) {
+      _onCancelSearchBarButtonClickCallback();
+      override = false;
+    }
+    return new Future<bool>.value(override);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor.value,
-      body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              new SliverAppBar(
-                backgroundColor: backgroundColor.value,
-                pinned: true,
-                flexibleSpace: SearchBar(
-                  textFieldController: searchController,
-                  focusNode: searchFocusNode,
-                  showCancelButton: searchFocusNode.hasFocus || _bloc.currentState is SearchByQueryIsLoading || _bloc.currentState is SearchByQueryIsLoaded,
-                  showClearSearchButton: showClearSearchButton,
-                  onChanged: _onSearchBarValueChangeCallback,
-                  onClearButtonClick: _onClearSearchBarButtonClickCallback,
-                  onCancelButtonClick: _onCancelSearchBarButtonClickCallback,
-                ),
-              ),
-            ];
-          },
-          body: BlocBuilder<HomePageEvent, HomePageState>(
-            bloc: _bloc,
-            builder: (BuildContext context, HomePageState state) {
-              if (state is HomePageIsLoaded) {
-                if (showShimmer) _closeShimmer();
-                shimmerOpacity = 0.0;
-              }
-              if (state is HomePageLoadingFailed) {
-                return Center(
-                  child: Text(
-                    'Couldn\'t connect to the server.\nPlease try again later',
-                    style: Theme.of(context).textTheme.headline,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: backgroundColor.value,
+        body: NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                new SliverAppBar(
+                  backgroundColor: backgroundColor.value,
+                  pinned: true,
+                  flexibleSpace: SearchBar(
+                    textFieldController: searchController,
+                    focusNode: searchFocusNode,
+                    showCancelButton: searchFocusNode.hasFocus
+                        || _bloc.currentState is SearchByQueryIsLoading || _bloc.currentState is SearchByQueryIsLoaded,
+                    showClearSearchButton: showClearSearchButton,
+                    onChanged: _onSearchBarValueChangeCallback,
+                    onClearButtonClick: _onClearSearchBarButtonClickCallback,
+                    onCancelButtonClick: _onCancelSearchBarButtonClickCallback,
                   ),
-                );
-              } else {
-                return Stack(
-                  children: <Widget>[
-                    (state is HomePageIsLoaded) ? _createHomePageContent(context) : SizedBox(),
-                    showShimmer
-                        ? IgnorePointer(
-                            child: AnimatedOpacity(
-                              opacity: shimmerOpacity,
-                              duration: const Duration(milliseconds: shimmerOpacityAnimationDurationMills),
-                              child: HomePageShimmer(),
-                            ),
-                          )
-                        : SizedBox(),
-                    (state is SearchByQueryIsLoading || state is SearchByQueryIsLoaded)
-                        ? QuerySearchResults(
-                            loaded: state is SearchByQueryIsLoaded,
-                            moviesRoot: (state is SearchByQueryIsLoaded) ? state.movies : null,
-                            peopleRoot: (state is SearchByQueryIsLoaded) ? state.people : null,
-                            moviesRepository: _bloc.moviesRepository,
-                          )
-                        : SizedBox(),
-                  ],
-                );
-              }
+                ),
+              ];
             },
-          )),
+            body: BlocBuilder<HomePageEvent, HomePageState>(
+              bloc: _bloc,
+              builder: (BuildContext context, HomePageState state) {
+                if (state is HomePageIsLoaded) {
+                  if (showShimmer) _closeShimmer();
+                  shimmerOpacity = 0.0;
+                }
+                if (state is HomePageLoadingFailed) {
+                  return Center(
+                    child: Text(
+                      'Couldn\'t connect to the server.\nPlease try again later',
+                      style: Theme.of(context).textTheme.headline,
+                    ),
+                  );
+                } else {
+                  return Stack(
+                    children: <Widget>[
+                      (state is HomePageIsLoaded) ? _createHomePageContent(context) : SizedBox(),
+                      showShimmer
+                          ? IgnorePointer(
+                              child: AnimatedOpacity(
+                                opacity: shimmerOpacity,
+                                duration: const Duration(milliseconds: shimmerOpacityAnimationDurationMills),
+                                child: HomePageShimmer(),
+                              ),
+                            )
+                          : SizedBox(),
+                      (state is SearchByQueryIsLoading || state is SearchByQueryIsLoaded)
+                          ? BlocProvider(
+                        bloc: QuerySearchResultsBloc(_bloc.moviesRepository),
+                        child: QuerySearchResults(
+                              loaded: state is SearchByQueryIsLoaded,
+                              moviesRoot: (state is SearchByQueryIsLoaded) ? state.movies : null,
+                              peopleRoot: (state is SearchByQueryIsLoaded) ? state.people : null,
+                              moviesRepository: _bloc.moviesRepository,
+                            ),)
+                          : SizedBox(),
+                    ],
+                  );
+                }
+              },
+            )),
+      ),
     );
   }
 

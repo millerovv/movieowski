@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_bloc_export.dart';
-import 'package:movieowski/src/ui/widget/actor_card.dart';
+import 'package:movieowski/src/ui/widget/person_circle_card.dart';
 import 'package:movieowski/src/utils/navigator.dart';
 
 class PopularActorsSection extends StatefulWidget {
@@ -50,7 +50,7 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
                           onTap: () => goToPersonDetails(context, _bloc.moviesRepository, state.actors[index],
                               posterHeroTag),
                           child: (state.actors[index].profilePath != null && state.actors[index].profilePath != '')
-                              ? ActorCircleImage(
+                              ? PersonCircleCard(
                                   asStubCard: false,
                                   withHero: true,
                                   posterHeroTag: posterHeroTag,

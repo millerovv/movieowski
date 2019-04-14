@@ -20,6 +20,8 @@ dependencies:
   bloc: ^0.9.5
   flutter_bloc: ^0.7.1
   pedantic: ^1.4.0
+  date_format: ^1.0.6
+  intl: ^0.15.8
 
 dev_dependencies:
   flutter_test:

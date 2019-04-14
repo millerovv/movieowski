@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movieowski/src/ui/widget/actor_card.dart';
+import 'package:movieowski/src/ui/widget/person_circle_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
@@ -62,7 +62,7 @@ class ActorListCard extends StatelessWidget {
                 child: heroWidget(
                     withHero,
                     imageHeroTag,
-                    ActorCircleImage(
+                    PersonCircleCard(
                       width: cardHeight,
                       posterPath: photoPath,
                       withName: false,

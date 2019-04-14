@@ -3,7 +3,7 @@ import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
-class ActorCircleImage extends StatelessWidget {
+class PersonCircleCard extends StatelessWidget {
   static const double defaultWidth = 131.0;
 
   final double width;
@@ -19,7 +19,7 @@ class ActorCircleImage extends StatelessWidget {
   final bool withHero;
   final String posterHeroTag;
 
-  ActorCircleImage({
+  PersonCircleCard({
     this.width = defaultWidth,
     this.asStubCard = false,
     this.posterPath,

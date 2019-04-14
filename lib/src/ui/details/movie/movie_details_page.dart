@@ -164,6 +164,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       heroTag: widget.numberRatingHeroTag,
       rating: widget.movie.voteAverage,
       color: calculateRatingColor(widget.movie.voteAverage),
+      diameter: 48.0,
     );
 
     var optionButtons = AnimatedOpacity(

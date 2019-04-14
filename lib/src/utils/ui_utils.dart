@@ -45,7 +45,7 @@ Widget createBasicTitleSubtitleSection(BuildContext context, String title, Strin
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
-      (title != null && title.isNotEmpty) ? Padding(
+      (title.isNotEmpty && subtitle.isNotEmpty) ? Padding(
         padding: EdgeInsets.only(left: 16.0, top: 16.0),
         child: Text(
           title,
@@ -53,7 +53,7 @@ Widget createBasicTitleSubtitleSection(BuildContext context, String title, Strin
           Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
         ),
       ) : SizedBox(),
-      (subtitle != null && subtitle.isNotEmpty) ? Padding(
+      (subtitle.isNotEmpty) ? Padding(
         padding: EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0),
         child: Text(
           subtitle,

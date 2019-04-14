@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
 import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
-import 'package:movieowski/src/ui/widget/actor_card.dart';
+import 'package:movieowski/src/ui/widget/person_circle_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
+import 'package:intl/intl.dart';
 
 class MovieMoreDetails extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class MovieMoreDetails extends StatefulWidget {
 
 //TODO: delete hardcoded genres and budget, format runtime correctly
 class _MovieMoreDetailsState extends State<MovieMoreDetails> {
+  final formatCurrency = new NumberFormat.simpleCurrency();
   MovieDetailsPageBloc _bloc;
 
   @override
@@ -41,11 +43,27 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _createCastSection(state.details.credits.cast),
-                  createBasicTitleSubtitleSection(context, 'Genres', 'Action, Science Fiction. Thriller, Adventure'),
-                  createBasicTitleSubtitleSection(context, 'Storyline', state.details.overview),
-                  createBasicTitleSubtitleSection(context, 'Country', state.details.productionCountries[0].name),
-                  createBasicTitleSubtitleSection(context, 'Budget', state.details.budget.toString()),
-                  createBasicTitleSubtitleSection(context, 'Runtime', state.details.runtime.toString() + ' min'),
+                  createBasicTitleSubtitleSection(
+                      context,
+                      'Genres',
+                      state.details.genres
+                          .map((genre) => genre.name)
+                          .toList()
+                          .toString()
+                          .replaceAll('[', '')
+                          .replaceAll(']', '')),
+                  state.details.overview != null
+                      ? createBasicTitleSubtitleSection(context, 'Storyline', state.details.overview)
+                      : SizedBox,
+                  state.details.productionCountries != null
+                      ? createBasicTitleSubtitleSection(context, 'Country', state.details.productionCountries[0].name)
+                      : SizedBox(),
+                  state.details.budget != null
+                      ? createBasicTitleSubtitleSection(context, 'Budget', formatCurrency.format(state.details.budget))
+                      : SizedBox(),
+                  state.details.runtime != null
+                      ? createBasicTitleSubtitleSection(context, 'Runtime', state.details.runtime.toString() + ' min')
+                      : SizedBox(),
                 ],
               ),
             );
@@ -91,11 +109,10 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: List<Widget>.generate((cast.length <= 16) ? cast.length : 16, (index) {
                 return Padding(
-                    padding: ((cast[index].profilePath != null && cast[index].profilePath.isNotEmpty))
-                        ? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0) : const EdgeInsets.all(0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                     child: GestureDetector(
 //                      onTap: () => goToPersonDetails(context, _bloc.moviesRepository, case[index]),
-                      child: ActorCircleImage(
+                      child: PersonCircleCard(
                         width: 96.0,
                         asStubCard: false,
                         posterPath: cast[index].profilePath,
@@ -111,6 +128,4 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
       ],
     );
   }
-
-
 }
