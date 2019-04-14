@@ -27,7 +27,7 @@ class MovieGenresSectionBloc extends Bloc<MovieGenresSectionEvent, MovieGenresSe
         yield MovieGenresIsLoaded(genres);
       } on ApiRequestException catch (e, stacktrace) {
         Log.e(e, stacktrace);
-        if (e is LoadingMoviesFailedException) {
+        if (e is ApiRequestFailedException) {
           Log.e(e, e.apiResponse);
         }
         yield MovieGenresError(e.message);

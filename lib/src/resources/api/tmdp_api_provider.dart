@@ -5,6 +5,8 @@ import 'package:movieowski/src/model/api/response/movie_details_with_credits_res
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
+import 'package:movieowski/src/model/api/response/search_movies_response.dart';
+import 'package:movieowski/src/model/api/response/search_people_response.dart';
 import 'package:movieowski/src/model/api/response/trending_movies_response.dart';
 import 'package:movieowski/src/model/api/response/now_playing_movies_response.dart';
 import 'package:movieowski/src/model/api/response/upcoming_movies_response.dart';
@@ -59,12 +61,14 @@ class TmdbApiProvider extends BaseApiProvider {
 
   /// Request list of trending actors
   /// Documentation: https://developers.themoviedb.org/3/people/get-popular-people
-  Future<PopularPeopleResponseRoot> getPopularPeople() async {
+  Future<PopularPeopleResponseRoot> getPopularPeople({int pageIndex = 1, String language = Languages.english}) async {
     var url = Uri.https(
       BASE_URL,
       '3/person/popular',
       <String, String>{
         'api_key': API_KEY,
+        'page': '$pageIndex',
+        'language': language,
       },
     );
 
@@ -128,21 +132,75 @@ class TmdbApiProvider extends BaseApiProvider {
   }
 
   /// Request the primary information about movie with appended credits
-  /// Documentation https://developers.themoviedb.org/3/movies/get-movie-details
-  Future<MovieDetailsWithCreditsResponseRoot> getMovieDetailsWithCredits({
-    @required int movieId, String language = Languages.english}) async {
+  /// Documentation: https://developers.themoviedb.org/3/movies/get-movie-details
+  Future<MovieDetailsWithCreditsResponseRoot> getMovieDetailsWithCredits(
+      {@required int movieId, String language = Languages.english}) async {
+    assert(movieId != null);
     var url = Uri.https(
       BASE_URL,
       '3/movie/$movieId',
       <String, String>{
         'api_key': API_KEY,
         'language': language,
-        'append_to_response': 'credits'
+        'append_to_response': 'credits',
       },
     );
 
     var response = await getRequest(url);
-    final MovieDetailsWithCreditsResponseRoot details = MovieDetailsWithCreditsResponseRoot.fromJson(json.decode(response));
+    final MovieDetailsWithCreditsResponseRoot details =
+        MovieDetailsWithCreditsResponseRoot.fromJson(json.decode(response));
     return details;
+  }
+
+  /// Search for movies
+  /// Documentation: https://developers.themoviedb.org/3/search/search-movies
+  Future<SearchMoviesResponseRoot> getMoviesByQuery({
+    @required String query,
+    int page = 1,
+    String language = Languages.english,
+    bool includeAdult = false,
+  }) async {
+    assert(query != null);
+    var url = Uri.https(
+      BASE_URL,
+      '3/search/movie',
+      <String, String>{
+        'api_key': API_KEY,
+        'language': language,
+        'query': query,
+        'page': page.toString(),
+        'includeAdult': includeAdult.toString(),
+      },
+    );
+
+    var response = await getRequest(url);
+    final SearchMoviesResponseRoot result = SearchMoviesResponseRoot.fromJson(json.decode(response));
+    return result;
+  }
+
+  /// Search for people
+  /// Documentation: https://developers.themoviedb.org/3/search/search-people
+  Future<SearchPeopleResponseRoot> getPeopleByQuery({
+    @required String query,
+    int page = 1,
+    String language = Languages.english,
+    bool includeAdult = false,
+  }) async {
+    assert(query != null);
+    var url = Uri.https(
+      BASE_URL,
+      '3/search/person',
+      <String, String>{
+        'api_key': API_KEY,
+        'language': language,
+        'query': query,
+        'page': page.toString(),
+        'includeAdult': includeAdult.toString(),
+      },
+    );
+
+    var response = await getRequest(url);
+    final SearchPeopleResponseRoot result = SearchPeopleResponseRoot.fromJson(json.decode(response));
+    return result;
   }
 }

@@ -1,4 +1,6 @@
-class MovieDetailsWithCreditsResponseRoot {
+import 'package:equatable/equatable.dart';
+
+class MovieDetailsWithCreditsResponseRoot extends Equatable {
   bool adult;
   String backdropPath;
   BelongsToCollection belongsToCollection;
@@ -148,7 +150,7 @@ class MovieDetailsWithCreditsResponseRoot {
   }
 }
 
-class BelongsToCollection {
+class BelongsToCollection extends Equatable {
   int id;
   String name;
   String posterPath;
@@ -173,7 +175,7 @@ class BelongsToCollection {
   }
 }
 
-class Genres {
+class Genres extends Equatable {
   int id;
   String name;
 
@@ -192,7 +194,7 @@ class Genres {
   }
 }
 
-class ProductionCompanies {
+class ProductionCompanies extends Equatable {
   int id;
   String logoPath;
   String name;
@@ -217,7 +219,7 @@ class ProductionCompanies {
   }
 }
 
-class ProductionCountries {
+class ProductionCountries extends Equatable {
   String iso31661;
   String name;
 
@@ -236,7 +238,7 @@ class ProductionCountries {
   }
 }
 
-class SpokenLanguages {
+class SpokenLanguages extends Equatable {
   String iso6391;
   String name;
 
@@ -255,7 +257,7 @@ class SpokenLanguages {
   }
 }
 
-class Credits {
+class Credits extends Equatable {
   List<Cast> cast;
   List<Crew> crew;
 
@@ -288,7 +290,7 @@ class Credits {
   }
 }
 
-class Cast {
+class Cast extends Equatable {
   int castId;
   String character;
   String creditId;
@@ -325,7 +327,7 @@ class Cast {
   }
 }
 
-class Crew {
+class Crew extends Equatable {
   String creditId;
   String department;
   int gender;

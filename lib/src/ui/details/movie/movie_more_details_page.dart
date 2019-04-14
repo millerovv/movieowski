@@ -4,12 +4,14 @@ import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_
 import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/ui/widget/actor_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/ui_utils.dart';
 
 class MovieMoreDetails extends StatefulWidget {
   @override
   _MovieMoreDetailsState createState() => _MovieMoreDetailsState();
 }
 
+//TODO: delete hardcoded genres and budget, format runtime correctly
 class _MovieMoreDetailsState extends State<MovieMoreDetails> {
   MovieDetailsPageBloc _bloc;
 
@@ -39,11 +41,11 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _createCastSection(state.details.credits.cast),
-                  _createBasicTitleSubtitleSection('Genres', 'Action, Science Fiction. Thriller, Adventure'),
-                  _createBasicTitleSubtitleSection('Storyline', state.details.overview),
-                  _createBasicTitleSubtitleSection('Country', state.details.productionCountries[0].name),
-                  _createBasicTitleSubtitleSection('Budget', state.details.budget.toString()),
-                  _createBasicTitleSubtitleSection('Runtime', state.details.runtime.toString() + ' min'),
+                  createBasicTitleSubtitleSection(context, 'Genres', 'Action, Science Fiction. Thriller, Adventure'),
+                  createBasicTitleSubtitleSection(context, 'Storyline', state.details.overview),
+                  createBasicTitleSubtitleSection(context, 'Country', state.details.productionCountries[0].name),
+                  createBasicTitleSubtitleSection(context, 'Budget', state.details.budget.toString()),
+                  createBasicTitleSubtitleSection(context, 'Runtime', state.details.runtime.toString() + ' min'),
                 ],
               ),
             );
@@ -90,14 +92,17 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
               children: List<Widget>.generate((cast.length <= 16) ? cast.length : 16, (index) {
                 return Padding(
                     padding: ((cast[index].profilePath != null && cast[index].profilePath.isNotEmpty))
-                        ? const EdgeInsets.symmetric(horizontal: 8.0) : const EdgeInsets.all(0),
-                    child: HomeActorCircleImage(
-                      width: 96.0,
-                      asStubCard: false,
-                      posterPath: cast[index].profilePath,
-                      actorName: cast[index].name,
-                      withSubTitle: true,
-                      subTitle: cast[index].character,
+                        ? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0) : const EdgeInsets.all(0),
+                    child: GestureDetector(
+//                      onTap: () => goToPersonDetails(context, _bloc.moviesRepository, case[index]),
+                      child: ActorCircleImage(
+                        width: 96.0,
+                        asStubCard: false,
+                        posterPath: cast[index].profilePath,
+                        actorName: cast[index].name,
+                        withSubTitle: true,
+                        subTitle: cast[index].character,
+                      ),
                     ));
               }),
             ),
@@ -107,26 +112,5 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
     );
   }
 
-  Widget _createBasicTitleSubtitleSection(String title, String subtitle) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 16.0, top: 16.0),
-          child: Text(
-            title,
-            style:
-                Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0),
-          child: Text(
-            subtitle,
-            style: Theme.of(context).textTheme.caption.copyWith(color: AppColors.primaryWhite),
-          ),
-        ),
-      ],
-    );
-  }
+
 }

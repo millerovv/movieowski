@@ -13,7 +13,6 @@ class TrendingMoviesSectionBloc extends MoviesSectionBloc {
 
 	String get sectionHeader => _sectionHeader;
 	bool get withSeeAllOption => _withSeeAllOption;
-	MoviesRepository get moviesRepository => _moviesRepository;
 
 	TrendingMoviesSectionBloc(this._moviesRepository)
 			: assert(_moviesRepository != null),

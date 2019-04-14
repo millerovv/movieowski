@@ -13,7 +13,6 @@ class NowPlayingMoviesSectionBloc extends MoviesSectionBloc {
 
   String get sectionHeader => _sectionHeader;
   bool get withSeeAllOption => _withSeeAllOption;
-  MoviesRepository get moviesRepository => _moviesRepository;
 
   NowPlayingMoviesSectionBloc(this._moviesRepository)
       : assert(_moviesRepository != null),

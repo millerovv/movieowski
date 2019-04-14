@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
+import 'package:movieowski/src/blocs/person_details_page/bloc_person_details_page.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
+import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
-import 'package:movieowski/src/ui/details/movie_details_page.dart';
+import 'package:movieowski/src/ui/details/movie/movie_details_page.dart';
+import 'package:movieowski/src/ui/details/person/person_details_page.dart';
 
 const int movieDetailsTransitionDurationMills = 500;
 
@@ -22,6 +25,25 @@ goToMovieDetails(
         movie: movie,
         posterHeroTag: imageHeroTag,
         numberRatingHeroTag: ratingHeroTag,
+      ),
+    ),
+    movieDetailsTransitionDurationMills,
+  );
+}
+
+goToPersonDetails(
+    BuildContext context,
+    MoviesRepository repository,
+    Person person,
+    String posterHeroTag,
+    ) {
+  _pushWidgetWithDuration(
+    context,
+    BlocProvider<PersonDetailsPageBloc>(
+      bloc: PersonDetailsPageBloc(repository, person.id),
+      child: PersonDetailsPage(
+        person: person,
+        posterHeroTag: posterHeroTag,
       ),
     ),
     movieDetailsTransitionDurationMills,

@@ -7,6 +7,12 @@ import 'package:movieowski/src/blocs/home_page/bloc_home_page_event.dart';
 import 'package:movieowski/src/blocs/home_page/bloc_home_page_state.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
+import 'package:movieowski/src/model/api/response/search_movies_response.dart';
+import 'package:movieowski/src/model/api/response/search_people_response.dart';
+import 'package:movieowski/src/resources/api/base_api_provider.dart';
+import 'package:movieowski/src/resources/repository/movies_repository.dart';
+import 'package:movieowski/src/utils/logger.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// This BLOC controls section content loading statuses.
 /// Emits [HomePageIsLoaded] state when all sections have been loaded
@@ -16,6 +22,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   final TrendingMoviesSectionBloc trendingMoviesSectionBloc;
   final UpcomingMoviesSectionBloc upcomingMoviesSectionBloc;
   final MovieGenresSectionBloc movieGenresSectionBloc;
+  final MoviesRepository moviesRepository;
 
   final Map<HomeSection, bool> sectionsLoadedStatuses = {
     HomeSection.NOW_PLAYING: false,
@@ -30,14 +37,47 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   StreamSubscription<MoviesSectionState> _upcomingMoviesSectionSubscription;
   StreamSubscription<PopularActorsSectionState> _popularActorsSectionSubscription;
   StreamSubscription<MovieGenresSectionState> _movieGenresSectionSubscription;
+  BehaviorSubject<String> _searchQueriesSubject;
 
-  HomePageBloc(
-      {@required this.popularActorsSectionBloc,
-      @required this.nowPlayingMoviesSectionBloc,
-      @required this.trendingMoviesSectionBloc,
-      @required this.upcomingMoviesSectionBloc,
-      @required this.movieGenresSectionBloc}) {
+  bool homePageLoadingFailed;
+  String errorMessage;
+  bool searchIsAllowed;
+
+  HomePageBloc({
+    @required this.popularActorsSectionBloc,
+    @required this.nowPlayingMoviesSectionBloc,
+    @required this.trendingMoviesSectionBloc,
+    @required this.upcomingMoviesSectionBloc,
+    @required this.movieGenresSectionBloc,
+    @required this.moviesRepository,
+  }) {
+    assert(popularActorsSectionBloc != null);
+    assert(nowPlayingMoviesSectionBloc != null);
+    assert(trendingMoviesSectionBloc != null);
+    assert(upcomingMoviesSectionBloc != null);
+    assert(movieGenresSectionBloc != null);
+    assert(moviesRepository != null);
+    homePageLoadingFailed = false;
+    searchIsAllowed = false;
     _subscribeToSectionBlocs();
+    _initSearchQueriesSubject();
+  }
+  
+  void _initSearchQueriesSubject() {
+    _searchQueriesSubject = BehaviorSubject<String>();
+    _searchQueriesSubject.debounce(Duration(milliseconds: 300))
+        .where((query) => query.isNotEmpty)
+        .listen((query) => searchIsAllowed ? dispatch(FetchSearchByQuery(query)) : null);
+  }
+
+  void dispatchSearchQuery(String query) {
+    searchIsAllowed = true;
+    _searchQueriesSubject.add(query);
+  }
+
+  void cancelSearch() {
+    searchIsAllowed = false;
+    dispatch(CancelSearch());
   }
 
   @override
@@ -45,23 +85,42 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   @override
   Stream<HomePageState> mapEventToState(HomePageState currentState, HomePageEvent event) async* {
-    if (event is SectionLoadingFailed) {
+    if (event is NotifySectionLoadingFailed) {
+      homePageLoadingFailed = true;
+      errorMessage = event.errorMessage;
       yield HomePageLoadingFailed(event.errorMessage);
     } else if (event is StartLoadingHomePage) {
       yield HomePageIsLoading();
+    } else if (event is FetchSearchByQuery) {
+      yield SearchByQueryIsLoading();
+      try {
+        final SearchMoviesResponseRoot moviesRoot = await moviesRepository.fetchMoviesByQuery(event.query);
+        final SearchPeopleResponseRoot peopleRoot = await moviesRepository.fetchPeopleByQuery(event.query);
+        yield SearchByQueryIsLoaded(moviesRoot, peopleRoot);
+      } on ApiRequestException catch (e, stacktrace) {
+        Log.e(e, stacktrace);
+        yield SearchByQueryLoadingFailed(e.message);
+      }
+    } else if (event is CancelSearch) {
+      if (homePageLoadingFailed) {
+        yield HomePageLoadingFailed(errorMessage);
+      } else {
+        yield (_allSectionsLoaded()) ? HomePageIsLoaded() : HomePageIsLoading();
+      }
     } else {
-      if (event is NowPlayingMoviesLoaded) {
+      if (event is NotifyNowPlayingMoviesLoaded) {
         sectionsLoadedStatuses[HomeSection.NOW_PLAYING] = true;
-      } else if (event is TrendingMoviesLoaded) {
+      } else if (event is NotifyTrendingMoviesLoaded) {
         sectionsLoadedStatuses[HomeSection.TRENDING] = true;
-      } else if (event is PopularActorsLoaded) {
+      } else if (event is NotifyPopularActorsLoaded) {
         sectionsLoadedStatuses[HomeSection.ACTORS] = true;
-      } else if (event is UpcomingMoviesLoaded) {
+      } else if (event is NotifyUpcomingMoviesLoaded) {
         sectionsLoadedStatuses[HomeSection.UPCOMING] = true;
-      } else if (event is GenresLoaded) {
+      } else if (event is NotifyGenresLoaded) {
         sectionsLoadedStatuses[HomeSection.CATEGORIES] = true;
       }
       if (_allSectionsLoaded()) {
+        homePageLoadingFailed = false;
         yield HomePageIsLoaded();
       }
     }
@@ -70,51 +129,53 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   @override
   void dispose() {
     _unsubscribeFromSectionBlocs();
+    _searchQueriesSubject.close();
     super.dispose();
   }
+
   void _subscribeToSectionBlocs() {
     if (nowPlayingMoviesSectionBloc.state != null) {
       _nowPlayingMoviesSectionSubscription = nowPlayingMoviesSectionBloc.state.listen((MoviesSectionState state) {
         if (state is MoviesIsLoaded) {
-          dispatch(NowPlayingMoviesLoaded());
+          dispatch(NotifyNowPlayingMoviesLoaded());
         } else if (state is MoviesError) {
-          dispatch(NowPlayingMoviesLoadingFailed(state.errorMessage));
+          dispatch(NotifyNowPlayingMoviesLoadingFailed(state.errorMessage));
         }
       });
     }
     if (trendingMoviesSectionBloc.state != null) {
       _trendingMoviesSectionSubscription = trendingMoviesSectionBloc.state.listen((MoviesSectionState state) {
         if (state is MoviesIsLoaded) {
-          dispatch(TrendingMoviesLoaded());
+          dispatch(NotifyTrendingMoviesLoaded());
         } else if (state is MoviesError) {
-          dispatch(TrendingMoviesLoadingFailed(state.errorMessage));
+          dispatch(NotifyTrendingMoviesLoadingFailed(state.errorMessage));
         }
       });
     }
     if (upcomingMoviesSectionBloc.state != null) {
       _upcomingMoviesSectionSubscription = upcomingMoviesSectionBloc.state.listen((MoviesSectionState state) {
         if (state is MoviesIsLoaded) {
-          dispatch(UpcomingMoviesLoaded());
+          dispatch(NotifyUpcomingMoviesLoaded());
         } else if (state is MoviesError) {
-          dispatch(UpcomingMoviesFailed(state.errorMessage));
+          dispatch(NotifyUpcomingMoviesFailed(state.errorMessage));
         }
       });
     }
     if (popularActorsSectionBloc.state != null) {
       _popularActorsSectionSubscription = popularActorsSectionBloc.state.listen((PopularActorsSectionState state) {
         if (state is PopularActorsIsLoaded) {
-          dispatch(PopularActorsLoaded());
+          dispatch(NotifyPopularActorsLoaded());
         } else if (state is PopularActorsError) {
-          dispatch(PopularActorsLoadingFailed(state.errorMessage));
+          dispatch(NotifyPopularActorsLoadingFailed(state.errorMessage));
         }
       });
     }
     if (movieGenresSectionBloc.state != null) {
       _movieGenresSectionSubscription = movieGenresSectionBloc.state.listen((MovieGenresSectionState state) {
         if (state is MovieGenresIsLoaded) {
-          dispatch(GenresLoaded());
+          dispatch(NotifyGenresLoaded());
         } else if (state is MovieGenresError) {
-          dispatch(GenresLoadingFailed(state.errorMessage));
+          dispatch(NotifyGenresLoadingFailed(state.errorMessage));
         }
       });
     }

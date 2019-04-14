@@ -1,8 +1,10 @@
+import 'package:movieowski/src/model/api/response/base_movies_response.dart';
+
 class PopularPeopleResponseRoot {
 	int page;
 	int totalResults;
 	int totalPages;
-	List<PopularPerson> results;
+	List<Person> results;
 
 	PopularPeopleResponseRoot({this.page, this.totalResults, this.totalPages, this.results});
 
@@ -11,9 +13,9 @@ class PopularPeopleResponseRoot {
 		totalResults = json['total_results'];
 		totalPages = json['total_pages'];
 		if (json['results'] != null) {
-			results = new List<PopularPerson>();
+			results = new List<Person>();
 			json['results'].forEach((v) {
-				results.add(new PopularPerson.fromJson(v));
+				results.add(new Person.fromJson(v));
 			});
 		}
 	}
@@ -30,15 +32,15 @@ class PopularPeopleResponseRoot {
 	}
 }
 
-class PopularPerson {
+class Person {
 	double popularity;
 	int id;
 	String profilePath;
 	String name;
-	List<KnownFor> knownFor;
+	List<Movie> knownFor;
 	bool adult;
 
-	PopularPerson(
+	Person(
 			{this.popularity,
 				this.id,
 				this.profilePath,
@@ -46,15 +48,15 @@ class PopularPerson {
 				this.knownFor,
 				this.adult});
 
-	PopularPerson.fromJson(Map<String, dynamic> json) {
+	Person.fromJson(Map<String, dynamic> json) {
 		popularity = json['popularity'];
 		id = json['id'];
 		profilePath = json['profile_path'];
 		name = json['name'];
 		if (json['known_for'] != null) {
-			knownFor = new List<KnownFor>();
+			knownFor = new List<Movie>();
 			json['known_for'].forEach((v) {
-				knownFor.add(new KnownFor.fromJson(v));
+				knownFor.add(new Movie.fromJson(v));
 			});
 		}
 		adult = json['adult'];
@@ -70,79 +72,6 @@ class PopularPerson {
 			data['known_for'] = this.knownFor.map((v) => v.toJson()).toList();
 		}
 		data['adult'] = this.adult;
-		return data;
-	}
-}
-
-class KnownFor {
-	double voteAverage;
-	int voteCount;
-	int id;
-	bool video;
-	String mediaType;
-	String title;
-	double popularity;
-	String posterPath;
-	String originalLanguage;
-	String originalTitle;
-	List<int> genreIds;
-	String backdropPath;
-	bool adult;
-	String overview;
-	String releaseDate;
-
-	KnownFor(
-			{this.voteAverage,
-				this.voteCount,
-				this.id,
-				this.video,
-				this.mediaType,
-				this.title,
-				this.popularity,
-				this.posterPath,
-				this.originalLanguage,
-				this.originalTitle,
-				this.genreIds,
-				this.backdropPath,
-				this.adult,
-				this.overview,
-				this.releaseDate});
-
-	KnownFor.fromJson(Map<String, dynamic> json) {
-		voteAverage = json['vote_average'].toDouble();
-		voteCount = json['vote_count'];
-		id = json['id'];
-		video = json['video'];
-		mediaType = json['media_type'];
-		title = json['title'];
-		popularity = json['popularity'].toDouble();
-		posterPath = json['poster_path'];
-		originalLanguage = json['original_language'];
-		originalTitle = json['original_title'];
-		genreIds = json['genre_ids'].cast<int>();
-		backdropPath = json['backdrop_path'];
-		adult = json['adult'];
-		overview = json['overview'];
-		releaseDate = json['release_date'];
-	}
-
-	Map<String, dynamic> toJson() {
-		final Map<String, dynamic> data = new Map<String, dynamic>();
-		data['vote_average'] = this.voteAverage;
-		data['vote_count'] = this.voteCount;
-		data['id'] = this.id;
-		data['video'] = this.video;
-		data['media_type'] = this.mediaType;
-		data['title'] = this.title;
-		data['popularity'] = this.popularity;
-		data['poster_path'] = this.posterPath;
-		data['original_language'] = this.originalLanguage;
-		data['original_title'] = this.originalTitle;
-		data['genre_ids'] = this.genreIds;
-		data['backdrop_path'] = this.backdropPath;
-		data['adult'] = this.adult;
-		data['overview'] = this.overview;
-		data['release_date'] = this.releaseDate;
 		return data;
 	}
 }

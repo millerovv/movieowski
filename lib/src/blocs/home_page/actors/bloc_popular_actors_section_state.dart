@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:movieowski/src/model/api/response/person_details_response.dart';
+import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 
 abstract class PopularActorsSectionState extends Equatable {
 	PopularActorsSectionState([List props = const []]);
@@ -10,11 +10,11 @@ class PopularActorsIsEmpty extends PopularActorsSectionState {}
 class PopularActorsIsLoading extends PopularActorsSectionState {}
 
 class PopularActorsIsLoaded extends PopularActorsSectionState {
-	final List<PersonDetailsResponseRoot> actors;
+	final List<Person> actors;
 
 	PopularActorsIsLoaded(this.actors) :
 				assert(actors != null),
-				super(actors);
+				super([actors]);
 }
 
 class PopularActorsError extends PopularActorsSectionState {

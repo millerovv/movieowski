@@ -10,11 +10,12 @@ class HomePageShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
       child: Column(children: <Widget>[
-        _createMoviesSection(context, true, true, 0),
-        _createMoviesSection(context, false, true, 1),
+        _createMoviesSection(context, true, true),
+        _createMoviesSection(context, false, true),
         _createActorsSection(context),
-        _createMoviesSection(context, true, false, 2),
+        _createMoviesSection(context, true, false),
         _createGenresSection(context)
       ]),
     );
@@ -44,7 +45,7 @@ class HomePageShimmer extends StatelessWidget {
     );
   }
 
-  Widget _createMoviesSection(BuildContext context, bool withSeeAllOption, bool withRating, int uniqueTagForHeroAnim) {
+  Widget _createMoviesSection(BuildContext context, bool withSeeAllOption, bool withRating) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -59,11 +60,8 @@ class HomePageShimmer extends StatelessWidget {
             child: shimmer(Row(
               children: List<Widget>.generate(_calculateNumberOfMovieCardsForDisplayWidth(context), (index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: HomeMovieCard(
-                    forAndroid: false,
-                    imageHeroTag: 'stub_image_hero_tag_$index : ${uniqueTagForHeroAnim}',
-                    ratingHeroTag: 'stub_rating_hero_tag_$index : ${uniqueTagForHeroAnim}',
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                  child: MovieCard(
                     withRating: withRating,
                     asStubCard: true,
                   ),
@@ -89,8 +87,8 @@ class HomePageShimmer extends StatelessWidget {
             child: shimmer(Row(
               children: List<Widget>.generate(_calculateNumberOfActorCardsForDisplayWidth(context), (index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: HomeActorCircleImage(asStubCard: true),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                  child: ActorCircleImage(asStubCard: true),
                 );
               }),
             )),
@@ -119,7 +117,7 @@ class HomePageShimmer extends StatelessWidget {
                     width: 500.0,
                     child: shimmer(Wrap(
                       spacing: 8.0,
-                      children: List<Widget>.generate(15, (index) {
+                      children: List<Widget>.generate(14, (index) {
                         return Chip(
                           backgroundColor: AppColors.accentColor,
                           padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 2.0),
@@ -142,13 +140,13 @@ class HomePageShimmer extends StatelessWidget {
 
   int _calculateNumberOfMovieCardsForDisplayWidth(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
-    double movieCardWidth = HomeMovieCard.cardWidth;
+    double movieCardWidth = MovieCard.defaultImageWidth;
     return (displayWidth / movieCardWidth).round() + 1;
   }
 
   int _calculateNumberOfActorCardsForDisplayWidth(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
-    double actorCardWidth = HomeActorCircleImage.defaultWidth;
+    double actorCardWidth = ActorCircleImage.defaultWidth;
     return (displayWidth / actorCardWidth).round() + 1;
   }
 }

@@ -6,42 +6,50 @@ abstract class HomePageEvent extends Equatable {
 
 class StartLoadingHomePage extends HomePageEvent {}
 
-class NowPlayingMoviesLoaded extends HomePageEvent {}
+class NotifyNowPlayingMoviesLoaded extends HomePageEvent {}
 
-class TrendingMoviesLoaded extends HomePageEvent {}
+class NotifyTrendingMoviesLoaded extends HomePageEvent {}
 
-class PopularActorsLoaded extends HomePageEvent {}
+class NotifyPopularActorsLoaded extends HomePageEvent {}
 
-class UpcomingMoviesLoaded extends HomePageEvent {}
+class NotifyUpcomingMoviesLoaded extends HomePageEvent {}
 
-class GenresLoaded extends HomePageEvent {}
+class NotifyGenresLoaded extends HomePageEvent {}
+
+class FetchSearchByQuery extends HomePageEvent {
+  final String query;
+
+  FetchSearchByQuery(this.query);
+}
+
+class CancelSearch extends HomePageEvent {}
 
 // -- error events section
 
-class SectionLoadingFailed extends HomePageEvent {
+class NotifySectionLoadingFailed extends HomePageEvent {
   final String errorMessage;
 
-  SectionLoadingFailed(this.errorMessage) : super([errorMessage]);
+  NotifySectionLoadingFailed(this.errorMessage) : super([errorMessage]);
 }
 
-class NowPlayingMoviesLoadingFailed extends SectionLoadingFailed {
-  NowPlayingMoviesLoadingFailed(String errorMessage) : super(errorMessage);
+class NotifyNowPlayingMoviesLoadingFailed extends NotifySectionLoadingFailed {
+  NotifyNowPlayingMoviesLoadingFailed(String errorMessage) : super(errorMessage);
 }
 
-class TrendingMoviesLoadingFailed extends SectionLoadingFailed {
-  TrendingMoviesLoadingFailed(String errorMessage) : super(errorMessage);
+class NotifyTrendingMoviesLoadingFailed extends NotifySectionLoadingFailed {
+  NotifyTrendingMoviesLoadingFailed(String errorMessage) : super(errorMessage);
 }
 
-class PopularActorsLoadingFailed extends SectionLoadingFailed {
-  PopularActorsLoadingFailed(String errorMessage) : super(errorMessage);
+class NotifyPopularActorsLoadingFailed extends NotifySectionLoadingFailed {
+  NotifyPopularActorsLoadingFailed(String errorMessage) : super(errorMessage);
 }
 
-class UpcomingMoviesFailed extends SectionLoadingFailed {
-  UpcomingMoviesFailed(String errorMessage) : super(errorMessage);
+class NotifyUpcomingMoviesFailed extends NotifySectionLoadingFailed {
+  NotifyUpcomingMoviesFailed(String errorMessage) : super(errorMessage);
 }
 
-class GenresLoadingFailed extends SectionLoadingFailed {
-  GenresLoadingFailed(String errorMessage) : super(errorMessage);
+class NotifyGenresLoadingFailed extends NotifySectionLoadingFailed {
+  NotifyGenresLoadingFailed(String errorMessage) : super(errorMessage);
 }
 
 // -- error events section end
