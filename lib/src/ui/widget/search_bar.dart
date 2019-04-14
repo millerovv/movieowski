@@ -5,7 +5,9 @@ class SearchBar extends StatelessWidget {
   final TextEditingController textFieldController;
   final FocusNode focusNode;
   final bool showClearSearchButton;
+  final bool showCancelButton;
   final Function(String text) onChanged;
+  final Function() onClearButtonClick;
   final Function() onCancelButtonClick;
 
   SearchBar({
@@ -13,7 +15,9 @@ class SearchBar extends StatelessWidget {
     this.textFieldController,
     this.focusNode,
     this.showClearSearchButton,
+    this.showCancelButton,
     this.onChanged,
+    this.onClearButtonClick,
     this.onCancelButtonClick,
   }) : super(key: key);
 
@@ -31,7 +35,7 @@ class SearchBar extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,7 +71,9 @@ class SearchBar extends StatelessWidget {
                   ),
                   showClearSearchButton
                       ? GestureDetector(
-                          onTap: () => textFieldController.text = '',
+                          onTap: () {
+                            onClearButtonClick();
+                          },
                           child: Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: Icon(
@@ -83,9 +89,9 @@ class SearchBar extends StatelessWidget {
             ),
           ),
         ),
-        focusNode.hasFocus
+        showCancelButton
             ? Padding(
-                padding: const EdgeInsets.only(top: 22.0, right: 12.0),
+                padding: const EdgeInsets.only(top: 24.0, right: 12.0),
                 child: GestureDetector(
                   onTap: () {
                     focusNode.unfocus();

@@ -34,7 +34,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   bool showShimmer;
 
   bool showClearSearchButton;
-  bool searchIsFocused;
   String searchValue;
 
   Animation<Color> backgroundColor;
@@ -55,15 +54,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ColorTween(begin: AppColors.primaryColor, end: AppColors.darkerPrimary).animate(searchFocusAnimationController);
 
     showClearSearchButton = false;
-    searchIsFocused = false;
     searchController = TextEditingController();
     searchFocusNode = FocusNode()
       ..addListener(() {
         setState(() {
           if (searchFocusNode.hasFocus) {
             searchFocusAnimationController.forward();
-            showClearSearchButton = true;
-            searchIsFocused = true;
+          } else if (!(_bloc.currentState is SearchByQueryIsLoaded) && !(_bloc.currentState is SearchByQueryIsLoading)) {
+            searchFocusAnimationController.reverse();
           }
         });
       });
@@ -80,16 +78,35 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _onSearchBarValueChangeCallback(String value) {
-    if (value.isNotEmpty && value.trim() != searchValue) {
-      searchValue = value;
-      _bloc.dispatchSearchQuery(value);
-    } else {
-      _bloc.dispatch(CancelSearch());
-    }
+    setState(() {
+      if (value.isNotEmpty && value.trim() != searchValue) {
+        searchValue = value;
+        showClearSearchButton = true;
+        _bloc.dispatchSearchQuery(value);
+      } else {
+        searchValue = '';
+        showClearSearchButton = false;
+        _bloc.cancelSearch();
+      }
+    });
+  }
+
+  void _onClearSearchBarButtonClickCallback() {
+    setState(() {
+      searchController.text = '';
+      searchValue = '';
+      _bloc.cancelSearch();
+    });
   }
 
   void _onCancelSearchBarButtonClickCallback() {
-    _bloc.dispatch(CancelSearch());
+    setState(() {
+      searchController.text = '';
+      searchValue = '';
+      showClearSearchButton = false;
+      searchFocusAnimationController.reverse();
+      _bloc.cancelSearch();
+    });
   }
 
   @override
@@ -105,8 +122,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 flexibleSpace: SearchBar(
                   textFieldController: searchController,
                   focusNode: searchFocusNode,
+                  showCancelButton: searchFocusNode.hasFocus || _bloc.currentState is SearchByQueryIsLoading || _bloc.currentState is SearchByQueryIsLoaded,
                   showClearSearchButton: showClearSearchButton,
                   onChanged: _onSearchBarValueChangeCallback,
+                  onClearButtonClick: _onClearSearchBarButtonClickCallback,
                   onCancelButtonClick: _onCancelSearchBarButtonClickCallback,
                 ),
               ),

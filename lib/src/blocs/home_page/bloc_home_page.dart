@@ -41,6 +41,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   bool homePageLoadingFailed;
   String errorMessage;
+  bool searchIsAllowed;
 
   HomePageBloc({
     @required this.popularActorsSectionBloc,
@@ -57,19 +58,26 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     assert(movieGenresSectionBloc != null);
     assert(moviesRepository != null);
     homePageLoadingFailed = false;
+    searchIsAllowed = false;
     _subscribeToSectionBlocs();
     _initSearchQueriesSubject();
   }
   
   void _initSearchQueriesSubject() {
     _searchQueriesSubject = BehaviorSubject<String>();
-    _searchQueriesSubject.debounce(Duration(milliseconds: 250))
+    _searchQueriesSubject.debounce(Duration(milliseconds: 300))
         .where((query) => query.isNotEmpty)
-        .listen((query) => dispatch(FetchSearchByQuery(query)));
+        .listen((query) => searchIsAllowed ? dispatch(FetchSearchByQuery(query)) : null);
   }
 
   void dispatchSearchQuery(String query) {
+    searchIsAllowed = true;
     _searchQueriesSubject.add(query);
+  }
+
+  void cancelSearch() {
+    searchIsAllowed = false;
+    dispatch(CancelSearch());
   }
 
   @override

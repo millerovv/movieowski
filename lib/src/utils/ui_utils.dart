@@ -34,6 +34,7 @@ Widget heroWidget(bool withHero, String tag, Widget child) {
           color: Colors.transparent,
           child: Hero(
             tag: tag,
+            transitionOnUserGestures: true,
             child: child,
           ),
         )
@@ -44,7 +45,7 @@ Widget createBasicTitleSubtitleSection(BuildContext context, String title, Strin
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
-      (title.isNotEmpty) ? Padding(
+      (title != null && title.isNotEmpty) ? Padding(
         padding: EdgeInsets.only(left: 16.0, top: 16.0),
         child: Text(
           title,
@@ -52,7 +53,7 @@ Widget createBasicTitleSubtitleSection(BuildContext context, String title, Strin
           Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
         ),
       ) : SizedBox(),
-      (subtitle.isNotEmpty) ? Padding(
+      (subtitle != null && subtitle.isNotEmpty) ? Padding(
         padding: EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0),
         child: Text(
           subtitle,

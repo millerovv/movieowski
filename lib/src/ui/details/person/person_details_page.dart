@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/person_details_page/person_details_page_bloc_export.dart';
+import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
+import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/navigator.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
 class PersonDetailsPage extends StatefulWidget {
@@ -66,9 +69,20 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
     var profileImage = Hero(
       tag: widget.posterHeroTag,
       transitionOnUserGestures: true,
-      child: Image.network(
-        '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.person.profilePath}',
-        fit: BoxFit.cover,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black87,
+              offset: Offset(1.0, 1.0),
+              blurRadius: 2.0,
+            ),
+          ],
+        ),
+        child: Image.network(
+          '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.person.profilePath}',
+          fit: BoxFit.fitHeight,
+        ),
       ),
     );
 
@@ -109,6 +123,7 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                         FlexibleSpaceBar(
                             centerTitle: true,
                             background: Material(
+                              color: AppColors.primaryColor,
                               child: profileImage,
                             )),
                         Align(
@@ -173,6 +188,8 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                           createBasicTitleSubtitleSection(context, '', state.details.biography),
                           createBasicTitleSubtitleSection(context, 'Birthday', state.details.birthday),
                           createBasicTitleSubtitleSection(context, 'Place of Birth', state.details.placeOfBirth),
+                          createBasicTitleSubtitleSection(context, 'Known for', ''),
+                          _createPersonRelatedMoviesSection(widget.person.knownFor),
                         ],
                       ),
                     ),
@@ -188,6 +205,38 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _createPersonRelatedMoviesSection(List<Movie> movies) {
+    return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        height: 224.3,
+        width: double.infinity,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: movies.length,
+          itemBuilder: (BuildContext context, int index) {
+            String cardHeroTag = 'card${this.hashCode}${movies[index].id}';
+            String ratingHeroTag = 'rating${this.hashCode}${movies[index].id}';
+            return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                child: GestureDetector(
+                  onTap: () =>
+                      goToMovieDetails(context, _bloc.moviesRepository, movies[index], cardHeroTag, ratingHeroTag),
+                  child: (movies[index].posterPath != null && movies[index].posterPath != '')
+                      ? MovieCard(
+                          withRating: false,
+                          withHero: true,
+                          imageHeroTag: cardHeroTag,
+                          ratingHeroTag: ratingHeroTag,
+                          posterPath: movies[index].posterPath,
+                        )
+                      : SizedBox(),
+                ),
+            );
+          },
+        ),
     );
   }
 }
