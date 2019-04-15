@@ -101,28 +101,30 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                 Theme.of(context).textTheme.body1.copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List<Widget>.generate((cast.length <= 16) ? cast.length : 16, (index) {
-                return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-                    child: GestureDetector(
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List<Widget>.generate((cast.length <= 16) ? cast.length : 16, (index) {
+              return Padding(
+                  padding: EdgeInsets.only(
+                    left: (index == 0) ? 16.0 : 0.0,
+                    right: 16.0,
+                    top: 12.0,
+                    bottom: 12.0,
+                  ),
+                  child: GestureDetector(
 //                      onTap: () => goToPersonDetails(context, _bloc.moviesRepository, case[index]),
-                      child: PersonCircleCard(
-                        width: 96.0,
-                        asStubCard: false,
-                        posterPath: cast[index].profilePath,
-                        actorName: cast[index].name,
-                        withSubTitle: true,
-                        subTitle: cast[index].character,
-                      ),
-                    ));
-              }),
-            ),
+                    child: PersonCircleCard(
+                      width: 96.0,
+                      asStubCard: false,
+                      posterPath: cast[index].profilePath,
+                      actorName: cast[index].name,
+                      withSubTitle: true,
+                      subTitle: cast[index].character,
+                    ),
+                  ));
+            }),
           ),
         ),
       ],

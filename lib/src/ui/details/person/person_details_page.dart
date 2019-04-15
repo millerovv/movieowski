@@ -199,7 +199,16 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                               ? createBasicTitleSubtitleSection(context, 'Place of Birth', state.details.placeOfBirth)
                               : SizedBox(),
                           widget.person.knownFor != null
-                              ? createBasicTitleSubtitleSection(context, 'Known for', '')
+                              ? Padding(
+                                  padding: EdgeInsets.only(left: 16.0, top: 16.0),
+                                  child: Text(
+                                    'Known for',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .body1
+                                        .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+                                  ),
+                                )
                               : SizedBox(),
                           widget.person.knownFor != null
                               ? _createPersonRelatedMoviesSection(widget.person.knownFor)
