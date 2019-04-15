@@ -4,6 +4,7 @@ import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_
 import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/ui/widget/person_circle_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/navigator.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 import 'package:intl/intl.dart';
 
@@ -12,7 +13,6 @@ class MovieMoreDetails extends StatefulWidget {
   _MovieMoreDetailsState createState() => _MovieMoreDetailsState();
 }
 
-//TODO: delete hardcoded genres and budget, format runtime correctly
 class _MovieMoreDetailsState extends State<MovieMoreDetails> {
   final formatCurrency = new NumberFormat.simpleCurrency();
   MovieDetailsPageBloc _bloc;
@@ -106,6 +106,7 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: List<Widget>.generate((cast.length <= 16) ? cast.length : 16, (index) {
+              String posterHeroTag = 'poster${this.hashCode}${cast[index].id}';
               return Padding(
                   padding: EdgeInsets.only(
                     left: (index == 0) ? 16.0 : 0.0,
@@ -114,7 +115,8 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                     bottom: 12.0,
                   ),
                   child: GestureDetector(
-//                      onTap: () => goToPersonDetails(context, _bloc.moviesRepository, case[index]),
+                      onTap: () => goToPersonDetails(context, _bloc.moviesRepository, cast[index].id, cast[index].name,
+                          cast[index].profilePath, posterHeroTag),
                     child: PersonCircleCard(
                       width: 96.0,
                       asStubCard: false,
@@ -122,6 +124,8 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                       actorName: cast[index].name,
                       withSubTitle: true,
                       subTitle: cast[index].character,
+                      withHero: true,
+                      posterHeroTag: posterHeroTag,
                     ),
                   ));
             }),

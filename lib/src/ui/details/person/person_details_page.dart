@@ -3,21 +3,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/person_details_page/person_details_page_bloc_export.dart';
-import 'package:movieowski/src/model/api/response/base_movies_response.dart';
-import 'package:movieowski/src/model/api/response/popular_people_response.dart';
+import 'package:movieowski/src/model/api/response/person_details_response.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
-import 'package:movieowski/src/utils/navigator.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 import 'package:date_format/date_format.dart';
 
 class PersonDetailsPage extends StatefulWidget {
-  final Person person;
+  final int personId;
+  final String name;
+  final String profilePath;
   final String posterHeroTag;
 
-  PersonDetailsPage({Key key, this.person, this.posterHeroTag})
-      : assert(person != null),
+  PersonDetailsPage({
+    Key key,
+    @required this.personId,
+    this.name,
+    this.profilePath,
+    this.posterHeroTag,
+  })  : assert(personId != null),
         super(key: key);
 
   @override
@@ -80,9 +85,9 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
             ),
           ],
         ),
-        child: (widget.person.profilePath != null && widget.person.profilePath.isNotEmpty)
+        child: (widget.profilePath != null && widget.profilePath.isNotEmpty)
             ? Image.network(
-                '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.person.profilePath}',
+                '${TmdbApiProvider.BASE_IMAGE_URL_W500}${widget.profilePath}',
                 fit: BoxFit.fitHeight,
               )
             : Image.asset('assets/person_placeholder.jpg', fit: BoxFit.fitHeight),
@@ -158,7 +163,7 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                             duration: Duration(milliseconds: titleAndBackButtonOpacityAnimationDurationMills),
                             child: Padding(
                               padding: EdgeInsets.only(bottom: _calculateAppBarTitleBottomPadding(collapsePercent)),
-                              child: Text(widget.person.name,
+                              child: Text(widget.name,
                                   style: Theme.of(context).textTheme.headline.copyWith(
                                       color: AppColors.primaryWhite,
                                       fontSize: _calculateAppBarTitleFontSize(collapsePercent))),
@@ -198,7 +203,7 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                           state.details.placeOfBirth != null
                               ? createBasicTitleSubtitleSection(context, 'Place of Birth', state.details.placeOfBirth)
                               : SizedBox(),
-                          widget.person.knownFor != null
+                          state.details.movieCredits != null
                               ? Padding(
                                   padding: EdgeInsets.only(left: 16.0, top: 16.0),
                                   child: Text(
@@ -210,8 +215,9 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                                   ),
                                 )
                               : SizedBox(),
-                          widget.person.knownFor != null
-                              ? _createPersonRelatedMoviesSection(widget.person.knownFor)
+                          state.details.movieCredits != null
+                              ? _createPersonRelatedMoviesSection(
+                                  state.details.knownForDepartment, state.details.movieCredits)
                               : SizedBox(),
                         ],
                       ),
@@ -231,31 +237,43 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
     );
   }
 
-  Widget _createPersonRelatedMoviesSection(List<Movie> movies) {
+  //TODO: Navigation to movie details page. Add character name or department for each movie and maybe release date?
+  //TODO: Maybe also sort by release date
+  Widget _createPersonRelatedMoviesSection(String knownForDepartment, MovieCredits credits) {
+    List<dynamic> relevantCredits = [];
+    if (knownForDepartment == 'Acting') {
+      credits.cast.sort((a, b) => b.popularity.compareTo(a.popularity));
+      relevantCredits = credits.cast;
+    } else {
+      credits.crew.sort((a, b) => b.popularity.compareTo(a.popularity));
+      relevantCredits = credits.crew;
+    }
+    debugPrint('knownForDepartment = acting :: ${knownForDepartment == 'Acting'}');
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8.0),
       height: 224.3,
       width: double.infinity,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: movies.length,
+        itemCount: relevantCredits.length,
         itemBuilder: (BuildContext context, int index) {
-          String cardHeroTag = 'card${this.hashCode}${movies[index].id}';
-          String ratingHeroTag = 'rating${this.hashCode}${movies[index].id}';
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-            child: GestureDetector(
-              onTap: () => goToMovieDetails(context, _bloc.moviesRepository, movies[index], cardHeroTag, ratingHeroTag),
-              child: (movies[index].posterPath != null && movies[index].posterPath != '')
-                  ? MovieCard(
+          dynamic credit = relevantCredits[index];
+          String cardHeroTag = 'card${this.hashCode}${credit.id}';
+          String ratingHeroTag = 'rating${this.hashCode}${credit.id}';
+          return GestureDetector(
+//              onTap: () => goToMovieDetails(context, _bloc.moviesRepository, movies[index], cardHeroTag, ratingHeroTag),
+            child: (credit.posterPath != null && credit.posterPath != '')
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                    child: MovieCard(
                       withRating: false,
                       withHero: true,
                       imageHeroTag: cardHeroTag,
                       ratingHeroTag: ratingHeroTag,
-                      posterPath: movies[index].posterPath,
-                    )
-                  : SizedBox(),
-            ),
+                      posterPath: credit.posterPath,
+                    ),
+                  )
+                : SizedBox(),
           );
         },
       ),

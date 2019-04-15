@@ -30,8 +30,9 @@ class MoviesRepository {
           {int pageIndex = 1, String language = Languages.english}) async =>
       tmdpApiProvider.getPopularPeople(pageIndex: pageIndex, language: language);
 
-  Future<PersonDetailsResponseRoot> fetchPersonDetails({int personId, language = Languages.english}) async =>
-      tmdpApiProvider.getPersonDetails(personId: personId, language: language);
+  Future<PersonDetailsResponseRoot> fetchPersonDetails(
+      {int personId, language = Languages.english, withMovieCredits = false}) async =>
+      tmdpApiProvider.getPersonDetails(personId: personId, language: language, withMovieCredits: withMovieCredits);
 
   /// Chained API request. Firstly we get list of popular people Ids, then for each Id
   /// we request additional details about this person

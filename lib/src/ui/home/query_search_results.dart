@@ -60,8 +60,6 @@ class _QuerySearchResultsState extends State<QuerySearchResults> {
                   builder: (context, state) {
                     String genres;
                     if (state is MovieGenresIsLoaded) {
-                      debugPrint('for movie:${movie.title} genreIds = ${movie.genreIds}');
-                      debugPrint('all genres = ${state.genres.toString()}');
                       genres = state.genres
                           .where((genre) => movie.genreIds.contains(genre.id))
                           .map((genre) => genre.name)
@@ -101,7 +99,8 @@ class _QuerySearchResultsState extends State<QuerySearchResults> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: GestureDetector(
-              onTap: () => goToPersonDetails(context, widget.moviesRepository, person, imageHeroTag),
+              onTap: () => goToPersonDetails(context, widget.moviesRepository, person.id, person.name,
+                  person.profilePath, imageHeroTag),
               child: ActorListCard(
                 photoPath: person.profilePath,
                 name: person.name,

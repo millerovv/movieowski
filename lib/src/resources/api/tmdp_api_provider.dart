@@ -79,14 +79,19 @@ class TmdbApiProvider extends BaseApiProvider {
 
   /// Request person detailed information by id
   /// Documentation: https://developers.themoviedb.org/3/people/get-person-details
-  Future<PersonDetailsResponseRoot> getPersonDetails({int personId, language = Languages.english}) async {
+  Future<PersonDetailsResponseRoot> getPersonDetails(
+      {int personId, language = Languages.english, withMovieCredits = false}) async {
+    Map<String, String> params = {
+      'api_key': API_KEY,
+      'language': language,
+    };
+    if (withMovieCredits) {
+      params['append_to_response'] = 'movie_credits';
+    }
     var url = Uri.https(
       BASE_URL,
       '3/person/$personId',
-      <String, String>{
-        'api_key': API_KEY,
-        'language': language,
-      },
+      params,
     );
 
     var response = await getRequest(url);
