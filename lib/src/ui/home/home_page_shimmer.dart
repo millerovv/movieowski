@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:movieowski/src/ui/widget/actor_card.dart';
+import 'package:movieowski/src/ui/widget/person_circle_card.dart';
 import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
@@ -88,7 +88,7 @@ class HomePageShimmer extends StatelessWidget {
               children: List<Widget>.generate(_calculateNumberOfActorCardsForDisplayWidth(context), (index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-                  child: ActorCircleImage(asStubCard: true),
+                  child: PersonCircleCard(asStubCard: true),
                 );
               }),
             )),
@@ -146,7 +146,7 @@ class HomePageShimmer extends StatelessWidget {
 
   int _calculateNumberOfActorCardsForDisplayWidth(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
-    double actorCardWidth = ActorCircleImage.defaultWidth;
+    double actorCardWidth = PersonCircleCard.defaultWidth;
     return (displayWidth / actorCardWidth).round() + 1;
   }
 }

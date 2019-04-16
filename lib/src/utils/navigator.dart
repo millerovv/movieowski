@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
 import 'package:movieowski/src/blocs/person_details_page/bloc_person_details_page.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
-import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/details/movie/movie_details_page.dart';
 import 'package:movieowski/src/ui/details/person/person_details_page.dart';
@@ -34,15 +33,19 @@ goToMovieDetails(
 goToPersonDetails(
     BuildContext context,
     MoviesRepository repository,
-    Person person,
+    int personId,
+    String name,
+    String profilePath,
     String posterHeroTag,
     ) {
   _pushWidgetWithDuration(
     context,
     BlocProvider<PersonDetailsPageBloc>(
-      bloc: PersonDetailsPageBloc(repository, person.id),
+      bloc: PersonDetailsPageBloc(repository, personId),
       child: PersonDetailsPage(
-        person: person,
+        personId: personId,
+        profilePath: profilePath,
+        name: name,
         posterHeroTag: posterHeroTag,
       ),
     ),

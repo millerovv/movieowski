@@ -49,12 +49,12 @@ class _MovieowskiAppState extends State<MovieowskiApp> {
 
   @override
   void dispose() {
-//    widget.popularActorsSectionBloc?.dispose();
-//    widget.nowPlayingMoviesSectionBloc?.dispose();
-//    widget.trendingMoviesSectionBloc?.dispose();
-//    widget.upcomingMoviesSectionBloc?.dispose();
-//    widget.movieGenresSectionBloc?.dispose();
-//    _homePageBloc?.dispose();
+    widget.popularActorsSectionBloc?.dispose();
+    widget.nowPlayingMoviesSectionBloc?.dispose();
+    widget.trendingMoviesSectionBloc?.dispose();
+    widget.upcomingMoviesSectionBloc?.dispose();
+    widget.movieGenresSectionBloc?.dispose();
+    _homePageBloc?.dispose();
     super.dispose();
   }
 

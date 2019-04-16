@@ -48,7 +48,7 @@ class DBProvider {
 	Future<List<Genre>> getAllGenres() async {
 		final db = await database;
 		var res = await db.query('Genres');
-		final List<Genre> genres = res.isNotEmpty ? res.map((r) => Genre.fromJson(r)).toList() : [];
+		final List<Genre> genres = res.isNotEmpty ? res.map((r) => Genre.fromDbJson(r)).toList() : [];
 		return genres;
 	}
 
@@ -58,6 +58,7 @@ class DBProvider {
 	}
 
 	Future<void> dropDatabase() async {
+		Log.d('DROP DATABASE', 'DB');
 		var databasesPath = await getDatabasesPath();
 		String path = join(databasesPath, "movieowski.db");
 		await deleteDatabase(path);

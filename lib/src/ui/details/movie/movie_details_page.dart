@@ -164,6 +164,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       heroTag: widget.numberRatingHeroTag,
       rating: widget.movie.voteAverage,
       color: calculateRatingColor(widget.movie.voteAverage),
+      diameter: 48.0,
     );
 
     var optionButtons = AnimatedOpacity(
@@ -247,7 +248,10 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
       bloc: _bloc,
       builder: (BuildContext context, MovieDetailsPageState state) {
         if (state is MovieDetailsIsLoaded) {
-          _animatedTitleKey.currentState?.prepareBoardingAnimation();
+          if (boardingAnimationController.status != AnimationStatus.completed) {
+            _animatedTitleKey.currentState?.prepareBoardingAnimation();
+            animatedTitlePreparedForTransitionAnim = false;
+          }
           boardingAnimationController.forward();
           ratingAnimationController.forward();
           return AnimatedMovieTitle(

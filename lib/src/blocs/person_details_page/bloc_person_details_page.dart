@@ -25,7 +25,8 @@ class PersonDetailsPageBloc extends Bloc<PersonDetailsPageEvent, PersonDetailsPa
 		if (event is FetchPersonDetails) {
 			yield PersonDetailsIsLoading();
 			try {
-				PersonDetailsResponseRoot details = await _moviesRepository.fetchPersonDetails(personId: _personId);
+				PersonDetailsResponseRoot details = await _moviesRepository
+						.fetchPersonDetails(personId: _personId, withMovieCredits: true);
 				yield PersonDetailsIsLoaded(details);
 			} on ApiRequestException catch (e, stacktrace) {
 				Log.e(e, stacktrace);

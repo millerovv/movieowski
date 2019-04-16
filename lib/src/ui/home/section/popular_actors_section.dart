@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/actors/popular_actors_section_bloc_export.dart';
-import 'package:movieowski/src/ui/widget/actor_card.dart';
+import 'package:movieowski/src/model/api/response/popular_people_response.dart';
+import 'package:movieowski/src/ui/widget/person_circle_card.dart';
 import 'package:movieowski/src/utils/navigator.dart';
 
 class PopularActorsSection extends StatefulWidget {
@@ -43,19 +44,20 @@ class _PopularActorsSectionState extends State<PopularActorsSection> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: List<Widget>.generate(state.actors.length, (index) {
-                    String posterHeroTag = 'poster${this.hashCode}${state.actors[index].id}';
+                    Person person = state.actors[index];
+                    String posterHeroTag = 'poster${this.hashCode}${person.id}';
                     return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
                         child: GestureDetector(
-                          onTap: () => goToPersonDetails(context, _bloc.moviesRepository, state.actors[index],
-                              posterHeroTag),
-                          child: (state.actors[index].profilePath != null && state.actors[index].profilePath != '')
-                              ? ActorCircleImage(
+                          onTap: () => goToPersonDetails(context, _bloc.moviesRepository, person.id, person.name,
+                              person.profilePath, posterHeroTag),
+                          child: (person.profilePath != null && person.profilePath != '')
+                              ? PersonCircleCard(
                                   asStubCard: false,
                                   withHero: true,
                                   posterHeroTag: posterHeroTag,
-                                  posterPath: state.actors[index].profilePath,
-                                  actorName: state.actors[index].name)
+                                  posterPath: person.profilePath,
+                                  actorName: person.name)
                               : SizedBox(),
                         ));
                   }),
