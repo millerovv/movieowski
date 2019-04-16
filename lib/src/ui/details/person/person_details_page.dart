@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/person_details_page/person_details_page_bloc_export.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
+import 'package:movieowski/src/model/utils/converters.dart';
 import 'package:movieowski/src/resources/api/tmdp_api_provider.dart';
 import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/navigator.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 import 'package:date_format/date_format.dart';
 
@@ -237,8 +239,6 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
     );
   }
 
-  //TODO: Navigation to movie details page. Add character name or department for each movie and maybe release date?
-  //TODO: Maybe also sort by release date
   Widget _createPersonRelatedMoviesSection(String knownForDepartment, MovieCredits credits) {
     List<dynamic> relevantCredits = [];
     if (knownForDepartment == 'Acting') {
@@ -248,9 +248,7 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
       credits.crew.sort((a, b) => b.popularity.compareTo(a.popularity));
       relevantCredits = credits.crew;
     }
-    debugPrint('knownForDepartment = acting :: ${knownForDepartment == 'Acting'}');
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
       height: 224.3,
       width: double.infinity,
       child: ListView.builder(
@@ -261,15 +259,25 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
           String cardHeroTag = 'card${this.hashCode}${credit.id}';
           String ratingHeroTag = 'rating${this.hashCode}${credit.id}';
           return GestureDetector(
-//              onTap: () => goToMovieDetails(context, _bloc.moviesRepository, movies[index], cardHeroTag, ratingHeroTag),
+            onTap: () => goToMovieDetails(
+                  context,
+                  _bloc.moviesRepository,
+                  credit.runtimeType == Cast ? convertCastToMovie(credit) : convertCrewToMovie(credit),
+                  cardHeroTag,
+                  ratingHeroTag,
+                ),
             child: (credit.posterPath != null && credit.posterPath != '')
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                    padding: EdgeInsets.only(
+                      left: (index == 0) ? 16.0 : 0.0,
+                      right: 16.0,
+                      top: 12.0,
+                      bottom: 12.0,
+                    ),
                     child: MovieCard(
                       withRating: false,
                       withHero: true,
                       imageHeroTag: cardHeroTag,
-                      ratingHeroTag: ratingHeroTag,
                       posterPath: credit.posterPath,
                     ),
                   )

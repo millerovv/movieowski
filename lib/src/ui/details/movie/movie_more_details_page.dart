@@ -58,7 +58,7 @@ class _MovieMoreDetailsState extends State<MovieMoreDetails> {
                   state.details.productionCountries != null
                       ? createBasicTitleSubtitleSection(context, 'Country', state.details.productionCountries[0].name)
                       : SizedBox(),
-                  state.details.budget != null
+                  state.details.budget != null && state.details.budget != 0
                       ? createBasicTitleSubtitleSection(context, 'Budget', formatCurrency.format(state.details.budget))
                       : SizedBox(),
                   state.details.runtime != null
