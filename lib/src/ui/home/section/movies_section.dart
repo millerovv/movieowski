@@ -46,11 +46,13 @@ class _MoviesSectionState extends State<MoviesSection> {
             children: <Widget>[
               Text(_bloc.sectionHeader, style: Theme.of(context).textTheme.headline),
               _bloc.withSeeAllOption
-                  ? Text('See all',
-                      style: Theme.of(context)
-                          .textTheme
-                          .body1
-                          .copyWith(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold))
+                  ? GestureDetector(
+                      onTap: () => goToSeeAllMovies(context),
+                      child: Text('See all',
+                          style: Theme.of(context)
+                              .textTheme
+                              .body1
+                              .copyWith(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)))
                   : Container(),
             ],
           ),

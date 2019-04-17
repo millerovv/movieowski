@@ -6,6 +6,7 @@ import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/details/movie/movie_details_page.dart';
 import 'package:movieowski/src/ui/details/person/person_details_page.dart';
+import 'package:movieowski/src/ui/see_all/see_all_movies_page.dart';
 
 const int movieDetailsTransitionDurationMills = 500;
 
@@ -51,6 +52,10 @@ goToPersonDetails(
     ),
     movieDetailsTransitionDurationMills,
   );
+}
+
+goToSeeAllMovies(BuildContext context) {
+  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SeeAllMoviesPage()));
 }
 
 void _pushWidgetWithDuration(BuildContext context, Widget widget, int durationMills) {
