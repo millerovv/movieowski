@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
 import 'package:movieowski/src/blocs/person_details_page/bloc_person_details_page.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
@@ -55,7 +56,10 @@ goToPersonDetails(
 }
 
 goToSeeAllMovies(BuildContext context) {
-  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SeeAllMoviesPage()));
+  MovieGenresSectionBloc genresBloc = BlocProvider.of<MovieGenresSectionBloc>(context);
+  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) =>
+      BlocProvider(bloc: genresBloc, child: SeeAllMoviesPage())
+  ));
 }
 
 void _pushWidgetWithDuration(BuildContext context, Widget widget, int durationMills) {

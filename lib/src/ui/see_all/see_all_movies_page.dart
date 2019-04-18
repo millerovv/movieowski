@@ -1,11 +1,194 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
+import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
-class CategoriesPanel extends StatelessWidget {
+class _GenreListItem {
+  _GenreListItem(this.genre, this.selected);
+
+  final Genre genre;
+
+  bool selected;
+}
+
+class GenresView extends StatefulWidget {
+  GenresView({this.selectedGenreIds});
+
+  final Set<int> selectedGenreIds;
+
+  @override
+  _GenresViewState createState() => _GenresViewState();
+}
+
+class _GenresViewState extends State<GenresView> {
+  MovieGenresSectionBloc _bloc;
+  Set<int> selectedItemsIds;
+
+  @override
+  void initState() {
+    _bloc = BlocProvider.of<MovieGenresSectionBloc>(context);
+    selectedItemsIds = widget.selectedGenreIds ?? Set();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      color: AppColors.darkerPrimary,
+      child: BlocBuilder(
+        bloc: _bloc,
+        builder: (context, MovieGenresSectionState state) {
+          if (state is MovieGenresIsLoaded) {
+            List<_GenreListItem> listItems = state.genres
+                .map((genre) => _GenreListItem(genre, selectedItemsIds.contains(genre.id) ? true : false))
+                .toList();
+            return ListView.builder(
+              itemCount: state.genres.length,
+              itemBuilder: (context, index) {
+                _GenreListItem item = listItems[index];
+                return Padding(
+                  padding: EdgeInsets.only(
+                    top: index == 0 ? 16.0 : 0.0,
+                    bottom: 16.0,
+                    left: 16.0,
+                    right: 16.0,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (item.selected) {
+                          selectedItemsIds.remove(item.genre.id);
+                          item.selected = false;
+                        } else {
+                          selectedItemsIds.add(item.genre.id);
+                          item.selected = true;
+                        }
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      decoration: BoxDecoration(
+                        color: item.selected ? AppColors.accentColor : AppColors.lighterPrimary,
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Center(
+                          child: Text(item.genre.name,
+                              style: Theme.of(context).textTheme.subhead.copyWith(color: AppColors.primaryWhite)),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class BackdropPanel extends StatelessWidget {
+  BackdropPanel({
+    Key key,
+    this.onMenuButtonClick,
+    this.menuButtonAnimation,
+    this.onVerticalDragUpdate,
+    this.onVerticalDragEnd,
+  }) : super(key: key);
+
+  final Listenable menuButtonAnimation;
+  final VoidCallback onMenuButtonClick;
+  final GestureDragUpdateCallback onVerticalDragUpdate;
+  final GestureDragEndCallback onVerticalDragEnd;
+
+  Widget _createAppBar(BuildContext context) {
+    return Container(
+      color: Colors.lightBlue,
+      child: Material(
+        elevation: 3.0,
+        child: Container(
+          height: kToolbarHeight,
+          decoration: BoxDecoration(
+            color: AppColors.primaryColor,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: Icon(
+                    Icons.keyboard_arrow_left,
+                    size: 32.0,
+                    color: AppColors.primaryWhite,
+                  ),
+                ),
+              ),
+              Text(
+                'In theatres',
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
+              ),
+              GestureDetector(
+                onTap: onMenuButtonClick,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: AnimatedIcon(
+                    icon: AnimatedIcons.menu_close,
+                    semanticLabel: 'close',
+                    progress: menuButtonAnimation,
+                    size: 24.0,
+                    color: AppColors.primaryWhite,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ScrollConfiguration(
+        behavior: NoGlowBehavior(),
+        child: NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverAppBarDelegate(
+                    height: kToolbarHeight,
+                    child: GestureDetector(
+                      onVerticalDragUpdate: onVerticalDragUpdate,
+                      onVerticalDragEnd: onVerticalDragEnd,
+                      child: _createAppBar(context),
+                    ),
+                  ),
+                ),
+              ];
+            },
+            body: Container(
+              color: Colors.blue,
+            )),
+      ),
+    );
   }
 }
 
@@ -15,7 +198,8 @@ class SeeAllMoviesPage extends StatefulWidget {
 }
 
 class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerProviderStateMixin {
-  static const int animationDuration = 400;
+  static const int animationDuration = 300;
+  final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
   AnimationController _controller;
 
   @override
@@ -30,88 +214,80 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
     super.dispose();
   }
 
-  Widget _createAppBar() {
-    return Container(
-      color: Colors.lightBlue,
-      child: Material(
-        elevation: 3.0,
-        child: Container(
-          height: kToolbarHeight,
-          decoration: BoxDecoration(
-            color: AppColors.primaryColor,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 6.0),
-                child: Icon(
-                  Icons.keyboard_arrow_left,
-                  size: 32.0,
-                  color: AppColors.primaryWhite,
-                ),
-              ),
-              Text(
-                'In theatres',
-                style: Theme.of(context)
-                    .textTheme
-                    .subhead
-                    .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: Icon(
-                  Icons.menu,
-                  size: 24.0,
-                  color: AppColors.primaryWhite,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  bool get _backdropPanelFolded {
+    final AnimationStatus status = _controller.status;
+    return status == AnimationStatus.completed;
+  }
+
+  double get _backdropHeight {
+    final RenderBox renderBox = _backdropKey.currentContext.findRenderObject();
+    return renderBox.size.height;
+  }
+
+  void _toggleBackdropPanelFolding() {
+    _backdropPanelFolded ? _controller.reverse() : _controller.forward();
+  }
+
+  // By design: the panel can only be opened with a swipe. To close the panel
+  // the user must either tap its heading or the backdrop's menu icon.
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    if (_controller.isAnimating || _controller.status == AnimationStatus.dismissed) return;
+
+    _controller.value += details.primaryDelta / (_backdropHeight ?? details.primaryDelta);
+  }
+
+  void _handleDragEnd(DragEndDetails details) {
+    if (_controller.isAnimating || _controller.status == AnimationStatus.dismissed) return;
+
+    final double flingVelocity = details.velocity.pixelsPerSecond.dy / _backdropHeight;
+    if (flingVelocity > 0.0)
+      _controller.fling(velocity: math.max(2.0, -flingVelocity));
+    else if (flingVelocity < 0.0)
+      _controller.fling(velocity: math.min(-2.0, -flingVelocity));
+    else
+      _controller.fling(velocity: _controller.value < 0.5 ? -2.0 : 2.0);
   }
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          color: Colors.pink,
-        ),
-        Container(
-          height: kStatusBarHeight,
-          color: AppColors.primaryColor,
-        ),
-        Positioned(
-          top: 50,
-          left: 0,
-          child: Container(
-            height: 700,
-            width: MediaQuery.of(context).size.width,
-            child: Scaffold(
-              body: ScrollConfiguration(
-                behavior: NoGlowBehavior(),
-                child: NestedScrollView(
-                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-                    return <Widget>[
-                      SliverPersistentHeader(
-                        pinned: true,
-                        delegate: _SliverAppBarDelegate(
-                          height: kToolbarHeight,
-                          child: _createAppBar(),
-                        ),
-                      ),
-                    ];
-                  },
-                  body: Container(color: Colors.blue,)
+    final Animation<double> scaffoldPositionOffsetFromTop = Tween<double>(
+      begin: kStatusBarHeight,
+      end: MediaQuery.of(context).size.height - kToolbarHeight,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+
+    return AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) => Stack(
+              key: _backdropKey,
+              children: <Widget>[
+                Container(
+                  child: GenresView(),
                 ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+                AnimatedContainer(
+                  height: kStatusBarHeight,
+                  duration: Duration(milliseconds: animationDuration),
+                  color: _controller.status != AnimationStatus.dismissed
+                      ? AppColors.darkerPrimary
+                      : AppColors.primaryColor,
+                ),
+                Positioned(
+                  top: scaffoldPositionOffsetFromTop.value,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height - kStatusBarHeight,
+                    width: MediaQuery.of(context).size.width,
+                    child: BackdropPanel(
+                      onMenuButtonClick: _toggleBackdropPanelFolding,
+                      menuButtonAnimation: _controller.view,
+                      onVerticalDragUpdate: _handleDragUpdate,
+                      onVerticalDragEnd: _handleDragEnd,
+                    ),
+                  ),
+                ),
+              ],
+            ));
   }
 
   @override
@@ -127,20 +303,21 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     @required this.height,
     @required this.child,
   });
+
   final double height;
   final Widget child;
+
   @override
   double get minExtent => height;
+
   @override
   double get maxExtent => height;
+
   @override
-  Widget build(
-      BuildContext context,
-      double shrinkOffset,
-      bool overlapsContent)
-  {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return new SizedBox.expand(child: child);
   }
+
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
     return height != oldDelegate.height || child != oldDelegate.child;
