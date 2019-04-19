@@ -10,6 +10,7 @@ import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/home/home_page.dart';
 import 'package:movieowski/src/utils/consts.dart';
 
+//TODO: Fix equatable implementation
 /// Base application class
 class MovieowskiApp extends StatefulWidget {
   final MoviesRepository moviesRepository;

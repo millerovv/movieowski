@@ -58,7 +58,7 @@ goToPersonDetails(
 goToSeeAllMovies(BuildContext context) {
   MovieGenresSectionBloc genresBloc = BlocProvider.of<MovieGenresSectionBloc>(context);
   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) =>
-      BlocProvider(bloc: genresBloc, child: SeeAllMoviesPage())
+      BlocProvider(bloc: genresBloc, child: SeeAllMoviesPage(moviesType: SeeAllMoviesType.POPULAR_BY_CATEGORY))
   ));
 }
 
