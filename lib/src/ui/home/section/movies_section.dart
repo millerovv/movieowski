@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/movies/movies_section_bloc_export.dart';
+import 'package:movieowski/src/ui/see_all/see_all_movies_page.dart';
 import 'package:movieowski/src/ui/widget/movie_card.dart';
 import 'package:movieowski/src/utils/navigator.dart';
 
@@ -32,43 +33,58 @@ class _MoviesSectionState extends State<MoviesSection> {
     }
   }
 
+  SeeAllMoviesType _chooseSeeAllMoviesTypePage() {
+    switch (widget.sectionType) {
+      case MovieSectionType.IN_THEATRES:
+        return SeeAllMoviesType.IN_THEATRES;
+        break;
+      case MovieSectionType.UPCOMING:
+        return SeeAllMoviesType.UPCOMING;
+        break;
+      default:
+        return null;
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+    return BlocBuilder<MoviesSectionEvent, MoviesSectionState>(
+      bloc: _bloc,
+      builder: (BuildContext context, MoviesSectionState state) {
+        if (state is MoviesError) {
+          return Center(
+            child: Text(
+              state.errorMessage,
+              style: Theme.of(context).textTheme.headline,
+            ),
+          );
+        } else if (state is MoviesIsLoaded) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(_bloc.sectionHeader, style: Theme.of(context).textTheme.headline),
-              _bloc.withSeeAllOption
-                  ? GestureDetector(
-                      onTap: () => goToSeeAllMovies(context),
-                      child: Text('See all',
-                          style: Theme.of(context)
-                              .textTheme
-                              .body1
-                              .copyWith(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)))
-                  : Container(),
-            ],
-          ),
-        ),
-        BlocBuilder<MoviesSectionEvent, MoviesSectionState>(
-          bloc: _bloc,
-          builder: (BuildContext context, MoviesSectionState state) {
-            if (state is MoviesError) {
-              return Center(
-                child: Text(
-                  state.errorMessage,
-                  style: Theme.of(context).textTheme.headline,
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: <Widget>[
+                    Text(_bloc.sectionHeader, style: Theme.of(context).textTheme.headline),
+                    _bloc.withSeeAllOption
+                        ? GestureDetector(
+                            onTap: () => goToSeeAllMovies(context, _chooseSeeAllMoviesTypePage(),
+                                preloadedFirstPage: state.movies, maxPages: state.maxPages),
+                            child: Text('See all',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .body1
+                                    .copyWith(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)))
+                        : Container(),
+                  ],
                 ),
-              );
-            } else if (state is MoviesIsLoaded) {
-              return Container(
+              ),
+              Container(
                 height: 224.3,
                 width: double.infinity,
                 child: ListView.builder(
@@ -102,13 +118,13 @@ class _MoviesSectionState extends State<MoviesSection> {
                   },
                   itemCount: state.movies.length,
                 ),
-              );
-            } else {
-              return SizedBox();
-            }
-          },
-        )
-      ],
+              ),
+            ],
+          );
+        } else {
+          return SizedBox();
+        }
+      },
     );
   }
 }

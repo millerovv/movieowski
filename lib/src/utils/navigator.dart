@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
 import 'package:movieowski/src/blocs/movie_details_page/movie_details_page_bloc_export.dart';
 import 'package:movieowski/src/blocs/person_details_page/bloc_person_details_page.dart';
+import 'package:movieowski/src/blocs/see_all_page/movie_list_bloc_export.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
+import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/details/movie/movie_details_page.dart';
 import 'package:movieowski/src/ui/details/person/person_details_page.dart';
@@ -33,13 +35,13 @@ goToMovieDetails(
 }
 
 goToPersonDetails(
-    BuildContext context,
-    MoviesRepository repository,
-    int personId,
-    String name,
-    String profilePath,
-    String posterHeroTag,
-    ) {
+  BuildContext context,
+  MoviesRepository repository,
+  int personId,
+  String name,
+  String profilePath,
+  String posterHeroTag,
+) {
   _pushWidgetWithDuration(
     context,
     BlocProvider<PersonDetailsPageBloc>(
@@ -55,11 +57,21 @@ goToPersonDetails(
   );
 }
 
-goToSeeAllMovies(BuildContext context) {
+goToSeeAllMovies(BuildContext context, SeeAllMoviesType type,
+    {Genre sortedByGenre, List<Movie> preloadedFirstPage, int maxPages}) {
   MovieGenresSectionBloc genresBloc = BlocProvider.of<MovieGenresSectionBloc>(context);
-  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) =>
-      BlocProvider(bloc: genresBloc, child: SeeAllMoviesPage(moviesType: SeeAllMoviesType.POPULAR_BY_CATEGORY))
-  ));
+  MovieListBloc movieListBloc =
+      MovieListBloc(type, genresBloc.moviesRepository, preloadedFirstPage: preloadedFirstPage, maxPages: maxPages);
+  Navigator.of(context).push(MaterialPageRoute(
+      builder: (BuildContext context) => BlocProviderTree(
+              blocProviders: [
+                BlocProvider<MovieGenresSectionBloc>(bloc: genresBloc),
+                BlocProvider<MovieListBloc>(bloc: movieListBloc),
+              ],
+              child: SeeAllMoviesPage(
+                moviesType: type,
+                chosenGenre: sortedByGenre,
+              ))));
 }
 
 void _pushWidgetWithDuration(BuildContext context, Widget widget, int durationMills) {
@@ -69,7 +81,7 @@ void _pushWidgetWithDuration(BuildContext context, Widget widget, int durationMi
 }
 
 void _pushWidgetWithFade(BuildContext context, Widget widget, int durationMills) {
-    Navigator.of(context).push(
+  Navigator.of(context).push(
     PageRouteBuilder(
         transitionDuration:
             (durationMills != null) ? Duration(milliseconds: durationMills) : const Duration(milliseconds: 300),

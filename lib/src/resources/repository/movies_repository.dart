@@ -4,6 +4,7 @@ import 'package:movieowski/src/model/api/response/movie_details_with_credits_res
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/now_playing_movies_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
+import 'package:movieowski/src/model/api/response/popular_movies_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/model/api/response/search_movies_response.dart';
 import 'package:movieowski/src/model/api/response/search_people_response.dart';
@@ -22,6 +23,10 @@ class MoviesRepository {
 
   Future<TrendingMoviesResponseRoot> fetchTrendingMovies() => tmdpApiProvider.getTrendingMovies();
 
+  Future<PopularMoviesResponseRoot> fetchPopularMovies(
+          {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) =>
+      tmdpApiProvider.getPopularMovies(pageIndex: pageIndex, language: language, region: region);
+
   Future<NowPlayingMoviesResponseRoot> fetchNowPlayingMovies(
           {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) =>
       tmdpApiProvider.getNowPlayingMovies(pageIndex: pageIndex, language: language, region: region);
@@ -31,7 +36,7 @@ class MoviesRepository {
       tmdpApiProvider.getPopularPeople(pageIndex: pageIndex, language: language);
 
   Future<PersonDetailsResponseRoot> fetchPersonDetails(
-      {int personId, language = Languages.english, withMovieCredits = false}) async =>
+          {int personId, language = Languages.english, withMovieCredits = false}) async =>
       tmdpApiProvider.getPersonDetails(personId: personId, language: language, withMovieCredits: withMovieCredits);
 
   /// Chained API request. Firstly we get list of popular people Ids, then for each Id

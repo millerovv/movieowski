@@ -3,7 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
+import 'package:movieowski/src/blocs/see_all_page/movie_list_bloc_export.dart';
+import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
+import 'package:movieowski/src/ui/widget/movie_list_card.dart';
 import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/ui_utils.dart';
 
@@ -102,6 +105,95 @@ class _GenresViewState extends State<GenresView> {
   }
 }
 
+/// View on the front with long list of movies that fit requested genres
+class MoviesListView extends StatefulWidget {
+  MoviesListView({this.genres = const []});
+
+  final List<Genre> genres;
+
+  @override
+  _MoviesListViewState createState() => _MoviesListViewState();
+}
+
+class _MoviesListViewState extends State<MoviesListView> {
+  MovieListBloc _bloc;
+
+  @override
+  void initState() {
+    _bloc = BlocProvider.of<MovieListBloc>(context);
+    super.initState();
+  }
+
+  Widget _buildMovieCard(List<Movie> movies, int index) {
+    if (index >= movies.length) {
+      _bloc.dispatch(FetchMovies(genres: widget.genres));
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    Movie movie = movies[index];
+    if (movie == null) {
+      return SizedBox();
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16.0,
+        right: 16.0,
+        top: (index == 0) ? 0.0 : 8.0,
+        bottom: (index == movies.length - 1) ? 16.0 : 0,
+      ),
+      child: GestureDetector(
+        child: MovieListCard(
+          posterPath: movie.posterPath,
+          rating: movie.voteAverage,
+          title: movie.title,
+          releaseYear: movie.releaseDate.split('-')[0],
+          genres: 'Adventure, Animation, Documentary',
+          withHero: false,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.primaryColor,
+      child: BlocBuilder(
+        bloc: _bloc,
+        builder: (context, MovieListState state) {
+          if (state is MoviesEmpty) {
+            _bloc.dispatch(FetchMovies(genres: widget.genres));
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is PagesLoaded) {
+            return ListView.builder(
+                itemCount: (state.movies == null) ? 0 : state.movies.length + (state.allPagesLoaded ? 0 : 1),
+                itemBuilder: (context, index) {
+                  return _buildMovieCard(state.movies, index);
+                });
+          } else {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'Error occured while trying to fetch movies from server :(',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headline.copyWith(color: AppColors.primaryWhite),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
 class BackdropPanel extends StatelessWidget {
   BackdropPanel({
     Key key,
@@ -111,6 +203,7 @@ class BackdropPanel extends StatelessWidget {
     this.menuButtonAnimation,
     this.onVerticalDragUpdate,
     this.onVerticalDragEnd,
+    this.chosenGenres = const [],
   }) : super(key: key);
 
   final String title;
@@ -119,6 +212,7 @@ class BackdropPanel extends StatelessWidget {
   final VoidCallback onMenuButtonClick;
   final GestureDragUpdateCallback onVerticalDragUpdate;
   final GestureDragEndCallback onVerticalDragEnd;
+  final List<Genre> chosenGenres;
 
   Widget _createAppBar(BuildContext context) {
     return Container(
@@ -192,24 +286,23 @@ class BackdropPanel extends StatelessWidget {
       body: ScrollConfiguration(
         behavior: NoGlowBehavior(),
         child: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _SliverAppBarDelegate(
-                    height: kToolbarHeight,
-                    child: GestureDetector(
-                      onVerticalDragUpdate: onVerticalDragUpdate,
-                      onVerticalDragEnd: onVerticalDragEnd,
-                      child: _createAppBar(context),
-                    ),
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _SliverAppBarDelegate(
+                  height: kToolbarHeight,
+                  child: GestureDetector(
+                    onVerticalDragUpdate: onVerticalDragUpdate,
+                    onVerticalDragEnd: onVerticalDragEnd,
+                    child: _createAppBar(context),
                   ),
                 ),
-              ];
-            },
-            body: Container(
-              color: Colors.blue,
-            )),
+              ),
+            ];
+          },
+          body: MoviesListView(genres: chosenGenres),
+        ),
       ),
     );
   }
@@ -218,12 +311,14 @@ class BackdropPanel extends StatelessWidget {
 enum SeeAllMoviesType { IN_THEATRES, UPCOMING, POPULAR_BY_CATEGORY, SEARCH_RESULTS }
 
 class SeeAllMoviesPage extends StatefulWidget {
-  SeeAllMoviesPage({Key key, @required this.moviesType, this.chosenGenre})
+  SeeAllMoviesPage({Key key, @required this.moviesType, this.chosenGenre, this.firstPageMovies, this.maxPages})
       : assert(moviesType != null),
         super(key: key);
 
   final SeeAllMoviesType moviesType;
   final Genre chosenGenre;
+  final List<Movie> firstPageMovies;
+  final int maxPages;
 
   @override
   _SeeAllMoviesPageState createState() => _SeeAllMoviesPageState();
@@ -233,18 +328,21 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
   static const int animationDuration = 300;
   final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
   AnimationController _controller;
+  MovieListBloc _movieListBloc;
   Set<Genre> chosenGenres;
 
   @override
   void initState() {
     _controller = AnimationController(duration: const Duration(milliseconds: animationDuration), vsync: this);
     chosenGenres = widget.chosenGenre == null ? Set() : {widget.chosenGenre};
+    _movieListBloc = BlocProvider.of<MovieListBloc>(context);
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _movieListBloc.dispose();
     super.dispose();
   }
 
@@ -308,12 +406,8 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
       case SeeAllMoviesType.IN_THEATRES:
       case SeeAllMoviesType.UPCOMING:
       case SeeAllMoviesType.POPULAR_BY_CATEGORY:
-        String subTitle = chosenGenres.map((genre) => genre.name)
-            .take(4)
-            .toList()
-            .toString()
-            .replaceAll('[', '')
-            .replaceAll(']', '');
+        String subTitle =
+            chosenGenres.map((genre) => genre.name).take(4).toList().toString().replaceAll('[', '').replaceAll(']', '');
         if (chosenGenres.length > 4) {
           subTitle += ' and ${chosenGenres.length - 4} others';
         }
@@ -329,7 +423,9 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
   }
 
   void _handleChosenGenresUpdate(Set<Genre> genres) {
-    chosenGenres = genres;
+    setState(() {
+      chosenGenres = genres;
+    });
   }
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
@@ -371,6 +467,7 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
                       menuButtonAnimation: _controller.view,
                       onVerticalDragUpdate: _handleDragUpdate,
                       onVerticalDragEnd: _handleDragEnd,
+                      chosenGenres: chosenGenres.toList(),
                     ),
                   ),
                 ),

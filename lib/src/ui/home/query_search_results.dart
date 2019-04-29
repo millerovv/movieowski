@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movieowski/src/blocs/query_search_results/query_search_results_export.dart';
+import 'package:movieowski/src/blocs/query_search_results/query_search_results_bloc_export.dart';
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/model/api/response/search_movies_response.dart';
@@ -8,6 +8,7 @@ import 'package:movieowski/src/model/api/response/search_people_response.dart';
 import 'package:movieowski/src/resources/repository/movies_repository.dart';
 import 'package:movieowski/src/ui/widget/person_list_card.dart';
 import 'package:movieowski/src/ui/widget/movie_list_card.dart';
+import 'package:movieowski/src/utils/consts.dart';
 import 'package:movieowski/src/utils/navigator.dart';
 
 class QuerySearchResults extends StatefulWidget {
@@ -89,29 +90,40 @@ class _QuerySearchResultsState extends State<QuerySearchResults> {
   }
 
   Widget _createFoundPeoplePage(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 4.0),
-      child: ListView.builder(
-        itemCount: widget.movies.length,
-        itemBuilder: (context, index) {
-          Person person = widget.people[index];
-          String imageHeroTag = 'searched_movie_card$index/${person.id}';
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: GestureDetector(
-              onTap: () => goToPersonDetails(context, widget.moviesRepository, person.id, person.name,
-                  person.profilePath, imageHeroTag),
-              child: ActorListCard(
-                photoPath: person.profilePath,
-                name: person.name,
-                withHero: true,
-                imageHeroTag: imageHeroTag,
+    if (widget.people != null && widget.people.isNotEmpty) {
+      return Container(
+        margin: const EdgeInsets.only(top: 4.0),
+        child: ListView.builder(
+          itemCount: widget.movies.length,
+          itemBuilder: (context, index) {
+            Person person = widget.people[index];
+            String imageHeroTag = 'searched_movie_card$index/${person.id}';
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: GestureDetector(
+                onTap: () => goToPersonDetails(
+                    context, widget.moviesRepository, person.id, person.name, person.profilePath, imageHeroTag),
+                child: ActorListCard(
+                  photoPath: person.profilePath,
+                  name: person.name,
+                  withHero: true,
+                  imageHeroTag: imageHeroTag,
+                ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Text(
+          'Couldn\'t find anyone with given query',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.title.copyWith(color: AppColors.primaryWhite),
+        ),
+      );
+    }
   }
 
   @override

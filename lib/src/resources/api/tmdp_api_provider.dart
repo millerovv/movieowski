@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:movieowski/src/model/api/response/movie_details_with_credits_response.dart';
 import 'package:movieowski/src/model/api/response/movie_genres_response.dart';
 import 'package:movieowski/src/model/api/response/person_details_response.dart';
+import 'package:movieowski/src/model/api/response/popular_movies_response.dart';
 import 'package:movieowski/src/model/api/response/popular_people_response.dart';
 import 'package:movieowski/src/model/api/response/search_movies_response.dart';
 import 'package:movieowski/src/model/api/response/search_people_response.dart';
@@ -22,7 +23,6 @@ class TmdbApiProvider extends BaseApiProvider {
   static const String BASE_IMAGE_URL_ORIGINAL = 'http://image.tmdb.org/t/p/original';
   static const String API_KEY = 'f31e1ed88bfb5a83cc3270aafe460be4';
 
-  //TODO: Maybe should replace this request with /movies/popular
   /// Request list of trending movies
   /// Documentation: https://developers.themoviedb.org/3/trending/get-trending
   Future<TrendingMoviesResponseRoot> getTrendingMovies() async {
@@ -38,6 +38,25 @@ class TmdbApiProvider extends BaseApiProvider {
     final TrendingMoviesResponseRoot movies = TrendingMoviesResponseRoot.fromJson(json.decode(response));
     return movies;
   }
+
+  Future<PopularMoviesResponseRoot> getPopularMovies(
+      {int pageIndex = 1, String language = Languages.english, String region = Regions.usa}) async {
+    var url = Uri.https(
+      BASE_URL,
+      '3/movie/popular',
+      <String, String>{
+        'api_key': API_KEY,
+        'page': '$pageIndex',
+        'language': language,
+        'region': region,
+      },
+    );
+
+    var response = await getRequest(url);
+    final PopularMoviesResponseRoot movies = PopularMoviesResponseRoot.fromJson(json.decode(response));
+    return movies;
+  }
+
 
   /// Request list of movies playing in theatres now
   /// Documentation: https://developers.themoviedb.org/3/movies/get-now-playing
