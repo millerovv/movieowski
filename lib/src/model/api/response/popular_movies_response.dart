@@ -1,12 +1,8 @@
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 
 class PopularMoviesResponseRoot extends BaseMoviesResponse {
-	int page;
-	int totalResults;
-	int totalPages;
-	List<Movie> movies;
-
-	PopularMoviesResponseRoot({this.page, this.totalResults, this.totalPages, this.movies});
+	PopularMoviesResponseRoot({page, movies, dates, totalPages, totalResults})
+			: super(page: page, movies: movies, dates: dates, totalPages: totalPages, totalResults: totalResults);
 
 	PopularMoviesResponseRoot.fromJson(Map<String, dynamic> json) {
 		page = json['page'];

@@ -24,7 +24,7 @@ class UpcomingMoviesSectionBloc extends MoviesSectionBloc {
 			yield MoviesIsLoading();
 			try {
 				final UpcomingMoviesResponseRoot movies = await _moviesRepository.fetchUpcomingMovies();
-				yield MoviesIsLoaded(movies.results, movies.totalPages);
+				yield MoviesIsLoaded(movies.movies, movies.totalPages);
 			} on ApiRequestException catch (e, stacktrace) {
 				Log.e(e, stacktrace);
 				yield MoviesError(e.message);

@@ -56,7 +56,7 @@ class _CategoriesSectionState extends State<CategoriesSection> {
                             spacing: 8.0,
                             children: state.genres
                                 .map((genre) => GestureDetector(
-                                    onTap: () => goToSeeAllMovies(context, SeeAllMoviesType.POPULAR_BY_CATEGORY,
+                                    onTap: () => goToSeeAllMovies(context, SeeAllMoviesType.POPULAR,
                                         sortedByGenre: genre),
                                     child: Chip(
                                       backgroundColor: AppColors.accentColor,

@@ -1,24 +1,14 @@
 import 'package:movieowski/src/model/api/response/base_movies_response.dart';
 
 class UpcomingMoviesResponseRoot extends BaseMoviesResponse {
-	List<Movie> results;
-	int page;
-	int totalResults;
-	Dates dates;
-	int totalPages;
-
-	UpcomingMoviesResponseRoot(
-			{this.results,
-				this.page,
-				this.totalResults,
-				this.dates,
-				this.totalPages});
+	UpcomingMoviesResponseRoot({page, movies, dates, totalPages, totalResults})
+			: super(page: page, movies: movies, dates: dates, totalPages: totalPages, totalResults: totalResults);
 
 	UpcomingMoviesResponseRoot.fromJson(Map<String, dynamic> json) {
 		if (json['results'] != null) {
-			results = new List<Movie>();
+			movies = new List<Movie>();
 			json['results'].forEach((v) {
-				results.add(new Movie.fromJson(v));
+				movies.add(new Movie.fromJson(v));
 			});
 		}
 		page = json['page'];
@@ -29,8 +19,8 @@ class UpcomingMoviesResponseRoot extends BaseMoviesResponse {
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
-		if (this.results != null) {
-			data['results'] = this.results.map((v) => v.toJson()).toList();
+		if (this.movies != null) {
+			data['results'] = this.movies.map((v) => v.toJson()).toList();
 		}
 		data['page'] = this.page;
 		data['total_results'] = this.totalResults;
@@ -38,25 +28,6 @@ class UpcomingMoviesResponseRoot extends BaseMoviesResponse {
 			data['dates'] = this.dates.toJson();
 		}
 		data['total_pages'] = this.totalPages;
-		return data;
-	}
-}
-
-class Dates {
-	String maximum;
-	String minimum;
-
-	Dates({this.maximum, this.minimum});
-
-	Dates.fromJson(Map<String, dynamic> json) {
-		maximum = json['maximum'];
-		minimum = json['minimum'];
-	}
-
-	Map<String, dynamic> toJson() {
-		final Map<String, dynamic> data = new Map<String, dynamic>();
-		data['maximum'] = this.maximum;
-		data['minimum'] = this.minimum;
 		return data;
 	}
 }

@@ -24,7 +24,7 @@ class TrendingMoviesSectionBloc extends MoviesSectionBloc {
 			yield MoviesIsLoading();
 			try {
 				final TrendingMoviesResponseRoot movies = await _moviesRepository.fetchTrendingMovies();
-				yield MoviesIsLoaded(movies.results, movies.totalPages);
+				yield MoviesIsLoaded(movies.movies, movies.totalPages);
 			} on ApiRequestException catch (e, stacktrace) {
 				Log.e(e, stacktrace);
 				yield MoviesError(e.message);

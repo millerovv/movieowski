@@ -106,37 +106,54 @@ class _GenresViewState extends State<GenresView> {
 }
 
 /// View on the front with long list of movies that fit requested genres
-class MoviesListView extends StatefulWidget {
-  MoviesListView({this.genres = const []});
+class MovieListView extends StatefulWidget {
+  MovieListView({Key key, this.genres = const []}) : super(key: key);
 
   final List<Genre> genres;
 
   @override
-  _MoviesListViewState createState() => _MoviesListViewState();
+  MovieListViewState createState() => MovieListViewState();
 }
 
-class _MoviesListViewState extends State<MoviesListView> {
+class MovieListViewState extends State<MovieListView> {
   MovieListBloc _bloc;
 
   @override
   void initState() {
     _bloc = BlocProvider.of<MovieListBloc>(context);
+    _bloc.dispatch(FetchMovies(genres: widget.genres));
     super.initState();
   }
 
-  Widget _buildMovieCard(List<Movie> movies, int index) {
+  void reloadMovies({List<Genre> newGenres = const []}) {
+    _bloc.dispatch(FetchMoviesWithReset(genres: newGenres));
+  }
+
+  Widget _buildMovieCard(List<Movie> movies, List<Genre> genres, int index, bool canLoadMoreMovies) {
     if (index >= movies.length) {
-      _bloc.dispatch(FetchMovies(genres: widget.genres));
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: Center(child: CircularProgressIndicator()),
-      );
+      if (canLoadMoreMovies) {
+        _bloc.dispatch(FetchMovies(genres: widget.genres));
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Center(child: CircularProgressIndicator()),
+        );
+      } else {
+        return SizedBox();
+      }
     }
 
     Movie movie = movies[index];
     if (movie == null) {
       return SizedBox();
     }
+
+    String matchingGenres = genres
+        .where((genre) => movie.genreIds.contains(genre.id))
+        .map((genre) => genre.name)
+        .toList()
+        .toString()
+        .replaceAll('[', '')
+        .replaceAll(']', '');
 
     return Padding(
       padding: EdgeInsets.only(
@@ -151,7 +168,7 @@ class _MoviesListViewState extends State<MoviesListView> {
           rating: movie.voteAverage,
           title: movie.title,
           releaseYear: movie.releaseDate.split('-')[0],
-          genres: 'Adventure, Animation, Documentary',
+          genres: matchingGenres,
           withHero: false,
         ),
       ),
@@ -166,15 +183,26 @@ class _MoviesListViewState extends State<MoviesListView> {
         bloc: _bloc,
         builder: (context, MovieListState state) {
           if (state is MoviesEmpty) {
-            _bloc.dispatch(FetchMovies(genres: widget.genres));
             return Center(
               child: CircularProgressIndicator(),
             );
           } else if (state is PagesLoaded) {
+            if (state.movies.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Text(
+                    'Couldn\'t find any movies matching chosen genres',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.title.copyWith(color: AppColors.primaryWhite),
+                  ),
+                ),
+              );
+            }
             return ListView.builder(
                 itemCount: (state.movies == null) ? 0 : state.movies.length + (state.allPagesLoaded ? 0 : 1),
                 itemBuilder: (context, index) {
-                  return _buildMovieCard(state.movies, index);
+                  return _buildMovieCard(state.movies, state.movieGenres, index, state.allPagesLoaded);
                 });
           } else {
             return Center(
@@ -204,6 +232,7 @@ class BackdropPanel extends StatelessWidget {
     this.onVerticalDragUpdate,
     this.onVerticalDragEnd,
     this.chosenGenres = const [],
+    this.movieListKey,
   }) : super(key: key);
 
   final String title;
@@ -213,6 +242,7 @@ class BackdropPanel extends StatelessWidget {
   final GestureDragUpdateCallback onVerticalDragUpdate;
   final GestureDragEndCallback onVerticalDragEnd;
   final List<Genre> chosenGenres;
+  final GlobalKey<MovieListViewState> movieListKey;
 
   Widget _createAppBar(BuildContext context) {
     return Container(
@@ -301,14 +331,17 @@ class BackdropPanel extends StatelessWidget {
               ),
             ];
           },
-          body: MoviesListView(genres: chosenGenres),
+          body: MovieListView(
+            key: movieListKey,
+            genres: chosenGenres,
+          ),
         ),
       ),
     );
   }
 }
 
-enum SeeAllMoviesType { IN_THEATRES, UPCOMING, POPULAR_BY_CATEGORY, SEARCH_RESULTS }
+enum SeeAllMoviesType { IN_THEATRES, UPCOMING, POPULAR, SEARCH_RESULTS }
 
 class SeeAllMoviesPage extends StatefulWidget {
   SeeAllMoviesPage({Key key, @required this.moviesType, this.chosenGenre, this.firstPageMovies, this.maxPages})
@@ -327,6 +360,7 @@ class SeeAllMoviesPage extends StatefulWidget {
 class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerProviderStateMixin {
   static const int animationDuration = 300;
   final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
+  final GlobalKey<MovieListViewState> _movieListViewKey = GlobalKey<MovieListViewState>();
   AnimationController _controller;
   MovieListBloc _movieListBloc;
   Set<Genre> chosenGenres;
@@ -389,7 +423,7 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
       case SeeAllMoviesType.UPCOMING:
         return 'Upcoming';
         break;
-      case SeeAllMoviesType.POPULAR_BY_CATEGORY:
+      case SeeAllMoviesType.POPULAR:
         return 'Popular in';
         break;
       case SeeAllMoviesType.SEARCH_RESULTS:
@@ -405,7 +439,7 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
     switch (widget.moviesType) {
       case SeeAllMoviesType.IN_THEATRES:
       case SeeAllMoviesType.UPCOMING:
-      case SeeAllMoviesType.POPULAR_BY_CATEGORY:
+      case SeeAllMoviesType.POPULAR:
         String subTitle =
             chosenGenres.map((genre) => genre.name).take(4).toList().toString().replaceAll('[', '').replaceAll(']', '');
         if (chosenGenres.length > 4) {
@@ -426,6 +460,7 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
     setState(() {
       chosenGenres = genres;
     });
+    _movieListViewKey.currentState?.reloadMovies(newGenres: chosenGenres.toList());
   }
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
@@ -468,6 +503,7 @@ class _SeeAllMoviesPageState extends State<SeeAllMoviesPage> with SingleTickerPr
                       onVerticalDragUpdate: _handleDragUpdate,
                       onVerticalDragEnd: _handleDragEnd,
                       chosenGenres: chosenGenres.toList(),
+                      movieListKey: _movieListViewKey,
                     ),
                   ),
                 ),
