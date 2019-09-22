@@ -27,7 +27,7 @@ class NowPlayingMoviesSectionBloc extends MoviesSectionBloc {
             pageIndex: event.page,
             language: event.language,
             region: event.region);
-        yield MoviesIsLoaded(movies.results);
+        yield MoviesIsLoaded(movies.movies, movies.totalPages);
       } on ApiRequestException catch (e, stacktrace) {
         Log.e(e, stacktrace);
         yield MoviesError(e.message);

@@ -36,8 +36,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> with TickerProvider
   static const int ratingAnimationDurationMills = 1400;
   static const int pageSwitchAnimationDurationMills = 1000;
 
-  final GlobalKey<AnimatedMovieTitleState> _animatedTitleKey = new GlobalKey<AnimatedMovieTitleState>();
-  final GlobalKey _pageViewKey = new GlobalKey();
+  final GlobalKey<AnimatedMovieTitleState> _animatedTitleKey = GlobalKey<AnimatedMovieTitleState>();
+  final GlobalKey _pageViewKey = GlobalKey();
 
   MovieDetailsPageBloc _bloc;
   PageController pageController;

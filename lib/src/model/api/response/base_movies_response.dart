@@ -1,6 +1,14 @@
 import 'package:equatable/equatable.dart';
 
-abstract class BaseMoviesResponse extends Equatable {}
+abstract class BaseMoviesResponse {
+  List<Movie> movies;
+  int totalPages;
+  int page;
+  Dates dates;
+  int totalResults;
+
+  BaseMoviesResponse({this.movies, this.totalPages, this.page, this.dates, this.totalResults});
+}
 
 class Movie extends Equatable {
   int id;
@@ -69,6 +77,25 @@ class Movie extends Equatable {
     data['vote_count'] = this.voteCount;
     data['video'] = this.video;
     data['vote_average'] = this.voteAverage;
+    return data;
+  }
+}
+
+class Dates {
+  String maximum;
+  String minimum;
+
+  Dates({this.maximum, this.minimum});
+
+  Dates.fromJson(Map<String, dynamic> json) {
+    maximum = json['maximum'];
+    minimum = json['minimum'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['maximum'] = this.maximum;
+    data['minimum'] = this.minimum;
     return data;
   }
 }

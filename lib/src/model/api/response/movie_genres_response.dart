@@ -27,7 +27,7 @@ class Genre extends Equatable {
 	int id;
 	String name;
 
-	Genre({this.id, this.name});
+	Genre({this.id, this.name}) : super([id, name]);
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -36,14 +36,12 @@ class Genre extends Equatable {
 		return data;
 	}
 
-	Genre.fromJson(Map<String, dynamic> json) {
-		id = json['id'];
-		name = json['name'];
+	factory Genre.fromJson(Map<String, dynamic> json) {
+		return Genre(id: json['id'], name: json['name']);
 	}
 
-	Genre.fromDbJson(Map<String, dynamic> json) {
-		id = json['api_id'];
-		name = json['name'];
+	factory Genre.fromDbJson(Map<String, dynamic> json) {
+		return Genre(id: json['api_id'], name: json['name']);
 	}
 
 	@override

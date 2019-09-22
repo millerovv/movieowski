@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieowski/src/blocs/home_page/genres/movie_genres_section_bloc_export.dart';
+import 'package:movieowski/src/ui/see_all/see_all_movies_page.dart';
 import 'package:movieowski/src/utils/consts.dart';
+import 'package:movieowski/src/utils/navigator.dart';
 
 class CategoriesSection extends StatefulWidget {
   @override
@@ -53,7 +55,10 @@ class _CategoriesSectionState extends State<CategoriesSection> {
                           child: Wrap(
                             spacing: 8.0,
                             children: state.genres
-                                .map((genre) => Chip(
+                                .map((genre) => GestureDetector(
+                                    onTap: () => goToSeeAllMovies(context, SeeAllMoviesType.POPULAR,
+                                        sortedByGenre: genre),
+                                    child: Chip(
                                       backgroundColor: AppColors.accentColor,
                                       padding: EdgeInsets.only(left: 4.0, right: 4.0, bottom: 2.0),
                                       label: Text(
@@ -63,7 +68,7 @@ class _CategoriesSectionState extends State<CategoriesSection> {
                                             .body1
                                             .copyWith(color: AppColors.primaryWhite, fontWeight: FontWeight.bold),
                                       ),
-                                    ))
+                                    )))
                                 .toList(),
                           ),
                         ),

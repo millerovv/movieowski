@@ -19,7 +19,6 @@ class MovieGenresSectionBloc extends Bloc<MovieGenresSectionEvent, MovieGenresSe
   @override
   Stream<MovieGenresSectionState> mapEventToState(
       MovieGenresSectionState currentState, MovieGenresSectionEvent event) async* {
-//    await DBProvider.dbProvider.dropDatabase();
     if (event is FetchGenres) {
       yield MovieGenresIsLoading();
       try {

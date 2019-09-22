@@ -11,9 +11,10 @@ class MoviesIsLoading extends MoviesSectionState {}
 
 class MoviesIsLoaded extends MoviesSectionState {
   final List<Movie> movies;
+  final int maxPages;
 
-  MoviesIsLoaded(this.movies) :
-        super(movies);
+  MoviesIsLoaded(this.movies, this.maxPages) :
+        super([movies, maxPages]);
 }
 
 class MoviesError extends MoviesSectionState {
