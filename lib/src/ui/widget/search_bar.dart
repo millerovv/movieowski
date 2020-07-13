@@ -62,8 +62,7 @@ class SearchBar extends StatelessWidget {
                         onChanged: onChanged,
                         decoration: InputDecoration(
                             border: InputBorder.none,
-                            // Set contentPadding to prevent incorrect layout of this TextField (bug?)
-                            contentPadding: EdgeInsets.all(0.0),
+                            contentPadding: EdgeInsets.only(bottom: 14),
                             hintText: 'Search for any movie or actor',
                             hintStyle: Theme.of(context).textTheme.body1.copyWith(color: AppColors.hintGrey)),
                       ),
