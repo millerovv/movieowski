@@ -46,13 +46,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     _bloc = BlocProvider.of<HomePageBloc>(context);
 
     searchValue = "";
-    searchFocusAnimationController =
-        AnimationController(duration: Duration(milliseconds: searchFocusAnimationDurationMills), vsync: this)
-          ..addListener(() {
-            setState(() {});
-          });
-    backgroundColor =
-        ColorTween(begin: AppColors.primaryColor, end: AppColors.darkerPrimary).animate(searchFocusAnimationController);
+    searchFocusAnimationController = AnimationController(duration: Duration(milliseconds: searchFocusAnimationDurationMills), vsync: this)
+      ..addListener(() {
+        setState(() {});
+      });
+    backgroundColor = ColorTween(begin: AppColors.primaryColor, end: AppColors.darkerPrimary).animate(searchFocusAnimationController);
 
     showClearSearchButton = false;
     searchController = TextEditingController();
@@ -112,7 +110,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   Future<bool> _onWillPop() {
     bool override = true;
-    if(_bloc.currentState is SearchByQueryIsLoaded || _bloc.currentState is SearchByQueryIsLoading) {
+    if (_bloc.currentState is SearchByQueryIsLoaded || _bloc.currentState is SearchByQueryIsLoading) {
       _onCancelSearchBarButtonClickCallback();
       override = false;
     }
@@ -125,67 +123,71 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       onWillPop: _onWillPop,
       child: Scaffold(
         backgroundColor: backgroundColor.value,
-        body: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                new SliverAppBar(
-                  backgroundColor: backgroundColor.value,
-                  pinned: true,
-                  flexibleSpace: SearchBar(
-                    textFieldController: searchController,
-                    focusNode: searchFocusNode,
-                    showCancelButton: searchFocusNode.hasFocus
-                        || _bloc.currentState is SearchByQueryIsLoading || _bloc.currentState is SearchByQueryIsLoaded,
-                    showClearSearchButton: showClearSearchButton,
-                    onChanged: _onSearchBarValueChangeCallback,
-                    onClearButtonClick: _onClearSearchBarButtonClickCallback,
-                    onCancelButtonClick: _onCancelSearchBarButtonClickCallback,
-                  ),
-                ),
-              ];
-            },
-            body: BlocBuilder<HomePageEvent, HomePageState>(
-              bloc: _bloc,
-              builder: (BuildContext context, HomePageState state) {
-                if (state is HomePageIsLoaded) {
-                  if (showShimmer) _closeShimmer();
-                  shimmerOpacity = 0.0;
-                }
-                if (state is HomePageLoadingFailed) {
-                  return Center(
-                    child: Text(
-                      'Couldn\'t connect to the server.\nPlease try again later',
-                      style: Theme.of(context).textTheme.headline,
+        body: SafeArea(
+          child: NestedScrollView(
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) => [
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: SearchBarDelegate(
+                        backgroundColor: backgroundColor.value,
+                        child: SearchBar(
+                          textFieldController: searchController,
+                          focusNode: searchFocusNode,
+                          showCancelButton: searchFocusNode.hasFocus ||
+                              _bloc.currentState is SearchByQueryIsLoading ||
+                              _bloc.currentState is SearchByQueryIsLoaded,
+                          showClearSearchButton: showClearSearchButton,
+                          onChanged: _onSearchBarValueChangeCallback,
+                          onClearButtonClick: _onClearSearchBarButtonClickCallback,
+                          onCancelButtonClick: _onCancelSearchBarButtonClickCallback,
+                        ),
+                      ),
                     ),
-                  );
-                } else {
-                  return Stack(
-                    children: <Widget>[
-                      (state is HomePageIsLoaded) ? _createHomePageContent(context) : SizedBox(),
-                      showShimmer
-                          ? IgnorePointer(
-                              child: AnimatedOpacity(
-                                opacity: shimmerOpacity,
-                                duration: const Duration(milliseconds: shimmerOpacityAnimationDurationMills),
-                                child: HomePageShimmer(),
-                              ),
-                            )
-                          : SizedBox(),
-                      (state is SearchByQueryIsLoading || state is SearchByQueryIsLoaded)
-                          ? BlocProvider(
-                        bloc: QuerySearchResultsBloc(_bloc.moviesRepository),
-                        child: QuerySearchResults(
-                              loaded: state is SearchByQueryIsLoaded,
-                              moviesRoot: (state is SearchByQueryIsLoaded) ? state.movies : null,
-                              peopleRoot: (state is SearchByQueryIsLoaded) ? state.people : null,
-                              moviesRepository: _bloc.moviesRepository,
-                            ),)
-                          : SizedBox(),
-                    ],
-                  );
-                }
-              },
-            )),
+                  ],
+              body: BlocBuilder<HomePageEvent, HomePageState>(
+                bloc: _bloc,
+                builder: (BuildContext context, HomePageState state) {
+                  if (state is HomePageIsLoaded) {
+                    if (showShimmer) _closeShimmer();
+                    shimmerOpacity = 0.0;
+                  }
+                  if (state is HomePageLoadingFailed) {
+                    return Center(
+                      child: Text(
+                        'Couldn\'t connect to the server.\nPlease try again later',
+                        style: Theme.of(context).textTheme.headline,
+                      ),
+                    );
+                  } else {
+                    return Stack(
+                      children: <Widget>[
+                        (state is HomePageIsLoaded) ? _createHomePageContent(context) : SizedBox(),
+                        showShimmer
+                            ? IgnorePointer(
+                                child: AnimatedOpacity(
+                                  opacity: shimmerOpacity,
+                                  duration: const Duration(milliseconds: shimmerOpacityAnimationDurationMills),
+                                  child: HomePageShimmer(),
+                                ),
+                              )
+                            : SizedBox(),
+                        (state is SearchByQueryIsLoading || state is SearchByQueryIsLoaded)
+                            ? BlocProvider(
+                                bloc: QuerySearchResultsBloc(_bloc.moviesRepository),
+                                child: QuerySearchResults(
+                                  loaded: state is SearchByQueryIsLoaded,
+                                  moviesRoot: (state is SearchByQueryIsLoaded) ? state.movies : null,
+                                  peopleRoot: (state is SearchByQueryIsLoaded) ? state.people : null,
+                                  moviesRepository: _bloc.moviesRepository,
+                                ),
+                              )
+                            : SizedBox(),
+                      ],
+                    );
+                  }
+                },
+              )),
+        ),
       ),
     );
   }
